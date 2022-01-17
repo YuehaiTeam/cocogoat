@@ -33,7 +33,7 @@
             <div class="text">
                 <div class="count">
                     <div class="scanned">
-                        <div class="title">已扫描</div>
+                        <div class="title">扫描</div>
                         <div class="number">
                             {{ scanned }}
                         </div>

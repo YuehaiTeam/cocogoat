@@ -1,46 +1,74 @@
 <template>
-    <div>
-        <video ref="video" style="width: 320px"></video>
-        <div class="imgList">
-            <img v-for="(img, i) in imgList" :key="i" :src="img" style="width: 320px" />
-        </div>
-        <button @click="requestCapture">start</button>
-        <float-window
-            v-if="state === S.Wait || state === S.Capture"
-            :width="250"
-            :height="100"
-            class="floatwindow"
-            @exit="state = S.Processing"
-        >
-            <float-content
-                :capture="capture"
-                :state="state === S.Capture ? 1 : 0"
-                :success="recognized.success"
-                :fail="recognized.fail"
-                :scanned="scanned"
-                :duplicate="dup"
-            />
-        </float-window>
-        <div v-if="state === S.Capture || state === S.Processing" class="inline-status">
-            <float-content
-                :in-float="false"
-                :capture="false"
-                :state="1"
-                :success="recognized.success"
-                :fail="recognized.fail"
-                :scanned="scanned"
-                :duplicate="dup"
-                @click="state === S.Capture && (state = S.Processing)"
-            />
-        </div>
-        <button @click="state++">>></button>
-        <div class="list">
-            <div v-for="(i, a) in results" :key="a" class="item">
-                <div v-if="!i.success">失败</div>
-                <div v-else class="title">{{ i.achievement.name }} {{ i.date || '未完成' }}</div>
+    <main>
+        <section v-if="state === S.Init">
+            <div class="loader">
+                <div class="loader-animation">
+                    <span class="cssload-loader"><span class="cssload-loader-inner"></span></span>
+                </div>
+                <div class="loader-text">椰羊正在饮甘露，马上就来</div>
             </div>
-        </div>
-    </div>
+        </section>
+        <section v-else>
+            <video ref="video" style="display: none"></video>
+            <div v-if="state < S.Wait" class="start-page">
+                <h1>椰羊·成就扫描</h1>
+                <button class="start" @click="requestCapture">开始</button>
+                <img src="@/assets/openscreenshare.png" alt="请参照图片开始抓屏" />
+            </div>
+            <float-window
+                v-if="state === S.Wait || state === S.Capture"
+                :width="250"
+                :height="100"
+                class="floatwindow"
+                @exit="state = S.Processing"
+            >
+                <float-content
+                    :capture="capture"
+                    :state="state === S.Capture ? 1 : 0"
+                    :success="recognized.success"
+                    :fail="recognized.fail"
+                    :scanned="scanned"
+                    :duplicate="dup"
+                />
+            </float-window>
+            <div v-if="state > S.Wait" class="status-inner">
+                <div class="inline-status">
+                    <float-content
+                        :in-float="false"
+                        :capture="false"
+                        :state="1"
+                        :success="recognized.success"
+                        :fail="recognized.fail"
+                        :scanned="scanned"
+                        :duplicate="dup"
+                        @click="state === S.Capture && (state = S.Processing)"
+                    />
+                </div>
+                <div v-if="state === S.Capture" class="no-box">
+                    请按悬浮窗提示操作
+                    <small> 找不到悬浮窗？点此重新显示</small>
+                </div>
+                <div v-if="state > S.Capture" class="pbar">
+                    <div class="pbar-bar">
+                        <div
+                            class="pbar-bar-in"
+                            :style="{ width: `${((recognized.success + recognized.fail + dup) / scanned) * 100}%` }"
+                        ></div>
+                        <div v-if="state === S.Finish" class="pbar-bar-text">完成</div>
+                    </div>
+                </div>
+            </div>
+            <button v-if="state === S.Wait" @click="state = S.Capture">我已切换到成就页面（自动识别页面未完成）</button>
+            <div v-if="isTop" class="list">
+                <div v-for="(i, a) in results" :key="a" class="item">
+                    <div v-if="!i.success">
+                        <img :src="i.images.main" />
+                    </div>
+                    <div v-else class="title">{{ i.achievement.name }} {{ i.date || '未完成' }}</div>
+                </div>
+            </div>
+        </section>
+    </main>
 </template>
 
 <script lang="ts">
@@ -50,16 +78,19 @@ const workerCV = getWorker()
 const workerOCR = getWorker()
 const { scannerOnImage, recognizeAchievement: recognizeAchievement2 } = workerCV
 const { recognizeAchievement } = workerOCR
-workerCV.init()
-workerOCR.init()
+const initPromise = (async () => {
+    await workerCV.init()
+    await workerOCR.init()
+})()
 enum S {
-    Ready,
-    Request,
-    Wait,
-    Capture,
-    Processing,
-    Finish,
-    Fail,
+    Fail = -1,
+    Init = 0,
+    Ready = 1,
+    Request = 2,
+    Wait = 3,
+    Capture = 4,
+    Processing = 5,
+    Finish = 6,
 }
 import { computed, defineComponent, ref, watch } from 'vue-demi'
 import FloatWindow from '@/components/FloatWindow.vue'
@@ -74,6 +105,7 @@ export default defineComponent({
         FloatContent,
     },
     setup() {
+        const isTop = window === parent
         const capture = ref(false)
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
         const scanned = ref(0)
@@ -105,7 +137,9 @@ export default defineComponent({
                         results.value.push(r)
                     }
                 } else {
-                    new Image().src = toCanvas(line.image).toDataURL()
+                    r.images = {
+                        main: toCanvas(line.image).toDataURL(),
+                    }
                     results.value.push(r)
                 }
             }
@@ -136,8 +170,10 @@ export default defineComponent({
         }
         const cvQueue = FastQ.promise(cvWorker, 1)
         const video = ref(null as unknown as HTMLVideoElement)
-        const state = ref(S.Ready)
-        const imgList = ref([] as string[])
+        const state = ref(S.Init)
+        initPromise.then(() => {
+            state.value = S.Ready
+        })
         let captureStream: MediaStream | null = null
         const requestCapture = async () => {
             try {
@@ -190,38 +226,232 @@ export default defineComponent({
                     console.log('processing')
                     ocrQueue.resume()
                 }
+                if (state.value === S.Finish) {
+                    console.log('finish')
+                    parent &&
+                        isTop &&
+                        parent.postMessage(
+                            {
+                                event: 'cocogoat-scanner-achievements',
+                                data: {
+                                    results: results.value,
+                                    dup: dup.value,
+                                },
+                            },
+                            '*',
+                        )
+                }
             },
         )
         return {
             S,
             state,
             video,
-            imgList,
             requestCapture,
             results,
             scanned,
             recognized,
             capture,
             dup,
+            isTop,
         }
     },
 })
 </script>
 
 <style lang="scss" scoped>
+.loader {
+    width: 200px;
+    padding-top: 40vh;
+    color: #666;
+    text-align: center;
+    font-size: 14px;
+    margin: 0 auto;
+}
+
+.loader-text {
+    padding-top: 15px;
+}
+section {
+    width: 100%;
+}
 .floatwindow {
     opacity: 0;
     position: absolute;
     top: -9999px;
     left: -9999px;
 }
+.status-inner {
+    width: 100%;
+    text-align: center;
+    padding-bottom: 15px;
+    position: absolute;
+    top: 35vh;
+    left: 0;
+    right: 0;
+    .no-box {
+        color: #409eff;
+        margin-top: -23px;
+        position: relative;
+        z-index: 2;
+        cursor: pointer;
+        small {
+            font-size: 13px;
+            text-decoration: underline;
+        }
+    }
+}
+
 .inline-status {
-    width: 250px;
-    height: 100px;
+    width: 180px;
+    height: 70px;
     zoom: 1.5;
     position: relative;
-    border: 1px solid #409eff;
     cursor: pointer;
     user-select: none;
+    margin: 0 auto;
+    &::v-deep(.icon) {
+        display: none;
+    }
+    &::v-deep(.text) {
+        left: 0;
+        .desc {
+            display: none;
+        }
+    }
+}
+
+.cssload-loader {
+    display: block;
+    margin: 0 auto;
+    width: 30px;
+    height: 30px;
+    position: relative;
+    border: 3px solid #333;
+    animation: cssload-loader 2.3s infinite ease;
+}
+
+.cssload-loader-inner {
+    vertical-align: top;
+    display: inline-block;
+    width: 100%;
+    background-color: #333;
+    animation: cssload-loader-inner 2.3s infinite ease-in;
+}
+
+@keyframes cssload-loader {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(180deg);
+    }
+
+    50% {
+        transform: rotate(180deg);
+    }
+
+    75% {
+        transform: rotate(360deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes cssload-loader-inner {
+    0% {
+        height: 0%;
+    }
+
+    25% {
+        height: 0%;
+    }
+
+    50% {
+        height: 100%;
+    }
+
+    75% {
+        height: 100%;
+    }
+
+    100% {
+        height: 0%;
+    }
+}
+.pbar {
+    width: 230px;
+    margin: 0 auto;
+    margin-top: -15px;
+    z-index: 2;
+    position: relative;
+    .pbar-bar {
+        width: 230px;
+        height: 30px;
+        border: 1px solid #409eff;
+        border-radius: 20px;
+        position: relative;
+    }
+
+    .pbar-bar-in {
+        height: 100%;
+        background: #409eff;
+        border-radius: 20px;
+    }
+    .pbar-bar-text {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        color: #fff;
+        line-height: 30px;
+        font-size: 14px;
+    }
+}
+.list {
+    font-size: 12px;
+    height: calc(100vh - 50px);
+    overflow: overlay;
+    overflow-x: hidden;
+    img {
+        max-width: 100%;
+    }
+}
+.start-page {
+    position: absolute;
+    top: 10vh;
+    right: 0;
+    left: 0;
+    h1 {
+        text-align: center;
+        font-weight: normal;
+    }
+    img {
+        display: block;
+        margin: 0 auto;
+        margin-top: 30px;
+        width: 490px;
+        max-width: 100%;
+    }
+    button.start {
+        width: 200px;
+        height: 55px;
+        background: #333;
+        border-radius: 55px;
+        border: 0;
+        color: #fff;
+        display: block;
+        margin: 0 auto;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+        &:hover {
+            opacity: 0.7;
+        }
+    }
 }
 </style>

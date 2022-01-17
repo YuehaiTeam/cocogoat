@@ -27,13 +27,13 @@ const isSimdSupported = () => {
         return false
     }
 }
-import wasmNormal from './opencv-normal.wasm?raw'
-import wasmSimd from './opencv-simd.wasm?raw'
-let wasmBinaryFile = wasmNormal
-if (isSimdSupported()) {
-    wasmBinaryFile = wasmSimd
-}
+
+import resources from '@/resources'
 export default function (cv) {
+    let wasmBinaryFile = resources['opencv-normal.wasm']
+    if (isSimdSupported()) {
+        wasmBinaryFile = resources['opencv-simd.wasm']
+    }
     cv = cv || {}
 
     var Module = typeof cv !== 'undefined' ? cv : {}

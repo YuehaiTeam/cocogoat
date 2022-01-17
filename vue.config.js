@@ -10,7 +10,7 @@ module.exports = defineConfig({
             .rule('raw')
             .type('asset')
             .set('resourceQuery', /raw/)
-            .set('generator', { filename: 'assets/[contenthash][ext]' })
+            .set('generator', { filename: 'assets/[name].[contenthash:8][ext]' })
         config.module.rule('txt').type('asset/source').set('resourceQuery', /txt/)
         config.resolve.set('fallback', {
             util: require.resolve('util'),

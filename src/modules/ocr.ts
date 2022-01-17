@@ -2,10 +2,7 @@ import * as ort from 'onnxruntime-web'
 import ocrModel from '@/plugins/ocr/ppocr.onnx?raw'
 import ocrString from '@/plugins/ocr/ppocr.txt?txt'
 
-import ortWasm from 'onnxruntime-web/dist/ort-wasm.wasm?raw'
-import ortWasmMT from 'onnxruntime-web/dist/ort-wasm-threaded.wasm?raw'
-import ortWasmSIMD from 'onnxruntime-web/dist/ort-wasm-simd.wasm?raw'
-import ortWasmSIMDMT from 'onnxruntime-web/dist/ort-wasm-simd-threaded.wasm?raw'
+import resources from '@/resources'
 
 import * as nd from 'nd4js'
 
@@ -15,12 +12,7 @@ const ocrMap: string[] = ocrString.toString().trim().replace(/\r/g, '').split('\
 ocrMap.unshift('\0')
 ocrMap.push(' ')
 
-ort.env.wasm.wasmPaths = {
-    'ort-wasm-simd-threaded.wasm': ortWasmSIMDMT.replace('?raw', ''),
-    'ort-wasm-simd.wasm': ortWasmSIMD.replace('?raw', ''),
-    'ort-wasm-threaded.wasm': ortWasmMT.replace('?raw', ''),
-    'ort-wasm.wasm': ortWasm.replace('?raw', ''),
-}
+ort.env.wasm.wasmPaths = resources
 
 let session: ort.InferenceSession | null = null
 

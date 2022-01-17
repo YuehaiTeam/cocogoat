@@ -1,4 +1,4 @@
-import cvLoader from '@/plugins/opencv.js'
+import cvLoader from '@/plugins/opencv/opencv.js'
 import type OpenCV from './opencv.d'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let cv: OpenCV

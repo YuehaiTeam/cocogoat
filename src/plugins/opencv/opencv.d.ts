@@ -1,4 +1,4 @@
-declare module '@/plugins/opencv.js' {
+declare module '@/plugins/opencv/opencv.js' {
     const p: () => Promise<any>
     export default p
 }

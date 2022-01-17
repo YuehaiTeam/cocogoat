@@ -1,4 +1,21 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
+    publicPath:
+        process.env.NODE_ENV === 'production' ? 'https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-web@dist/' : '/',
     transpileDependencies: true,
+    chainWebpack: (config) => {
+        config.output.set('chunkLoadingGlobal', 'define')
+        config.plugins.delete('prefetch')
+        config.plugins.delete('preload')
+        config.module
+            .rule('raw')
+            .type('asset')
+            .set('resourceQuery', /raw/)
+            .set('generator', { filename: 'assets/[contenthash][ext]' })
+        config.module.rule('txt').type('asset/source').set('resourceQuery', /txt/)
+        config.resolve.set('fallback', {
+            util: require.resolve('util'),
+            '@genshin-data': require('path').resolve(__dirname, 'src', 'plugins', 'genshin-data', 'data'),
+        })
+    },
 })

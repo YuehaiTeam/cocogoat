@@ -158,8 +158,11 @@ export function cvSplitAchievement(cv: Awaited<ReturnType<typeof getCV>>, src: M
             // 右侧
             if (rect.width / rect.height <= 1.5) {
                 name = 'reward'
+                roi.delete()
             } else if (rect.y + rect.height > 0.8 * src.rows) {
                 name = 'date'
+                // 防止识别不完整
+                rect.width = src.cols - rect.x - 1
                 cv.resize(roi, roi, new cv.Size((roi.cols / roi.rows) * 32, 32), 0, 0, cv.INTER_AREA)
             } else {
                 name = 'status'
@@ -169,12 +172,16 @@ export function cvSplitAchievement(cv: Awaited<ReturnType<typeof getCV>>, src: M
             // 左侧
             if (rect.width / rect.height <= 1.5) {
                 name = 'icon'
+                roi.delete()
+                /*
+                暂时不需要识别图标
                 const low = new cv.Mat(roi.rows, roi.cols, roi.type(), [130, 100, 0, 255])
                 const high = new cv.Mat(roi.rows, roi.cols, roi.type(), [255, 255, 255, 255])
                 cv.inRange(roi, low, high, roi)
                 low.delete()
                 high.delete()
                 cv.cvtColor(roi, roi, cv.COLOR_GRAY2RGBA, 0)
+                */
             } else if (rect.y + rect.height / 2 < src.rows * 0.5) {
                 name = 'title'
                 cv.resize(roi, roi, new cv.Size((roi.cols / roi.rows) * 32, 32), 0, 0, cv.INTER_AREA)
@@ -185,17 +192,12 @@ export function cvSplitAchievement(cv: Awaited<ReturnType<typeof getCV>>, src: M
         }
         return { name, rect: rect, roi }
     })
-    const reward = rects.find((rect) => rect.name === 'reward')
     rects = rects.filter((rect) => {
         // 去除过窄的矩形
         if (rect.rect.height < 5) return false
-        if (rect.name === 'reward') return true
-        // 去除reward范围内的重复框
-        if (reward) {
-            if (rect.rect.x > reward.rect.x && rect.rect.x + rect.rect.width < reward.rect.x + reward.rect.width) {
-                return false
-            }
-        }
+        // reward和icon都用不到，减少占用
+        if (rect.name === 'reward') return false
+        if (rect.name === 'icon') return false
         return true
     })
     src.delete()

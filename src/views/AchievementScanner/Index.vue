@@ -13,6 +13,7 @@
             <div v-if="state < S.Wait" class="start-page">
                 <h1>椰羊·成就扫描</h1>
                 <button class="start" @click="requestCapture">开始</button>
+                <div class="desc">点击开始后，请按下图指示选择原神窗口以识别</div>
                 <img src="@/assets/openscreenshare.png" alt="请参照图片开始抓屏" />
             </div>
             <float-window
@@ -44,21 +45,21 @@
                         @click="state === S.Capture && (state = S.Processing)"
                     />
                 </div>
-                <div v-if="state === S.Capture" class="no-box">
-                    请按悬浮窗提示操作
-                    <small> 找不到悬浮窗？点此重新显示</small>
-                </div>
+                <div v-if="state === S.Capture" class="no-box">请按悬浮窗提示滚动页面</div>
                 <div v-if="state > S.Capture" class="pbar">
-                    <div class="pbar-bar">
+                    <div class="pbar-bar" :class="{ finish: state === S.Finish }">
                         <div
                             class="pbar-bar-in"
                             :style="{ width: `${((recognized.success + recognized.fail + dup) / scanned) * 100}%` }"
                         ></div>
                         <div v-if="state === S.Finish" class="pbar-bar-text">完成</div>
                     </div>
+                    <div v-if="state === S.Finish" class="restart" @click="reset">重新开始</div>
                 </div>
             </div>
-            <button v-if="state === S.Wait" @click="state = S.Capture">我已切换到成就页面（自动识别页面未完成）</button>
+            <button v-if="state === S.Wait" @click="state = S.Capture">
+                我已切换到成就页面（自动识别页面未完成）<br />如没看到悬浮窗请点击窗口空白处
+            </button>
             <div v-if="isTop" class="list">
                 <div v-for="(i, a) in results" :key="a" class="item">
                     <div v-if="!i.success">
@@ -246,6 +247,13 @@ export default defineComponent({
                 }
             },
         )
+        const reset = async () => {
+            await Promise.all([workerCV.reset(), workerOCR.reset()])
+            results.value = []
+            scanned.value = 0
+            dup.value = 0
+            state.value = S.Ready
+        }
         return {
             S,
             state,
@@ -257,6 +265,7 @@ export default defineComponent({
             capture,
             dup,
             isTop,
+            reset,
         }
     },
 })
@@ -310,7 +319,6 @@ section {
     height: 70px;
     zoom: 1.5;
     position: relative;
-    cursor: pointer;
     user-select: none;
     margin: 0 auto;
     &::v-deep(.icon) {
@@ -397,12 +405,20 @@ section {
         border: 1px solid #409eff;
         border-radius: 20px;
         position: relative;
+        &.finish {
+            cursor: pointer;
+            transition: all 0.3s;
+            &:hover {
+                opacity: 0.8;
+            }
+        }
     }
 
     .pbar-bar-in {
         height: 100%;
         background: #409eff;
         border-radius: 20px;
+        transition: all 0.1s;
     }
     .pbar-bar-text {
         position: absolute;
@@ -455,6 +471,19 @@ section {
         &:hover {
             opacity: 0.7;
         }
+    }
+    .desc {
+        text-align: center;
+        margin-top: 20px;
+    }
+}
+.restart {
+    color: #888;
+    font-size: 13px;
+    margin-top: 10px;
+    cursor: pointer;
+    &:hover {
+        color: #666;
     }
 }
 </style>

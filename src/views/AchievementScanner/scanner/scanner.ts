@@ -9,6 +9,16 @@ import { textBestmatch } from '@/utils/textMatch'
 let lastImage: Mat | null = null
 let rect: Rect | null = null
 
+export function reset() {
+    if (lastImage) {
+        try {
+            lastImage.delete()
+        } catch (e) {}
+    }
+    lastImage = null
+    rect = null
+}
+
 export interface IAScannerBase {
     result?: {
         title: Awaited<ReturnType<typeof recognize>>

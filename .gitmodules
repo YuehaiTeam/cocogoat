@@ -1,0 +1,3 @@
+[submodule "genshin-data"]
+	path = src/plugins/genshin-data
+	url = https://github.com.cnpmjs.org/dvaJi/genshin-data.git

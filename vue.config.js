@@ -1,7 +1,6 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
-    publicPath:
-        process.env.NODE_ENV === 'production' ? 'https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-web@dist/' : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
     transpileDependencies: true,
     chainWebpack: (config) => {
         config.output.set('chunkLoadingGlobal', 'define')

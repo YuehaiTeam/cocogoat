@@ -2,6 +2,7 @@ const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
     publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
     transpileDependencies: true,
+    productionSourceMap: false,
     chainWebpack: (config) => {
         config.output.set('chunkLoadingGlobal', 'define')
         config.plugins.delete('prefetch')

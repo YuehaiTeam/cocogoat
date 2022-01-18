@@ -1,0 +1,41 @@
+[
+    {
+        "tag": "ort",
+        "test": "ort-wasm-simd.wasm",
+        "prefix": "https://unpkg.zhimg.com/onnxruntime-web@1.10.0/dist/",
+        "resources": {
+            "ort-wasm-simd.wasm": "ort-wasm-simd.wasm",
+            "ort-wasm-simd-threaded.wasm": "ort-wasm-simd-threaded.wasm",
+            "ort-wasm.wasm": "ort-wasm.wasm",
+            "ort-wasm-threaded.wasm": "ort-wasm-threaded.wasm"
+        }
+    },
+    {
+        "tag": "ort",
+        "test": "ort-wasm-simd.wasm",
+        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.0/",
+        "resources": {
+            "ort-wasm-simd.wasm": "ort-wasm-simd.wasm",
+            "ort-wasm-simd-threaded.wasm": "ort-wasm-simd-threaded.wasm",
+            "ort-wasm.wasm": "ort-wasm.wasm",
+            "ort-wasm-threaded.wasm": "ort-wasm-threaded.wasm"
+        }
+    },
+    {
+        "tag": "opencv",
+        "test": "opencv-simd.wasm",
+        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.0/",
+        "resources": {
+            "opencv-simd.wasm": "opencv-simd.wasm",
+            "opencv-normal.wasm": "opencv-normal.wasm"
+        }
+    },
+    {
+        "tag": "model",
+        "test": "ppocr.onnx",
+        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.0/",
+        "resources": {
+            "ppocr.onnx": "ppocr.onnx"
+        }
+    }
+]

@@ -75,14 +75,14 @@
 <script lang="ts">
 import { IMatFromImageData, toCanvas } from '@/utils/IMat'
 import getWorker from './scanner/scanner.worker'
-import resources from '@/resources'
+import resources, { speedTest } from '@/resources'
 const workerCV = getWorker()
 const workerOCR = getWorker()
 const { scannerOnImage, recognizeAchievement: recognizeAchievement2 } = workerCV
 const { recognizeAchievement } = workerOCR
 const initPromise = (async () => {
-    await workerCV.setResources(resources)
-    await workerOCR.setResources(resources)
+    await speedTest()
+    await Promise.all([workerCV.setResources(resources), workerOCR.setResources(resources)])
     await workerCV.init()
     await workerOCR.init()
 })()

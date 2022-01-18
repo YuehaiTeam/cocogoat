@@ -1,5 +1,4 @@
 import * as ort from 'onnxruntime-web'
-import ocrModel from '@/plugins/ocr/ppocr.onnx?raw'
 import ocrString from '@/plugins/ocr/ppocr.txt?txt'
 
 import resources from '@/resources'
@@ -17,7 +16,7 @@ ort.env.wasm.wasmPaths = resources
 let session: ort.InferenceSession | null = null
 
 export async function init() {
-    const [s] = await Promise.all([ort.InferenceSession.create(ocrModel.replace('?raw', '')), getCV()])
+    const [s] = await Promise.all([ort.InferenceSession.create(resources['ppocr.onnx']), getCV()])
     session = s
     return session
 }

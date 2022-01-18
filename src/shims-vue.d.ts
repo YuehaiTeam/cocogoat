@@ -11,6 +11,12 @@ declare module '@/plugins/ocr/*'
 
 declare module '*?raw'
 
+declare module '@/../resources.json' {
+    import { IResourceItem } from './resources'
+    const t: IResourceItem[]
+    export default t
+}
+
 declare module '@genshin-data/*/achievements.json' {
     import { AchievementCategory } from '@/plugins/genshin-data/src/types/achievement'
     const t: AchievementCategory[]

@@ -10,14 +10,18 @@ import ocrModel from '@/plugins/ocr/ppocr.ort?raw'
 
 import testResources from '@/../resources.json'
 
+function absoluteify(url: string) {
+    return new URL(url, location.href).href.replace('?raw', '')
+}
+
 const defaultResources = {
-    'ort-wasm-simd-threaded.wasm': ortWasmSIMDMT.replace('?raw', ''),
-    'ort-wasm-simd.wasm': ortWasmSIMD.replace('?raw', ''),
-    'ort-wasm-threaded.wasm': ortWasmMT.replace('?raw', ''),
-    'ort-wasm.wasm': ortWasm.replace('?raw', ''),
-    'opencv-normal.wasm': cvWasmNormal.replace('?raw', ''),
-    'opencv-simd.wasm': cvWasmSimd.replace('?raw', ''),
-    'ppocr.ort': ocrModel.replace('?raw', ''),
+    'ort-wasm-simd-threaded.wasm': absoluteify(ortWasmSIMDMT),
+    'ort-wasm-simd.wasm': absoluteify(ortWasmSIMD),
+    'ort-wasm-threaded.wasm': absoluteify(ortWasmMT),
+    'ort-wasm.wasm': absoluteify(ortWasm),
+    'opencv-normal.wasm': absoluteify(cvWasmNormal),
+    'opencv-simd.wasm': absoluteify(cvWasmSimd),
+    'ppocr.ort': absoluteify(ocrModel),
 } as Record<string, string>
 
 export interface IResourceItem {

@@ -1,4 +1,5 @@
 const { defineConfig } = require('@vue/cli-service')
+const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
 module.exports = defineConfig({
     publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
     transpileDependencies: true,
@@ -17,5 +18,14 @@ module.exports = defineConfig({
             util: require.resolve('util'),
             '@genshin-data': require('path').resolve(__dirname, 'src', 'plugins', 'genshin-data', 'data'),
         })
+        config.module.set('parser', {
+            'javascript/auto': {
+                worker: ['Worker from @/utils/corsWorker', '...'],
+            },
+            'javascript/esm': {
+                worker: ['Worker from @/utils/corsWorker', '...'],
+            },
+        })
+        config.plugin('corsWorkerPlugin').use(corsWorkerPlugin)
     },
 })

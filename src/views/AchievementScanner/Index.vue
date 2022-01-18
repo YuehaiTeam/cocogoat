@@ -28,7 +28,7 @@
                 class="floatwindow"
                 @exit="state = S.Processing"
             >
-                <float-content
+                <float-content-b
                     :capture="capture"
                     :state="state === S.Capture ? 1 : 0"
                     :success="recognized.success"
@@ -92,8 +92,9 @@ enum S {
     Finish = 6,
 }
 import { computed, defineComponent, onBeforeUnmount, ref, watch } from 'vue-demi'
-import FloatWindow from '@/components/FloatWindow.vue'
+import FloatWindow from '@/components/FloatWindow2.vue'
 import FloatContent from './FloatContent.vue'
+import FloatContentB from './FloatContent2.vue'
 import delay from 'delay'
 import FastQ from 'fastq'
 import type { IAScannerData, IAScannerLine, IAScannerFaild } from './scanner/scanner'
@@ -102,6 +103,7 @@ export default defineComponent({
     components: {
         FloatWindow,
         FloatContent,
+        FloatContentB,
     },
     setup() {
         const isTop = window === parent

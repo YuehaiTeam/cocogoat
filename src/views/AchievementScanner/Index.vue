@@ -17,7 +17,8 @@
                 <img src="@/assets/openscreenshare.png" alt="请参照图片开始抓屏" />
                 <div class="opensource">
                     椰羊·成就扫描 | <a href="https://github.com/YuehaiTeam/cocogoat-web" target="_blank">Github</a> |
-                    <a href="https://github.com/YuehaiTeam/cocogoat-web/tree/main/docs" target="_blank">集成文档</a>
+                    <a href="https://github.com/YuehaiTeam/cocogoat-web/tree/main/docs" target="_blank">集成文档</a> |
+                    2022011821
                 </div>
             </div>
             <float-window
@@ -191,11 +192,6 @@ export default defineComponent({
             tempCanvas.width = video.value.videoWidth
             tempCanvas.height = video.value.videoHeight
             while (state.value === S.Capture) {
-                ;(async () => {
-                    capture.value = true
-                    await delay(100)
-                    capture.value = false
-                })()
                 try {
                     tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
                     const imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)

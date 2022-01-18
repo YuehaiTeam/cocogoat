@@ -52,7 +52,7 @@ export default defineComponent({
         })
         const exportToPaiminMoe = computed(() => {
             const exportArray = results.value
-                .filter((e) => e.success)
+                .filter((e) => e.success && (e as IAScannerData).date)
                 .map((e) => {
                     const g = e as IAScannerData
                     const a = g.achievement

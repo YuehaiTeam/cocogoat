@@ -17,6 +17,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'extera.achievement-to-paimon-moe',
         component: () => import('@/views/AchievementScanner/ScanToPaimonMoe.vue'),
     },
+    {
+        path: '/extra/achievement-to-seelie',
+        name: 'extera.achievement-to-seelie',
+        component: () => import('@/views/AchievementScanner/ScanToSeelie.vue'),
+    },
 ]
 
 const router = createRouter({

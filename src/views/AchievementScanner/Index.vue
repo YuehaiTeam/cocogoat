@@ -67,6 +67,12 @@
                     </div>
                     <div v-else class="title">{{ i.achievement.name }} {{ i.date || '未完成' }}</div>
                 </div>
+                <textarea
+                    v-if="state === S.Finish && $route.query.exportToPaiminMoe"
+                    :value="exportToPaiminMoe"
+                    rows="6"
+                    cols="50"
+                ></textarea>
             </div>
         </section>
     </main>
@@ -244,6 +250,25 @@ export default defineComponent({
             dup.value = 0
             state.value = S.Ready
         }
+        const exportToPaiminMoe = computed(() => {
+            const exportArray = results.value
+                .filter((e) => e.success)
+                .map((e) => {
+                    const a = (e as IAScannerData).achievement
+                    return [a.categoryId, a.id]
+                })
+            return `/* 
+* 复制此处所有内容，
+* 在Paimon.moe页面按F12打开调试器，
+* 选择控制台(Console)
+* 粘贴并回车执行完成导入
+*/
+const b = ${JSON.stringify(exportArray)};
+const a = (await localforage.getItem('achievement')) || [];
+b.forEach(c=>{a[c[0]]=a[c[0]]||{};a[c[0]][c[1]]=true})
+await localforage.setItem('achievement',a);
+location.href='/achievement'`
+        })
         return {
             S,
             state,
@@ -256,6 +281,7 @@ export default defineComponent({
             dup,
             isTop,
             reset,
+            exportToPaiminMoe,
         }
     },
 })

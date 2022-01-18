@@ -13,7 +13,7 @@
     {
         "tag": "ort",
         "test": "ort-wasm-simd.wasm",
-        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.1/",
+        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.2/",
         "resources": {
             "ort-wasm-simd.wasm": "ort-wasm-simd.wasm",
             "ort-wasm-simd-threaded.wasm": "ort-wasm-simd-threaded.wasm",
@@ -22,20 +22,23 @@
         }
     },
     {
-        "tag": "opencv",
+        "tag": "resources",
         "test": "opencv-simd.wasm",
-        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.1/",
+        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.2/",
         "resources": {
             "opencv-simd.wasm": "opencv-simd.wasm",
-            "opencv-normal.wasm": "opencv-normal.wasm"
+            "opencv-normal.wasm": "opencv-normal.wasm",
+            "ppocr.ort": "ppocr.ort.as.wasm"
         }
     },
     {
-        "tag": "model",
-        "test": "ppocr.ort",
-        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.1/",
+        "tag": "resources",
+        "test": "opencv-simd.wasm",
+        "prefix": "https://unpkg.zhimg.com/@yuehaiteam/cocogoat-resources@1.0.3/",
         "resources": {
-            "ppocr.ort": "ppocr.ort"
+            "opencv-simd.wasm": "opencv-simd.wasm",
+            "opencv-normal.wasm": "opencv-normal.wasm",
+            "ppocr.ort": "ppocr.ort.as.wasm"
         }
     }
 ]

@@ -1,7 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
 module.exports = defineConfig({
-    publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
+    publicPath: process.env.NODE_ENV === 'production' ? 'https://cocogoat-1251105598.file.myqcloud.com/' : '/',
     transpileDependencies: true,
     productionSourceMap: false,
     chainWebpack: (config) => {

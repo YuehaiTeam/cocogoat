@@ -15,7 +15,7 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-    history: createWebHistory(location.origin.includes('.io') ? '/cocogoat-web/' : '/'),
+    history: createWebHistory('/'),
     routes,
 })
 

@@ -11,10 +11,14 @@
         <section v-else>
             <video ref="video" style="display: none"></video>
             <div v-if="state < S.Wait" class="start-page">
-                <h1>椰羊·成就扫描</h1>
+                <h1 v-if="isTop">椰羊·成就扫描</h1>
                 <button class="start" @click="requestCapture">开始</button>
                 <div class="desc">点击开始后，请按下图指示选择原神窗口以识别</div>
                 <img src="@/assets/openscreenshare.png" alt="请参照图片开始抓屏" />
+                <div class="opensource">
+                    椰羊·成就扫描 | <a href="https://github.com/YuehaiTeam/cocogoat-web" target="_blank">Github</a> |
+                    <a href="https://github.com/YuehaiTeam/cocogoat-web/tree/main/docs" target="_blank">集成文档</a>
+                </div>
             </div>
             <float-window
                 v-if="state === S.Wait || state === S.Capture"
@@ -67,12 +71,6 @@
                     </div>
                     <div v-else class="title">{{ i.achievement.name }} {{ i.date || '未完成' }}</div>
                 </div>
-                <textarea
-                    v-if="state === S.Finish && $route.query.exportToPaiminMoe"
-                    :value="exportToPaiminMoe"
-                    rows="6"
-                    cols="50"
-                ></textarea>
             </div>
         </section>
     </main>
@@ -92,7 +90,7 @@ enum S {
     Processing = 5,
     Finish = 6,
 }
-import { computed, defineComponent, ref, watch } from 'vue-demi'
+import { computed, defineComponent, onBeforeUnmount, ref, watch } from 'vue-demi'
 import FloatWindow from '@/components/FloatWindow.vue'
 import FloatContent from './FloatContent.vue'
 import delay from 'delay'
@@ -212,6 +210,17 @@ export default defineComponent({
         watch(
             () => state.value,
             async () => {
+                if (state.value === S.Ready) {
+                    parent &&
+                        !isTop &&
+                        parent.postMessage(
+                            {
+                                app: 'cocogoat.scanner.achievement',
+                                event: 'ready',
+                            },
+                            '*',
+                        )
+                }
                 if (state.value === S.Capture) {
                     console.log('capture')
                     scannerLoop()
@@ -232,9 +241,10 @@ export default defineComponent({
                         !isTop &&
                         parent.postMessage(
                             {
-                                event: 'cocogoat-scanner-achievements',
+                                app: 'cocogoat.scanner.achievement',
+                                event: 'result',
                                 data: JSON.stringify({
-                                    results: results.value,
+                                    result: results.value,
                                     dup: dup.value,
                                 }),
                             },
@@ -250,25 +260,23 @@ export default defineComponent({
             dup.value = 0
             state.value = S.Ready
         }
-        const exportToPaiminMoe = computed(() => {
-            const exportArray = results.value
-                .filter((e) => e.success)
-                .map((e) => {
-                    const a = (e as IAScannerData).achievement
-                    return [a.categoryId, a.id]
-                })
-            return `/* 
-* 复制此处所有内容，
-* 在Paimon.moe页面按F12打开调试器，
-* 选择控制台(Console)
-* 粘贴并回车执行完成导入
-*/
-const b = ${JSON.stringify(exportArray)};
-const a = (await localforage.getItem('achievement')) || [];
-b.forEach(c=>{a[c[0]]=a[c[0]]||{};a[c[0]][c[1]]=true})
-await localforage.setItem('achievement',a);
-location.href='/achievement'`
-        })
+        const msgHandler = (ev: MessageEvent) => {
+            const { event } = ev.data
+            switch (event) {
+                case 'reset':
+                    reset()
+                    break
+                case 'start':
+                    requestCapture()
+                    break
+            }
+        }
+        if (!isTop) {
+            window.addEventListener('message', msgHandler)
+            onBeforeUnmount(() => {
+                window.removeEventListener('message', msgHandler)
+            })
+        }
         return {
             S,
             state,
@@ -281,7 +289,6 @@ location.href='/achievement'`
             dup,
             isTop,
             reset,
-            exportToPaiminMoe,
         }
     },
 })
@@ -500,6 +507,16 @@ section {
     cursor: pointer;
     &:hover {
         color: #666;
+    }
+}
+
+.opensource {
+    text-align: center;
+    font-size: 13px;
+    margin-top: 20px;
+    a {
+        color: #6395c9;
+        text-decoration: none;
     }
 }
 </style>

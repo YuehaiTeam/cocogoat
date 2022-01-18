@@ -12,6 +12,11 @@ const routes: Array<RouteRecordRaw> = [
         name: 'frames.scan',
         component: () => import('@/views/AchievementScanner/Index.vue'),
     },
+    {
+        path: '/extra/achievement-to-paimon-moe',
+        name: 'extera.achievement-to-paimon-moe',
+        component: () => import('@/views/AchievementScanner/ScanToPaimonMoe.vue'),
+    },
 ]
 
 const router = createRouter({

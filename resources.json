@@ -13,7 +13,7 @@
     {
         "tag": "ort",
         "test": "ort-wasm-simd.wasm",
-        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.0/",
+        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.1/",
         "resources": {
             "ort-wasm-simd.wasm": "ort-wasm-simd.wasm",
             "ort-wasm-simd-threaded.wasm": "ort-wasm-simd-threaded.wasm",
@@ -24,7 +24,7 @@
     {
         "tag": "opencv",
         "test": "opencv-simd.wasm",
-        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.0/",
+        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.1/",
         "resources": {
             "opencv-simd.wasm": "opencv-simd.wasm",
             "opencv-normal.wasm": "opencv-normal.wasm"
@@ -32,10 +32,10 @@
     },
     {
         "tag": "model",
-        "test": "ppocr.onnx",
-        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.0/",
+        "test": "ppocr.ort",
+        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.1/",
         "resources": {
-            "ppocr.onnx": "ppocr.onnx"
+            "ppocr.ort": "ppocr.ort"
         }
     }
 ]

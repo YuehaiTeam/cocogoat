@@ -17,6 +17,10 @@ declare module '@/../resources.json' {
     export default t
 }
 
+declare module 'onnxruntime-web/dist/ort.wasm-core.min.js' {
+    export * from 'onnxruntime-web'
+}
+
 declare module '@genshin-data/*/achievements.json' {
     import { AchievementCategory } from '@/plugins/genshin-data/src/types/achievement'
     const t: AchievementCategory[]

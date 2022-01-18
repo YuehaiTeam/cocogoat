@@ -6,7 +6,7 @@ import ortWasmSIMDMT from 'onnxruntime-web/dist/ort-wasm-simd-threaded.wasm?raw'
 import cvWasmNormal from '@/plugins/opencv/opencv-normal.wasm?raw'
 import cvWasmSimd from '@/plugins/opencv/opencv-simd.wasm?raw'
 
-import ocrModel from '@/plugins/ocr/ppocr.onnx?raw'
+import ocrModel from '@/plugins/ocr/ppocr.ort?raw'
 
 import testResources from '@/../resources.json'
 
@@ -17,7 +17,7 @@ const defaultResources = {
     'ort-wasm.wasm': ortWasm.replace('?raw', ''),
     'opencv-normal.wasm': cvWasmNormal.replace('?raw', ''),
     'opencv-simd.wasm': cvWasmSimd.replace('?raw', ''),
-    'ppocr.onnx': ocrModel.replace('?raw', ''),
+    'ppocr.ort': ocrModel.replace('?raw', ''),
 } as Record<string, string>
 
 export interface IResourceItem {

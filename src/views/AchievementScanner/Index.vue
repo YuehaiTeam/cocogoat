@@ -233,14 +233,14 @@ export default defineComponent({
                 if (state.value === S.Finish) {
                     console.log('finish')
                     parent &&
-                        isTop &&
+                        !isTop &&
                         parent.postMessage(
                             {
                                 event: 'cocogoat-scanner-achievements',
-                                data: {
+                                data: JSON.stringify({
                                     results: results.value,
                                     dup: dup.value,
-                                },
+                                }),
                             },
                             '*',
                         )

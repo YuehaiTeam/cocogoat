@@ -13,7 +13,7 @@
     {
         "tag": "ort",
         "test": "ort-wasm-simd.wasm",
-        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.2/",
+        "prefix": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.10.0/dist/",
         "resources": {
             "ort-wasm-simd.wasm": "ort-wasm-simd.wasm",
             "ort-wasm-simd-threaded.wasm": "ort-wasm-simd-threaded.wasm",
@@ -24,7 +24,7 @@
     {
         "tag": "resources",
         "test": "opencv-simd.wasm",
-        "prefix": "https://cdn.jsdelivr.net/gh/YuehaiTeam/cocogoat-resources@1.0.2/",
+        "prefix": "https://cdn.jsdelivr.net/npm/@yuehaiteam/cocogoat-resources@1.0.4/",
         "resources": {
             "opencv-simd.wasm": "opencv-simd.wasm",
             "opencv-normal.wasm": "opencv-normal.wasm",
@@ -34,7 +34,7 @@
     {
         "tag": "resources",
         "test": "opencv-simd.wasm",
-        "prefix": "https://unpkg.zhimg.com/@yuehaiteam/cocogoat-resources@1.0.3/",
+        "prefix": "https://unpkg.zhimg.com/@yuehaiteam/cocogoat-resources@1.0.4/",
         "resources": {
             "opencv-simd.wasm": "opencv-simd.wasm",
             "opencv-normal.wasm": "opencv-normal.wasm",

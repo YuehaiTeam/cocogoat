@@ -44,6 +44,9 @@ export function setResources(r: typeof defaultResources) {
 }
 
 export async function speedTest() {
+    if (process.env.NODE_ENV === 'development') {
+        return []
+    }
     // group testresources by tag
     const testResourcesByTag = testResources.reduce((acc, item) => {
         const tag = item.tag

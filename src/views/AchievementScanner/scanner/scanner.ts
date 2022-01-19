@@ -6,8 +6,12 @@ import { Achievement } from '@/typings/Achievements'
 import { achievementTitles, achievementEC } from './achievementsList'
 import { textBestmatch } from '@/utils/textMatch'
 
-let lastImage: Mat | null = null
-let rect: Rect | null = null
+export let lastImage: Mat | null = null
+export let rect: Rect | null = null
+
+export function getRect() {
+    return rect
+}
 
 export function reset() {
     if (lastImage) {

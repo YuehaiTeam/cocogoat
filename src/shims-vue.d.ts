@@ -26,3 +26,5 @@ declare module '@genshin-data/*/achievements.json' {
     const t: AchievementCategory[]
     export default t
 }
+
+declare module 'flyio/dist/npm/fly';

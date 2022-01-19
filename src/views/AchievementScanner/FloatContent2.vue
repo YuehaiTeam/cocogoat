@@ -19,6 +19,7 @@ export default defineComponent({
         fail: Number,
         duplicate: Number,
         scanned: Number,
+        webControlEnabled: Number,
     },
     setup(props) {
         const canvas = inject('canvas') as Ref<HTMLCanvasElement>
@@ -56,12 +57,29 @@ export default defineComponent({
                 (45 / 250) * canvas.value.width,
             )
             ctx.font = `${(11 / 250) * canvas.value.width}px 微软雅黑`
-            ctx.fillText(
-                '匀速向下翻页 完成后点此结束',
-                (87 / 250) * canvas.value.width,
-                (73 / 250) * canvas.value.width,
-            )
-            ctx.fillText('尽量将鼠标保持在左侧图标处', (89 / 250) * canvas.value.width, (88 / 250) * canvas.value.width)
+            if (props.webControlEnabled && props.webControlEnabled > 0) {
+                ctx.fillText(
+                    '自动翻页进行中，请勿移动鼠标',
+                    (87 / 250) * canvas.value.width,
+                    (73 / 250) * canvas.value.width,
+                )
+                ctx.fillText(
+                    '暂不支持中断，请耐心等待结束',
+                    (89 / 250) * canvas.value.width,
+                    (88 / 250) * canvas.value.width,
+                )
+            } else {
+                ctx.fillText(
+                    '匀速向下翻页 完成后点此结束',
+                    (87 / 250) * canvas.value.width,
+                    (73 / 250) * canvas.value.width,
+                )
+                ctx.fillText(
+                    '尽量将鼠标保持在左侧图标处',
+                    (89 / 250) * canvas.value.width,
+                    (88 / 250) * canvas.value.width,
+                )
+            }
             ctx.fillText('扫描', (85 / 250) * canvas.value.width, (23 / 250) * canvas.value.width)
             ctx.fillStyle = '#00b57a'
             ctx.fillText('成功', (127 / 250) * canvas.value.width, (23 / 250) * canvas.value.width)

@@ -13,6 +13,7 @@
             <div v-if="state < S.Wait" class="start-page">
                 <h1 v-if="isTop">椰羊·成就扫描</h1>
                 <button class="start" @click="requestCapture">开始</button>
+                <webcontrol-switch v-model="webControlEnabled" :w="webControl" />
                 <div class="desc">点击开始后，请按下图指示选择原神窗口以识别</div>
                 <img src="@/assets/openscreenshare.png" alt="请参照图片开始抓屏" />
                 <div class="opensource">
@@ -35,6 +36,7 @@
                     :fail="recognized.fail"
                     :scanned="scanned"
                     :duplicate="dup"
+                    :webControlEnabled="webControlEnabled"
                 />
             </float-window>
             <div v-if="state > S.Wait" class="status-inner">
@@ -78,6 +80,8 @@
 </template>
 
 <script lang="ts">
+import { CocogoatWebControl } from '@/modules/webcontrol'
+const webControl = new CocogoatWebControl()
 import { IMatFromImageData, toCanvas } from '@/utils/IMat'
 import { initScanner } from './scanner/scanner.worker'
 const { recognizeAchievement, recognizeAchievement2, scannerOnImage, initPromise, workerCV, workerOCR } = initScanner()
@@ -95,17 +99,21 @@ import { computed, defineComponent, onBeforeUnmount, ref, watch } from 'vue-demi
 import FloatWindow from '@/components/FloatWindow2.vue'
 import FloatContent from './FloatContent.vue'
 import FloatContentB from './FloatContent2.vue'
+import WebcontrolSwitch from './WebcontrolSwitch.vue'
 import delay from 'delay'
 import FastQ from 'fastq'
 import type { IAScannerData, IAScannerLine, IAScannerFaild } from './scanner/scanner'
+import type { Rect } from '@/utils/opencv'
 export default defineComponent({
     name: 'AchievementScanner',
     components: {
         FloatWindow,
         FloatContent,
         FloatContentB,
+        WebcontrolSwitch,
     },
     setup() {
+        const webControlEnabled = ref(0)
         const isTop = window === parent
         const capture = ref(false)
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
@@ -150,17 +158,55 @@ export default defineComponent({
         }
         const tempCanvas = document.createElement('canvas')
         const tempCtx = tempCanvas.getContext('2d')
+        let firstLine: IAScannerLine | null = null
+        let zeroTimes = 0
         const cvWorker = async ({ imageData, keepLastLine }: { imageData: ImageData; keepLastLine: boolean }) => {
             const lines = await scannerOnImage(IMatFromImageData(imageData), keepLastLine)
+            const scannedVal = scanned.value
             for (const line of lines) {
                 if (line.blocks.length > 2) {
                     // block太少的，认为是半行
+                    if (!firstLine) {
+                        firstLine = line
+                    }
                     ocrQueue.push({ line, thread: scanned.value % 2 === 0 })
                     scanned.value++
                 }
             }
             if (keepLastLine) {
                 ocrQueue.push({ line: null, thread: false })
+            }
+
+            let rect: Rect | null = null
+            if (webControlEnabled.value && webControlEnabled.value) {
+                if (scannedVal === scanned.value) {
+                    zeroTimes++
+                }
+                if (zeroTimes > 5) {
+                    zeroTimes = 0
+                    state.value = S.Processing
+                    return
+                }
+                if (!rect) {
+                    rect = await workerCV.getRect()
+                }
+                if (firstLine && rect) {
+                    const title = firstLine.blocks.find((e) => e.name === 'title')
+                    if (title) {
+                        const { x, y } = await webControl.toAbsolute(
+                            webControlEnabled.value,
+                            rect.x + title.rect.x / 2 + 20,
+                            rect.y + title.rect.y + 20,
+                        )
+                        webControl.SetCursorPos(x, y)
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTDOWN, 0, 0, 0)
+                        await delay(50)
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTUP, 0, 0, 0)
+                        await delay(50)
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 8)
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 8)
+                    }
+                }
             }
         }
         const ocrQueue = FastQ.promise(recoginzeWorker, 1)
@@ -257,6 +303,8 @@ export default defineComponent({
             scanned.value = 0
             dup.value = 0
             state.value = S.Ready
+            firstLine = null
+            zeroTimes = 0
         }
         const msgHandler = (ev: MessageEvent) => {
             const { event } = ev.data
@@ -287,6 +335,8 @@ export default defineComponent({
             dup,
             isTop,
             reset,
+            webControl,
+            webControlEnabled,
         }
     },
 })

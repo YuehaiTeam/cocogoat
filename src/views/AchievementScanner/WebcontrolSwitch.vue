@@ -106,7 +106,7 @@ export default defineComponent({
     background: #fff;
     border-radius: 10px;
     margin: 0 auto;
-    margin-top: calc(30% - 100px);
+    margin-top: calc(30vh - 100px);
     text-align: center;
     padding: 20px;
     box-sizing: border-box;

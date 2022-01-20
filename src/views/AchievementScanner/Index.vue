@@ -19,7 +19,7 @@
                 <div class="opensource">
                     椰羊·成就扫描 | <a href="https://github.com/YuehaiTeam/cocogoat-web" target="_blank">Github</a> |
                     <a href="https://github.com/YuehaiTeam/cocogoat-web/tree/main/docs" target="_blank">集成文档</a> |
-                    2022011821
+                    {{ build }}
                 </div>
             </div>
             <float-window
@@ -361,6 +361,7 @@ export default defineComponent({
             reset,
             webControl,
             webControlEnabled,
+            build: process.env.VUE_APP_BUILD,
         }
     },
 })

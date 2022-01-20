@@ -1,5 +1,6 @@
 const { defineConfig } = require('@vue/cli-service')
 const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
+process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 module.exports = defineConfig({
     publicPath: process.env.NODE_ENV === 'production' ? 'https://cocogoat-1251105598.file.myqcloud.com/' : '/',
     transpileDependencies: true,

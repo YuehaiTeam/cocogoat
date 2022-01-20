@@ -64,7 +64,7 @@ export default defineComponent({
                     return
                 }
                 if (event === 'result') {
-                    const { result } = JSON.parse(data)
+                    const { result } = data
                     for (const e of result as IAScannerData[]) {
                         if (!e.success) continue
                         if (e.achievement.preStage && e.achievement.preStage > 0) {

@@ -311,10 +311,12 @@ export default defineComponent({
                             {
                                 app: 'cocogoat.scanner.achievement',
                                 event: 'result',
-                                data: JSON.stringify({
-                                    result: results.value,
-                                    dup: dup.value,
-                                }),
+                                data: JSON.parse(
+                                    JSON.stringify({
+                                        result: results.value,
+                                        dup: dup.value,
+                                    }),
+                                ),
                             },
                             '*',
                         )

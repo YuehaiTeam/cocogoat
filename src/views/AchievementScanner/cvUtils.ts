@@ -24,7 +24,7 @@ export async function cvGetRect(src: Mat): Promise<{ x: number; y: number; width
         const d2h = rect.height / 100
         rect.x += d2w
         rect.y += d2h
-        rect.width -= 2 * d2w
+        rect.width -= 1.5 * d2w
         rect.height -= 2 * d2h
         frect = rect
     }
@@ -123,7 +123,7 @@ export function cvSplitAchievement(cv: Awaited<ReturnType<typeof getCV>>, src: M
     rgbaPlanes.get(2).copyTo(dst)
     rgbaPlanes.delete()
     cv.threshold(dst, dst, 170, 255, cv.THRESH_BINARY)
-    const M7 = cv.Mat.ones(5, 15, cv.CV_8U)
+    const M7 = cv.Mat.ones(3, 15, cv.CV_8U)
     const MC = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(dst.cols / 5, 1))
     cv.dilate(dst, dst2, MC)
     cv.bitwise_not(dst2, dst2)
@@ -192,12 +192,30 @@ export function cvSplitAchievement(cv: Awaited<ReturnType<typeof getCV>>, src: M
         }
         return { name, rect: rect, roi }
     })
+    const reward = rects.find((rect) => rect.name === 'reward')
+    const maxStatusLength = rects.reduce((max, rect) => {
+        if (rect.name === 'status' && rect.rect.width > max) {
+            return rect.rect.width
+        }
+        return max
+    }, 0)
     rects = rects.filter((rect) => {
         // 去除过窄的矩形
-        if (rect.rect.height < 5) return false
+        if (rect.rect.height < 8) return false
         // reward和icon都用不到，减少占用
         if (rect.name === 'reward') return false
         if (rect.name === 'icon') return false
+        if (rect.name === 'status') {
+            if (rect.rect.width < maxStatusLength) {
+                rect.name = 'status2'
+            }
+        }
+        // 去除reward里面包含的半个原石
+        if (reward) {
+            if (rect.rect.x > reward.rect.x && rect.rect.x + rect.rect.width < reward.rect.x + reward.rect.width) {
+                return false
+            }
+        }
         return true
     })
     src.delete()

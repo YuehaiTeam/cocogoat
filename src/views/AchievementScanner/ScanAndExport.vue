@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="titlebar">椰羊·扫描成就并导出到Paimon.moe</div>
+        <div class="titlebar">椰羊·扫描成就并导出（支持Paimon.moe和Seelie）</div>
         <iframe ref="contentFrame" src="/frames/achievement-scanner" frameborder="0"></iframe>
         <div v-if="finished" class="model-backdrop">
             <div class="model">
@@ -8,12 +8,26 @@
                 <div v-if="showFaildImages" class="faildResults">
                     <img v-for="(image, index) in faildResults" :key="index" :src="image" />
                 </div>
-                <textarea v-else :value="exportToPaiminMoe"></textarea>
+                <textarea v-else :value="to === 'seelie' ? exportToSeelie : exportToPaiminMoe"></textarea>
                 <div class="operations">
                     <span v-if="faildResults.length > 0" @click="showFaildImages = !showFaildImages">{{
                         showFaildImages ? '返回导出结果' : '查看失败项'
                     }}</span>
                     <a v-if="faildResults.length > 0"> | </a>
+                    <span
+                        class="switch"
+                        @click="
+                            $router.replace({
+                                ...$route,
+                                query: {
+                                    ...$route.query,
+                                    to: to === 'seelie' ? 'paimon-moe' : 'seelie',
+                                },
+                            })
+                        "
+                        >切换到{{ to === 'seelie' ? 'Paimon.moe' : 'Seelie' }}</span
+                    >
+                    <a> | </a>
                     <span class="reset" @click="reset">重新开始</span>
                 </div>
             </div>
@@ -24,6 +38,7 @@
 <script lang="ts">
 import { ref, computed, defineComponent, watch } from 'vue'
 import type { IAScannerData, IAScannerFaild } from './scanner/scanner'
+import { useRoute } from 'vue-router'
 
 export default defineComponent({
     setup() {
@@ -32,6 +47,11 @@ export default defineComponent({
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
         const faildResults = computed(() => results.value.filter((item) => !item.success).map((e) => e.images?.main))
         const contentFrame = ref<HTMLIFrameElement | null>(null)
+
+        const route = useRoute()
+        const to = computed(() => {
+            return route.query.to === 'seelie' ? 'seelie' : 'paimon-moe'
+        })
         watch(contentFrame, (v) => {
             if (!v) return
             window.addEventListener('message', (ev: MessageEvent) => {
@@ -69,6 +89,28 @@ b.forEach(c=>{a[c[0]]=a[c[0]]||{};a[c[0]][c[1]]=true})
 await localforage.setItem('achievement',a);
 location.href='/achievement'`
         })
+        const exportToSeelie = computed(() => {
+            const exportArray = results.value
+                .filter((e) => e.success && (e as IAScannerData).date)
+                .map((e) => {
+                    const g = e as IAScannerData
+                    const a = g.achievement
+                    return [a.id, (g.status + ' ' + g.date).trim()]
+                })
+            return `/* 
+* 复制此处所有内容，
+* 在Seelie.me页面按F12打开调试器，
+* 选择控制台(Console)
+* 粘贴并回车执行完成导入
+*/
+const z = ${JSON.stringify(exportArray)};
+const a = localStorage.account || 'main'
+const b = JSON.parse(localStorage.getItem(\`\${a}-achievements\`)||'{}')
+z.forEach(c=>{b[c[0]]={done:true,notes:c[1]}})
+localStorage.setItem(\`\${a}-achievements\`,JSON.stringify(b))
+localStorage.last_update = (new Date()).toISOString()
+location.href='/achievements'`
+        })
         const reset = () => {
             contentFrame.value?.contentWindow?.postMessage(
                 {
@@ -82,10 +124,12 @@ location.href='/achievement'`
             finished,
             results,
             exportToPaiminMoe,
+            exportToSeelie,
             contentFrame,
             reset,
             faildResults,
             showFaildImages,
+            to,
         }
     },
 })

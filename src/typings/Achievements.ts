@@ -1,10 +1,12 @@
 import { Achievement as GenshinDataAchievement } from '@/plugins/genshin-data/src'
 export interface Achievement extends GenshinDataAchievement {
-    id: number
-    name: string
-    desc: string
-    reward: number
-    hidden: boolean
-    order: number
     categoryId: number
+    preStage?: number
+}
+export interface AchievementCategory {
+    id: string
+    originalId: number
+    name: string
+    order: number
+    achievements: Achievement[]
 }

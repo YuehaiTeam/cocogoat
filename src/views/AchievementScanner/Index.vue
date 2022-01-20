@@ -104,6 +104,7 @@ import delay from 'delay'
 import FastQ from 'fastq'
 import type { IAScannerData, IAScannerLine, IAScannerFaild } from './scanner/scanner'
 import type { Rect } from '@/utils/opencv'
+import { useRoute } from 'vue-router'
 export default defineComponent({
     name: 'AchievementScanner',
     components: {
@@ -113,6 +114,7 @@ export default defineComponent({
         WebcontrolSwitch,
     },
     setup() {
+        const route = useRoute()
         const webControlEnabled = ref(0)
         const isTop = window === parent
         const capture = ref(false)
@@ -140,6 +142,11 @@ export default defineComponent({
                         const n = i as IAScannerData
                         return n.achievement.id === r.achievement.id
                     })
+                    if (route.query.withImage) {
+                        r.images = {
+                            main: toCanvas(line.image).toDataURL(),
+                        }
+                    }
                     if (r2) {
                         dup.value++
                     } else {
@@ -150,6 +157,7 @@ export default defineComponent({
                         main: toCanvas(line.image).toDataURL(),
                     }
                     results.value.push(r)
+                    new Image().src = r.images.main
                 }
             }
             if (state.value !== S.Processing) {

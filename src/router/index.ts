@@ -13,14 +13,17 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/AchievementScanner/Index.vue'),
     },
     {
-        path: '/extra/achievement-to-paimon-moe',
-        name: 'extera.achievement-to-paimon-moe',
-        component: () => import('@/views/AchievementScanner/ScanToPaimonMoe.vue'),
+        path: '/achievement/scan-and-export',
+        name: 'extera.achievement-export',
+        component: () => import('@/views/AchievementScanner/ScanAndExport.vue'),
     },
     {
         path: '/extra/achievement-to-seelie',
-        name: 'extera.achievement-to-seelie',
-        component: () => import('@/views/AchievementScanner/ScanToSeelie.vue'),
+        redirect: '/achievement/scan-and-export?to=seelie',
+    },
+    {
+        path: '/extra/achievement-to-paimon-moe',
+        redirect: '/achievement/scan-and-export?to=paimon-moe',
     },
 ]
 

@@ -136,7 +136,12 @@ export async function recognizeAchievement(line: IAScannerLine): Promise<IAScann
         const titleText = await recognize(title.image)
         result.title = titleText
         const titleObj = !isNaN(titleText.confidence) ? achievementTitles.find((e) => e.str === titleText.text) : false
-        if (titleObj && titleText.confidence > 85 && !titleObj.obj.desc.includes('次')) {
+        if (
+            titleObj &&
+            titleText.confidence > 85 &&
+            !/.*[0-9]{1,}.*/.test(titleObj.obj.desc) &&
+            !titleObj.obj.desc.includes('次')
+        ) {
             res = titleObj.obj
         } else {
             const subtitleText = await recognize(subtitle.image)

@@ -26,3 +26,14 @@ function combineData() {
 }
 
 combineData()
+const achievementCN = fs.readJsonSync(path.join(MIN_PATH, 'chinese-simplified/achievements.json'))
+achievementCN.forEach((c) => {
+    delete c.name
+    c.achievements.forEach((a) => {
+        delete a.name
+        delete a.desc
+        a.categoryId = c.originalId || 0
+    })
+})
+fs.ensureDirSync(path.dirname(path.join(MIN_PATH, 'no-language/achievements.json')))
+fs.writeJSONSync(path.join(MIN_PATH, 'no-language/achievements.json'), achievementCN)

@@ -39,6 +39,7 @@
 import { ref, computed, defineComponent, watch } from 'vue'
 import type { IAScannerData, IAScannerFaild } from './scanner/scanner'
 import { useRoute } from 'vue-router'
+import _achievementMap from '@genshin-data/chinese-simplified/achievements.json'
 
 export default defineComponent({
     setup() {
@@ -64,6 +65,29 @@ export default defineComponent({
                 }
                 if (event === 'result') {
                     const { result } = JSON.parse(data)
+                    for (const e of result as IAScannerData[]) {
+                        if (!e.success) continue
+                        if (e.achievement.preStage && e.achievement.preStage > 0) {
+                            const cat = _achievementMap.find((x) => (x.originalId || 0) === e.achievement.categoryId)
+                            if (cat) {
+                                let preStage = cat.achievements.find((x) => x.id === e.achievement.preStage)
+                                if (preStage) {
+                                    const p = {
+                                        ...e,
+                                        success: true,
+                                        date: '后续已完成',
+                                    }
+                                    result.push({
+                                        ...p,
+                                        achievement: {
+                                            ...preStage,
+                                            categoryId: e.achievement.categoryId,
+                                        },
+                                    })
+                                }
+                            }
+                        }
+                    }
                     results.value = result
                     finished.value = true
                     console.log('got result from scanner')

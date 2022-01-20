@@ -17,6 +17,8 @@ export interface IWindow {
 export class CocogoatWebControl {
     port = 32333
     token = ''
+    hwnd = 0
+    version = ''
     client: FlyType = new Fly()
     MOUSEEVENTF_ABSOLUTE = 0x8000
     MOUSEEVENTF_LEFTDOWN = 0x0002
@@ -45,13 +47,14 @@ export class CocogoatWebControl {
     }
     async check(): Promise<boolean> {
         try {
-            await this.client.get(
+            const { data } = await this.client.get(
                 '/',
                 {},
                 {
                     timeout: 800,
                 },
             )
+            this.version = data.version
             return true
         } catch (e) {
             return false
@@ -61,6 +64,7 @@ export class CocogoatWebControl {
         try {
             const { data } = await this.client.post('/token')
             this.token = data.token
+            this.hwnd = data.hwnd || 0
             return true
         } catch (e) {
             const er = e as FlyError
@@ -113,6 +117,9 @@ export class CocogoatWebControl {
     }
     async getWindow(id: number): Promise<IWindow> {
         return (await this.client.get('/api/windows/' + id)).data
+    }
+    async activeWindow(id: number) {
+        return await this.client.patch('/api/windows/' + id, {}, {})
     }
     async getMonitor(): Promise<IWindow> {
         return (await this.client.get('/api/monitors')).data

@@ -3,7 +3,7 @@
         <div class="switcher">
             <a v-if="loading" href="javascript:">检测中</a>
             <a v-else-if="!modelValue" href="javascript:" @click="enable">{{
-                clientNotFound
+                gameNotFound
                     ? '未检测到支持的原神窗口，当前暂未支持云游戏等，点击重试'
                     : denied
                     ? '您拒绝了自动滚动所需的权限申请，点击重试'
@@ -14,13 +14,18 @@
         <teleport to="body">
             <div v-if="showModel" class="model-backdrop">
                 <div class="model">
-                    <div class="title">自动滚动需要客户端</div>
+                    <div class="title">
+                        {{ needUpdate ? '您的客户端版本过低' : '自动滚动需要客户端' }}
+                        <small v-if="needUpdate">(v{{ version }})</small>
+                    </div>
                     <div class="content">
                         由于浏览器限制，自动滚动无法在网页完成
-                        <a class="dlink" href="/assets/cocogoat-control-1.0.0.exe" target="_blank">
-                            点击此处下载客户端(140kB)
+                        <a class="dlink" href="/assets/cocogoat-control-1.0.1.exe" target="_blank">
+                            点击此处下载客户端<br /><small>(v1.0.1 140kB)</small>
                         </a>
-                        <button @click="enable">{{ loading ? '检测中' : '我已下载并运行客户端' }}</button>
+                        <button @click="enable">
+                            {{ loading ? '检测中' : needUpdate ? '我已更新并重新运行客户端' : '我已下载并运行客户端' }}
+                        </button>
                         <a class="cancel" href="javascript:" @click="showModel = false">取消</a>
                     </div>
                 </div>
@@ -46,7 +51,9 @@ export default defineComponent({
         const loading = ref(false)
         const showModel = ref(false)
         const denied = ref(false)
-        const clientNotFound = ref(false)
+        const gameNotFound = ref(false)
+        const needUpdate = ref(false)
+        const version = ref('')
         const enable = async () => {
             if (loading.value) return
             loading.value = true
@@ -54,8 +61,16 @@ export default defineComponent({
             if (!alive) {
                 showModel.value = true
                 loading.value = false
+                needUpdate.value = false
+                return
+            } else if (w.value.version === '1.0.0') {
+                needUpdate.value = true
+                showModel.value = true
+                loading.value = false
+                version.value = w.value.version
                 return
             } else {
+                needUpdate.value = false
                 try {
                     const authorized = await w.value.authorize()
                     if (authorized) {
@@ -68,7 +83,7 @@ export default defineComponent({
                         if (windows.length === 0) {
                             showModel.value = false
                             loading.value = false
-                            clientNotFound.value = true
+                            gameNotFound.value = true
                             return
                         }
                         emit('update:modelValue', windows[0].hWnd)
@@ -85,7 +100,9 @@ export default defineComponent({
             showModel,
             enable,
             denied,
-            clientNotFound,
+            gameNotFound,
+            needUpdate,
+            version,
         }
     },
 })
@@ -113,7 +130,7 @@ export default defineComponent({
 
     .title {
         font-size: 23px;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
     }
     button {
         width: 230px;
@@ -124,6 +141,7 @@ export default defineComponent({
         color: #fff;
         display: block;
         margin: 20px auto;
+        margin-bottom: 15px;
         font-size: 15px;
         cursor: pointer;
         transition: all 0.2s;

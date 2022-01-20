@@ -52,7 +52,9 @@
                         @click="state === S.Capture && (state = S.Processing)"
                     />
                 </div>
-                <div v-if="state === S.Capture" class="no-box">请按悬浮窗提示滚动页面</div>
+                <div v-if="state === S.Capture" class="no-box">
+                    {{ webControlEnabled ? '自动滚动进行中' : '请按悬浮窗提示滚动页面' }}
+                </div>
                 <div v-if="state > S.Capture" class="pbar">
                     <div class="pbar-bar" :class="{ finish: state === S.Finish }">
                         <div
@@ -65,7 +67,12 @@
                 </div>
             </div>
             <button v-if="state === S.Wait" @click="state = S.Capture">
-                我已切换到成就页面（自动识别页面未完成）<br />如没看到悬浮窗请点击窗口空白处
+                我已切换到成就页面（自动识别页面未完成）
+                <template v-if="webControlEnabled">
+                    <br />
+                    点击后会自动切换到成就页面
+                </template>
+                <br />如没看到悬浮窗请点击窗口空白处
             </button>
             <div v-if="isTop" class="list">
                 <div v-for="(i, a) in results" :key="a" class="item">
@@ -186,9 +193,11 @@ export default defineComponent({
             }
 
             let rect: Rect | null = null
-            if (webControlEnabled.value && webControlEnabled.value) {
+            if (webControlEnabled.value) {
                 if (scannedVal === scanned.value) {
                     zeroTimes++
+                } else {
+                    zeroTimes = Math.max(0, zeroTimes - 1)
                 }
                 if (zeroTimes > 5) {
                     zeroTimes = 0
@@ -203,16 +212,17 @@ export default defineComponent({
                     if (title) {
                         const { x, y } = await webControl.toAbsolute(
                             webControlEnabled.value,
-                            rect.x + title.rect.x / 2 + 20,
-                            rect.y + title.rect.y + 20,
+                            rect.x + title.rect.x / 2,
+                            rect.y + title.rect.y * 1.5,
                         )
                         webControl.SetCursorPos(x, y)
                         await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTDOWN, 0, 0, 0)
                         await delay(50)
                         await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTUP, 0, 0, 0)
                         await delay(50)
-                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 8)
-                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 8)
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 5)
+                        await delay(10)
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 5)
                     }
                 }
             }
@@ -274,6 +284,9 @@ export default defineComponent({
                         )
                 }
                 if (state.value === S.Capture) {
+                    if (webControlEnabled.value) {
+                        webControl.activeWindow(webControlEnabled.value)
+                    }
                     console.log('capture')
                     scannerLoop()
                 }
@@ -286,6 +299,9 @@ export default defineComponent({
                     captureStream && captureStream.getTracks().forEach((track) => track.stop())
                     console.log('processing')
                     ocrQueue.resume()
+                    if (webControlEnabled.value && webControl.hwnd) {
+                        webControl.activeWindow(webControl.hwnd)
+                    }
                 }
                 if (state.value === S.Finish) {
                     console.log('finish')

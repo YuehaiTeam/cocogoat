@@ -1,4 +1,4 @@
-import { Achievement } from '@/typings/Achievements'
+import { Achievement } from '@/typings/Achievement'
 import _achievementMap from '@genshin-data/chinese-simplified/achievements.json'
 export const achievementMap = _achievementMap
 export const achievementTitles: { str: string; obj: Achievement }[] = []

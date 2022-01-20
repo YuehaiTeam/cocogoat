@@ -2,7 +2,7 @@ import { cvTranslateError, getCV, ICVMat, toIMat, fromIMat } from '@/utils/cv'
 import type { Mat, Rect } from '@/utils/opencv'
 import { cvDiffImage, cvGetRect, cvSplitAchievement, cvSplitImage } from '../cvUtils'
 import { recognize, init as getOCR } from '@/modules/ocr'
-import { Achievement } from '@/typings/Achievements'
+import { Achievement } from '@/typings/Achievement'
 import { achievementTitles, achievementEC } from './achievementsList'
 import { textBestmatch } from '@/utils/textMatch'
 

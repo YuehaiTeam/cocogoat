@@ -6,6 +6,12 @@
                     <span class="cssload-loader"><span class="cssload-loader-inner"></span></span>
                 </div>
                 <div class="loader-text">椰羊正在饮甘露，马上就来</div>
+                <div class="loader-progress">
+                    <div class="loader-progress-bar" :style="{ width: progress + '%' }"></div>
+                </div>
+                <div class="loader-progress-text">
+                    <span>{{ progressText || `${progress.toFixed(2)}%` }}</span>
+                </div>
             </div>
         </section>
         <section v-else>
@@ -91,7 +97,8 @@ import { CocogoatWebControl } from '@/modules/webcontrol'
 const webControl = new CocogoatWebControl()
 import { IMatFromImageData, toCanvas } from '@/utils/IMat'
 import { initScanner } from './scanner/scanner.worker'
-const { recognizeAchievement, recognizeAchievement2, scannerOnImage, initPromise, workerCV, workerOCR } = initScanner()
+const { recognizeAchievement, recognizeAchievement2, scannerOnImage, initPromise, workerCV, workerOCR, onProgress } =
+    initScanner()
 enum S {
     Fail = -1,
     Init = 0,
@@ -128,6 +135,22 @@ export default defineComponent({
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
         const scanned = ref(0)
         const dup = ref(0)
+        const progress = ref(0)
+        const progressText = ref('获取资源地址')
+        onProgress((pvalue) => {
+            if (pvalue < 0) {
+                progressText.value = '加载失败, 请刷新重试或联系开发者'
+                return
+            }
+            progressText.value = ''
+            progress.value = pvalue
+            if (pvalue >= 100) {
+                progressText.value = '校验完整性'
+                setTimeout(() => {
+                    progressText.value = '应用初始化'
+                }, 140)
+            }
+        })
         const recognized = computed(() => {
             return {
                 success: results.value.filter((r) => r.success).length,
@@ -364,6 +387,8 @@ export default defineComponent({
             webControl,
             webControlEnabled,
             build: process.env.VUE_APP_BUILD,
+            progress,
+            progressText,
         }
     },
 })
@@ -446,6 +471,32 @@ section {
     width: 100%;
     background-color: #333;
     animation: cssload-loader-inner 2.3s infinite ease-in;
+}
+
+.loader-progress {
+    width: 170px;
+    height: 2px;
+    background: #ddd;
+    margin: 0 auto;
+    margin-top: 20px;
+    position: relative;
+    .loader-progress-bar {
+        width: 0;
+        height: 100%;
+        background: #777;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+
+.loader-progress-text {
+    font-size: 12px;
+    position: relative;
+    top: -12px;
+    background: #fff;
+    display: inline-block;
+    padding: 0 4px;
 }
 
 @keyframes cssload-loader {

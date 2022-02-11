@@ -44,7 +44,7 @@ export function setResources(r: typeof defaultResources) {
 }
 
 export async function speedTest() {
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && !location.href.includes('forceCDN')) {
         return []
     }
     // group testresources by tag
@@ -84,4 +84,60 @@ export async function speedTest() {
         )
     }
     return await Promise.allSettled(allPromises)
+}
+export function getBlobWithProgress(
+    url: string,
+    onprogress: (finished: number, total: number) => unknown,
+): Promise<Blob> {
+    const xhr = new XMLHttpRequest()
+    xhr.open('GET', url, true)
+    xhr.responseType = 'blob'
+    xhr.onprogress = (e) => {
+        let total = 0
+        if (e.lengthComputable) {
+            total = e.total
+        } else {
+            total = Number(xhr.getResponseHeader('content-length') || '0')
+            total *= 1.1 // For gzipped file
+        }
+        if (total > 0) onprogress(e.loaded, total)
+    }
+    return new Promise((resolve, reject) => {
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                resolve(xhr.response)
+            } else {
+                reject(new Error(`${xhr.status} ${xhr.statusText}`))
+            }
+        }
+        xhr.onerror = () => {
+            reject(new Error(`${xhr.status} ${xhr.statusText}`))
+        }
+        xhr.send()
+    })
+}
+export async function requireAsBlob(names: string[], onprogress: (progress: number) => unknown) {
+    const urls = names
+        .map((name) => ({
+            name,
+            url: resources[name],
+            progress: 0,
+        }))
+        .filter((item) => !item.url.includes('blob:') && !item.url.includes('data:'))
+    const sendProgress = () => {
+        onprogress(Math.round((urls.reduce((acc, item) => acc + item.progress, 0) / urls.length) * 9999) / 100)
+    }
+    const promises = urls.map((obj) => {
+        const { name, url } = obj
+        return getBlobWithProgress(url, (finished, total) => {
+            obj.progress = Math.min(finished / total, 1)
+            sendProgress()
+        }).then((blob) => {
+            return { name, blob }
+        })
+    })
+    const ret = await Promise.all(promises)
+    ret.forEach((item) => {
+        resources[item.name] = URL.createObjectURL(item.blob)
+    })
 }

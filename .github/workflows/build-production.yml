@@ -50,3 +50,11 @@ jobs:
           FOLDER: dist
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Build: ({sha}) {msg}" # The commit message
+      - name: Deploy
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: ${{ secrets.DEPLOY_REPO }}
+          BRANCH: dist
+          FOLDER: dist
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          SQUASH_HISTORY: true

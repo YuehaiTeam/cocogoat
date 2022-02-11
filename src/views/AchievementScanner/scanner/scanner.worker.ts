@@ -21,11 +21,12 @@ export function initScanner() {
     }
     const initPromise = (async () => {
         try {
-            await speedTest()
+            const [race, all] = speedTest()
             const hasSimdResult = hasSimd()
             const ortWasm = hasSimdResult ? 'ort-wasm-simd.wasm' : 'ort-wasm.wasm'
             const ocvWasm = hasSimdResult ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
-            await requireAsBlob([ortWasm, ocvWasm, 'ppocr.ort'], (e) => progressHandler(e))
+            await race
+            await requireAsBlob([ortWasm, ocvWasm, 'ppocr.ort'], (e) => progressHandler(e), all)
             await Promise.all([workerCV.setResources(resources), workerOCR.setResources(resources)])
             progressHandler(100)
         } catch (e) {

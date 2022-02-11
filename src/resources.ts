@@ -30,10 +30,23 @@ export interface IResourceItem {
     prefix?: string
     resources: Record<string, string>
 }
+export interface IResourceInfo {
+    urls: string[]
+    blob: Blob | null
+    tested: boolean
+}
 
 const resources = {
     ...defaultResources,
 }
+const resourceInfo = {} as Record<string, IResourceInfo>
+Object.keys(resources).forEach((key) => {
+    resourceInfo[key] = {
+        urls: [],
+        blob: null,
+        tested: false,
+    }
+})
 export default resources
 export function setResources(r: typeof defaultResources) {
     for (const key in r) {
@@ -43,7 +56,7 @@ export function setResources(r: typeof defaultResources) {
     }
 }
 
-export async function speedTest() {
+export function speedTest() {
     if (process.env.NODE_ENV === 'development' && !location.href.includes('forceCDN')) {
         return []
     }
@@ -58,6 +71,7 @@ export async function speedTest() {
     }, {} as Record<string, IResourceItem[]>) as Record<string, IResourceItem[]>
     // test each tag
     const allPromises = [] as Promise<IResourceItem>[]
+    const waitPromises = [] as Promise<IResourceItem>[]
     for (const tag of Object.keys(testResourcesByTag)) {
         const items = testResourcesByTag[tag]
         const promises = items.map((item) =>
@@ -68,6 +82,11 @@ export async function speedTest() {
                 })
                 if (!ret.ok) {
                     throw new Error(`${item.test} is not available`)
+                }
+
+                const r1 = { ...item.resources }
+                for (const key of Object.keys(r1)) {
+                    resourceInfo[key].urls.push((item.prefix || '') + r1[key])
                 }
                 return item
             })(),
@@ -82,8 +101,9 @@ export async function speedTest() {
                 return item
             }),
         )
+        waitPromises.push(...promises)
     }
-    return await Promise.allSettled(allPromises)
+    return [Promise.allSettled(allPromises), Promise.all(waitPromises)]
 }
 export function getBlobWithProgress(
     url: string,
@@ -94,10 +114,11 @@ export function getBlobWithProgress(
     xhr.responseType = 'blob'
     xhr.onprogress = (e) => {
         let total = 0
+        const fallbackSize = 8 * 1024 * 1024 // 8M
         if (e.lengthComputable) {
             total = e.total
         } else {
-            total = Number(xhr.getResponseHeader('content-length') || '0')
+            total = Number(xhr.getResponseHeader('content-length') || fallbackSize)
             total *= 1.1 // For gzipped file
         }
         if (total > 0) onprogress(e.loaded, total)
@@ -116,7 +137,11 @@ export function getBlobWithProgress(
         xhr.send()
     })
 }
-export async function requireAsBlob(names: string[], onprogress: (progress: number) => unknown) {
+export async function requireAsBlob(
+    names: string[],
+    onprogress: (progress: number) => unknown,
+    allSettled?: Promise<unknown>,
+) {
     const urls = names
         .map((name) => ({
             name,
@@ -129,12 +154,35 @@ export async function requireAsBlob(names: string[], onprogress: (progress: numb
     }
     const promises = urls.map((obj) => {
         const { name, url } = obj
-        return getBlobWithProgress(url, (finished, total) => {
-            obj.progress = Math.min(finished / total, 1)
-            sendProgress()
-        }).then((blob) => {
-            return { name, blob }
-        })
+        function loadUrl() {
+            const allUrls = [url, ...resourceInfo[name].urls]
+            while (allUrls[0] === allUrls[1]) {
+                allUrls.shift()
+            }
+            return allUrls
+        }
+        return (async function (name): Promise<{ name: string; blob: Blob }> {
+            let allUrls = loadUrl()
+            let failTimes = 0
+            let url: string | undefined
+            while ((url = allUrls.shift())) {
+                try {
+                    const blob = await getBlobWithProgress(url, (finished, total) => {
+                        obj.progress = Math.min(finished / total, 1)
+                        sendProgress()
+                    })
+                    return { name, blob }
+                } catch (e) {
+                    if (failTimes === 0) {
+                        allSettled && (await allSettled)
+                        allUrls = loadUrl().filter((u) => u !== url)
+                    }
+                    failTimes++
+                    console.error('资源加载失败, 重试：', e)
+                }
+            }
+            throw new Error('资源加载失败')
+        })(name)
     })
     const ret = await Promise.all(promises)
     ret.forEach((item) => {

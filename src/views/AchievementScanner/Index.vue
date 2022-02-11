@@ -138,12 +138,15 @@ export default defineComponent({
         const progress = ref(0)
         const progressText = ref('获取资源地址')
         onProgress((pvalue) => {
+            if (progress.value < 0) {
+                return
+            }
+            progress.value = pvalue
             if (pvalue < 0) {
                 progressText.value = '加载失败, 请刷新重试或联系开发者'
                 return
             }
             progressText.value = ''
-            progress.value = pvalue
             if (pvalue >= 100) {
                 progressText.value = '校验完整性'
                 setTimeout(() => {

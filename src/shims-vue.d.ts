@@ -10,6 +10,7 @@ declare module 'nd4js'
 declare module '@/plugins/ocr/*'
 
 declare module '*?raw'
+declare module '*?rawnolocal'
 
 declare module '@/../resources.json' {
     import { IResourceItem } from './resources'

@@ -1,11 +1,11 @@
 import { Remote, wrap } from 'comlink'
 import type { W } from './scanner.worker.expose'
 import resources, { requireAsBlob, speedTest } from '@/resources'
-import { Worker } from '@/utils/corsWorker'
+import '@/utils/corsWorker'
 import { hasSimd } from '@/utils/WasmFeatureCheck'
 export function createWorker() {
-    const worker = new Worker(new URL('./scanner.worker.expose.ts', import.meta.url))
-    return wrap(worker) as Remote<typeof W>
+    const Worker = require('./scanner.worker.expose.ts').default
+    return wrap(new Worker()) as Remote<typeof W>
 }
 export function initScanner() {
     const workerCV = createWorker()

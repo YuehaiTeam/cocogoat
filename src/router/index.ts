@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -9,7 +9,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: '/frames/achievement-scanner',
-        name: 'frames.scan',
+        name: 'frames.achievement.scan',
         component: () => import('@/views/AchievementScanner/Index.vue'),
     },
     {
@@ -28,8 +28,11 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-    history: createWebHistory('/'),
+    history: process.env.VUE_APP_ROUTER_HASH === 'true' ? createWebHashHistory() : createWebHistory('/'),
     routes,
 })
 
 export default router
+export function getUrl(name: string) {
+    return router.resolve({ name }).href
+}

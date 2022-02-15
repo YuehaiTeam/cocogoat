@@ -175,6 +175,5 @@ export async function recognizeAchievement(line: IAScannerLine): Promise<IAScann
 }
 
 export async function init() {
-    await getOCR()
-    await getCV()
+    await Promise.all([getOCR(), getCV()])
 }

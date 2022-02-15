@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "build:singlefile": "vue-cli-service build --singlefile",
     "lint": "vue-cli-service lint",
     "postinstall": "git submodule update --init && node scripts/genereate-json"
   },
@@ -47,6 +48,7 @@
     "prettier": "^2.4.1",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "worker-loader": "^3.0.8"
   }
 }

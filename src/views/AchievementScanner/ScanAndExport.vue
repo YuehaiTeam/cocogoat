@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="titlebar">椰羊·扫描成就并导出（支持Paimon.moe和Seelie）</div>
-        <iframe ref="contentFrame" src="/frames/achievement-scanner" frameborder="0"></iframe>
+        <iframe ref="contentFrame" :src="frameUrl" frameborder="0"></iframe>
         <div v-if="finished" class="model-backdrop">
             <div class="model">
                 <div class="title">扫描完成</div>
@@ -40,9 +40,11 @@ import { ref, computed, defineComponent, watch } from 'vue'
 import type { IAScannerData, IAScannerFaild } from './scanner/scanner'
 import { useRoute } from 'vue-router'
 import _achievementMap from '@genshin-data/chinese-simplified/achievements.json'
+import { getUrl } from '@/router'
 
 export default defineComponent({
     setup() {
+        const frameUrl = getUrl('frames.achievement.scan')
         const showFaildImages = ref(false)
         const finished = ref(false)
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
@@ -154,6 +156,7 @@ location.href='/achievements'`
             faildResults,
             showFaildImages,
             to,
+            frameUrl,
         }
     },
 })

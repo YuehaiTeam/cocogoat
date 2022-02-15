@@ -1,28 +1,6 @@
-import ortWasm from 'onnxruntime-web/dist/ort-wasm.wasm?raw'
-import ortWasmMT from 'onnxruntime-web/dist/ort-wasm-threaded.wasm?raw'
-import ortWasmSIMD from 'onnxruntime-web/dist/ort-wasm-simd.wasm?raw'
-import ortWasmSIMDMT from 'onnxruntime-web/dist/ort-wasm-simd-threaded.wasm?raw'
-
-import cvWasmNormal from '@/plugins/opencv/opencv-normal.wasm?raw'
-import cvWasmSimd from '@/plugins/opencv/opencv-simd.wasm?raw'
-
-import ocrModel from '@/plugins/ocr/ppocr.ort?raw'
+export const defaultResources = {} as Record<string, string>
 
 import testResources from '@/../resources.json'
-
-function absoluteify(url: string) {
-    return new URL(url, location.href).href.replace('?raw', '')
-}
-
-const defaultResources = {
-    'ort-wasm-simd-threaded.wasm': absoluteify(ortWasmSIMDMT),
-    'ort-wasm-simd.wasm': absoluteify(ortWasmSIMD),
-    'ort-wasm-threaded.wasm': absoluteify(ortWasmMT),
-    'ort-wasm.wasm': absoluteify(ortWasm),
-    'opencv-normal.wasm': absoluteify(cvWasmNormal),
-    'opencv-simd.wasm': absoluteify(cvWasmSimd),
-    'ppocr.ort': absoluteify(ocrModel),
-} as Record<string, string>
 
 export interface IResourceItem {
     tag: string
@@ -40,13 +18,6 @@ const resources = {
     ...defaultResources,
 }
 const resourceInfo = {} as Record<string, IResourceInfo>
-Object.keys(resources).forEach((key) => {
-    resourceInfo[key] = {
-        urls: [],
-        blob: null,
-        tested: false,
-    }
-})
 export default resources
 export function setResources(r: typeof defaultResources) {
     for (const key in r) {
@@ -55,9 +26,23 @@ export function setResources(r: typeof defaultResources) {
         }
     }
 }
+export function setResourcesAndUpdateInfo(r: typeof defaultResources) {
+    for (const key in r) {
+        if (Object.prototype.hasOwnProperty.call(r, key)) {
+            resources[key] = r[key] || defaultResources[key]
+        }
+    }
+    Object.keys(resources).forEach((key) => {
+        resourceInfo[key] = {
+            urls: [],
+            blob: null,
+            tested: false,
+        }
+    })
+}
 
 export function speedTest() {
-    if (process.env.NODE_ENV === 'development' && !location.href.includes('forceCDN')) {
+    if (process.env.VUE_APP_LOCALRES === 'true' && !location.href.includes('forceCDN')) {
         return []
     }
     // group testresources by tag

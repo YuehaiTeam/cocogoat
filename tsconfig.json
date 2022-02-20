@@ -13,7 +13,7 @@
         "useDefineForClassFields": true,
         "sourceMap": true,
         "baseUrl": ".",
-        "types": ["webpack-env"],
+        "types": ["webpack-env", "element-plus/global"],
         "paths": {
             "@/*": ["src/*"],
             "@genshin-data/*": ["src/plugins/genshin-data/data/*"]

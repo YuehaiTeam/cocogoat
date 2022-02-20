@@ -1,22 +1,62 @@
 import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-
 const routes: Array<RouteRecordRaw> = [
+    /* Main */
     {
         path: '/',
-        name: 'home',
-        component: HomeView,
+        component: () => import('@/views/Layout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'home',
+                component: () => import('@/views/Home.vue'),
+            },
+        ],
     },
+    {
+        path: '/artifact',
+        component: () => import('@/views/Layout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'artifact.index',
+                component: () => import('@/views/Artifact/Index.vue'),
+            },
+        ],
+    },
+    {
+        path: '/achievement',
+        component: () => import('@/views/Layout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'achievement.index',
+                component: () => import('@/views/Achievement/Index.vue'),
+            },
+            {
+                path: 'scan-and-export',
+                name: 'achievement.scan-and-export',
+                component: () => import('@/views/AchievementScanner/ScanAndExport.vue'),
+            },
+        ],
+    },
+    {
+        path: '/options',
+        component: () => import('@/views/Layout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'options',
+                component: () => import('@/views/Options/Index.vue'),
+            },
+        ],
+    },
+    /* Frames */
     {
         path: '/frames/achievement-scanner',
         name: 'frames.achievement.scan',
         component: () => import('@/views/AchievementScanner/Index.vue'),
     },
-    {
-        path: '/achievement/scan-and-export',
-        name: 'extera.achievement-export',
-        component: () => import('@/views/AchievementScanner/ScanAndExport.vue'),
-    },
+    /* Tools */
     {
         path: '/extra/achievement-to-seelie',
         redirect: '/achievement/scan-and-export?to=seelie',

@@ -1,12 +1,20 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const InlineChunkHtmlPlugin = require('./scripts/InlineChunkHtmlPlugin')
-const { defineConfig } = require('@vue/cli-service')
 const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
-process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
+const InlineChunkHtmlPlugin = require('./scripts/InlineChunkHtmlPlugin')
+const InlineFaviconHtmlPlugin = require('./scripts/InlineFaviconHtmlPlugin')
+const { defineConfig } = require('@vue/cli-service')
+const AutoImport = require('unplugin-auto-import/webpack')
+const Components = require('unplugin-vue-components/webpack')
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+const gitInfo = require('git-repo-info')()
 const singleFile = process.argv.includes('--singlefile')
+process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
 process.env.VUE_APP_LOCALRES = singleFile || process.env.NODE_ENV === 'development' ? 'true' : 'false'
+process.env.VUE_APP_TIMESTAMP = Date.now()
+process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
+process.env.VUE_APP_GIT_MSG = gitInfo.commitMessage
 module.exports = defineConfig({
     publicPath: process.env.NODE_ENV === 'production' ? 'https://cocogoat-1251105598.file.myqcloud.com/' : '/',
     transpileDependencies: true,
@@ -15,6 +23,16 @@ module.exports = defineConfig({
     // worker-loader与thread-loader冲突
     css: {
         extract: !singleFile,
+    },
+    configureWebpack: {
+        plugins: [
+            AutoImport({
+                resolvers: [ElementPlusResolver()],
+            }),
+            Components({
+                resolvers: [ElementPlusResolver()],
+            }),
+        ],
     },
     chainWebpack: (config) => {
         config.output.set('chunkLoadingGlobal', 'define')
@@ -38,6 +56,7 @@ module.exports = defineConfig({
                 .plugin('InlineChunkHtmlPlugin')
                 .before('copy')
                 .use(new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/app/]))
+            config.plugin('InlineFaviconHtmlPlugin').after('copy').use(new InlineFaviconHtmlPlugin(HtmlWebpackPlugin))
             config.module
                 .rule('worker')
                 .test(/\.worker\.expose\.ts$/)
@@ -61,6 +80,7 @@ module.exports = defineConfig({
                 .set('resourceQuery', /rawnolocal/)
                 .set('generator', { filename: 'assets/[name].[contenthash:8][ext]' })
             config.module.rule('images').type('asset/inline').set('generator', {})
+            config.module.rule('fonts').type('asset/inline').set('generator', {})
         } else {
             config.module
                 .rule('raw')

@@ -25,7 +25,7 @@
                 <div class="opensource">
                     椰羊·成就扫描 | <a href="https://github.com/YuehaiTeam/cocogoat-web" target="_blank">Github</a> |
                     <a href="https://github.com/YuehaiTeam/cocogoat-web/tree/main/docs" target="_blank">集成文档</a> |
-                    {{ build }}
+                    <build-info />
                 </div>
             </div>
             <float-window
@@ -93,6 +93,7 @@
 </template>
 
 <script lang="ts">
+import BuildInfo from '@/components/BuildInfo.vue'
 import { CocogoatWebControl } from '@/modules/webcontrol'
 const webControl = new CocogoatWebControl()
 import { IMatFromImageData, toCanvas } from '@/utils/IMat'
@@ -119,6 +120,18 @@ import FastQ from 'fastq'
 import type { IAScannerData, IAScannerLine, IAScannerFaild } from './scanner/scanner'
 import type { Rect } from '@/utils/opencv'
 import { useRoute } from 'vue-router'
+function send<T>(event: string, data: T) {
+    parent &&
+        window !== parent &&
+        parent.postMessage(
+            {
+                app: 'cocogoat.scanner.achievement',
+                event,
+                data: JSON.parse(JSON.stringify(data)),
+            },
+            '*',
+        )
+}
 export default defineComponent({
     name: 'AchievementScanner',
     components: {
@@ -126,6 +139,7 @@ export default defineComponent({
         FloatContent,
         FloatContentB,
         WebcontrolSwitch,
+        BuildInfo,
     },
     setup() {
         const route = useRoute()
@@ -137,12 +151,15 @@ export default defineComponent({
         const dup = ref(0)
         const progress = ref(0)
         const progressText = ref('获取资源地址')
+        send('state', 'loading')
         onProgress((pvalue) => {
             if (progress.value < 0) {
                 return
             }
+            send('load', pvalue)
             progress.value = pvalue
             if (pvalue < 0) {
+                send('load', false)
                 progressText.value = '加载失败, 请刷新重试或联系开发者'
                 return
             }
@@ -150,6 +167,7 @@ export default defineComponent({
             if (pvalue >= 100) {
                 progressText.value = '校验完整性'
                 setTimeout(() => {
+                    send('load', true)
                     progressText.value = '应用初始化'
                 }, 140)
             }
@@ -299,17 +317,11 @@ export default defineComponent({
             () => state.value,
             async () => {
                 if (state.value === S.Ready) {
-                    parent &&
-                        !isTop &&
-                        parent.postMessage(
-                            {
-                                app: 'cocogoat.scanner.achievement',
-                                event: 'ready',
-                            },
-                            '*',
-                        )
+                    send('ready', null)
+                    send('state', 'ready')
                 }
                 if (state.value === S.Capture) {
+                    send('state', 'capture')
                     if (webControlEnabled.value) {
                         webControl.activeWindow(webControlEnabled.value)
                     }
@@ -324,6 +336,7 @@ export default defineComponent({
                     }
                     captureStream && captureStream.getTracks().forEach((track) => track.stop())
                     console.log('processing')
+                    send('state', 'processing')
                     ocrQueue.resume()
                     if (webControlEnabled.value && webControl.hwnd) {
                         webControl.activeWindow(webControl.hwnd)
@@ -331,21 +344,11 @@ export default defineComponent({
                 }
                 if (state.value === S.Finish) {
                     console.log('finish')
-                    parent &&
-                        !isTop &&
-                        parent.postMessage(
-                            {
-                                app: 'cocogoat.scanner.achievement',
-                                event: 'result',
-                                data: JSON.parse(
-                                    JSON.stringify({
-                                        result: results.value,
-                                        dup: dup.value,
-                                    }),
-                                ),
-                            },
-                            '*',
-                        )
+                    send('state', 'finish')
+                    send('result', {
+                        result: results.value,
+                        dup: dup.value,
+                    })
                 }
             },
         )
@@ -375,6 +378,13 @@ export default defineComponent({
                 window.removeEventListener('message', msgHandler)
             })
         }
+        watch([scanned, recognized, dup], () => {
+            send('progress', {
+                scanned: scanned.value,
+                ...recognized.value,
+                dup: dup.value,
+            })
+        })
         return {
             S,
             state,
@@ -389,7 +399,6 @@ export default defineComponent({
             reset,
             webControl,
             webControlEnabled,
-            build: process.env.VUE_APP_BUILD,
             progress,
             progressText,
         }

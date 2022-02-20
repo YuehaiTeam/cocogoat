@@ -1,0 +1,50 @@
+.actions {
+    .import-button {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+        border-right: 0;
+        position: relative;
+        z-index: 1;
+        &:hover + div > div > div > .el-button {
+            border-left-color: #409eff;
+        }
+    }
+    .export-title {
+        cursor: default !important;
+    }
+    .dropdown {
+        display: inline-block;
+        vertical-align: middle;
+        height: 32px;
+        position: relative;
+        z-index: 2;
+    }
+    .header-plain-dropdown {
+        .el-button {
+            vertical-align: middle;
+            &:first-child {
+                border-radius: 0;
+            }
+            & + .el-button {
+                margin-left: 0;
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+                width: 25px;
+            }
+        }
+        .el-button:focus,
+        .el-button:hover,
+        &:hover .el-button:first-child {
+            background: #fff;
+            border-color: #409eff;
+            color: #409eff;
+        }
+    }
+    .el-button + .header-plain-dropdown,
+    .header-plain-dropdown + .el-button {
+        margin-left: 10px;
+    }
+    .el-button svg:first-child {
+        margin-right: 5px;
+    }
+}

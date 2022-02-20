@@ -1,6 +1,30 @@
 <template>
-    <div>
-        <div class="titlebar">椰羊·扫描成就并导出（支持Paimon.moe和Seelie）</div>
+    <Layout full-height>
+        <template #title>
+            <span style="font-family: genshin">椰羊 · </span> 扫描成就并导出到{{
+                to === 'seelie' ? 'Seelie' : 'Paimon.moe'
+            }}
+        </template>
+        <template #actions>
+            <el-tooltip content="扫描完成之后也还可以切换哦">
+                <el-button
+                    class="switch"
+                    type="primary"
+                    plain
+                    @click="
+                        $router.replace({
+                            ...$route,
+                            query: {
+                                ...$route.query,
+                                to: to === 'seelie' ? 'paimon-moe' : 'seelie',
+                            },
+                        })
+                    "
+                >
+                    切换到{{ to === 'seelie' ? 'Paimon.moe' : 'Seelie' }}
+                </el-button>
+            </el-tooltip>
+        </template>
         <iframe ref="contentFrame" :src="frameUrl" frameborder="0"></iframe>
         <div v-if="finished" class="model-backdrop">
             <div class="model">
@@ -32,7 +56,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </Layout>
 </template>
 
 <script lang="ts">
@@ -173,8 +197,8 @@ location.href='/achievements'`
     padding-left: 20px;
 }
 iframe {
-    width: 100vw;
-    height: calc(100vh - 55px);
+    width: 100%;
+    height: 100%;
     box-sizing: border-box;
 }
 .model {

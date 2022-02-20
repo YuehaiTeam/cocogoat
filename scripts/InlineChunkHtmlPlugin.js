@@ -1,4 +1,3 @@
-'use strict'
 class InlineChunkHtmlPlugin {
     constructor(htmlWebpackPlugin, tests) {
         this.htmlWebpackPlugin = htmlWebpackPlugin
@@ -13,7 +12,7 @@ class InlineChunkHtmlPlugin {
             return tag
         }
         const asset = assets[scriptName]
-        if (asset == null) {
+        if (asset === null) {
             return tag
         }
         return { tagName: 'script', innerHTML: asset.source(), closeTag: true, isInlined: true }

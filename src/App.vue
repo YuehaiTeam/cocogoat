@@ -4,14 +4,13 @@
 </template>
 <script>
 import { defineAsyncComponent } from 'vue'
-import { showUncompatible } from './main'
 export default {
     components: {
         UncompatibleDialog: defineAsyncComponent(() => import('@/components/UncompatibleDialog')),
     },
     setup() {
         return {
-            showUncompatible: parent === window && showUncompatible,
+            showUncompatible: false, // parent === window && showUncompatible,
         }
     },
 }
@@ -25,6 +24,9 @@ body,
     margin: 0;
     padding: 0;
     overscroll-behavior: none;
+}
+body {
+    overflow-x: hidden;
 }
 @font-face {
     font-family: genshin;

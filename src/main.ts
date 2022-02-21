@@ -7,7 +7,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import View from '@/views/View.vue'
 
 // 兼容性检查：
-// Chrome 85- 不兼容Promise.any，其他浏览器暂不做特殊测试
 export let notInSameoriginFrame = parent === window
 if (!notInSameoriginFrame) {
     try {
@@ -18,8 +17,6 @@ if (!notInSameoriginFrame) {
         notInSameoriginFrame = true
     }
 }
-const hasPromiseAny = 'Promise' in window && 'any' in Promise
-export const showUncompatible = !hasPromiseAny
 
 setResourcesAndUpdateInfo(defaultResources)
 const app = createApp(App)

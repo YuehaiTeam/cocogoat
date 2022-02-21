@@ -1,5 +1,5 @@
 <script lang="ts">
-import { showUncompatible } from '@/main'
+import { scannerCompatible } from '@/utils/compatibility'
 import BuildInfo from '@/components/BuildInfo.vue'
 import { CocogoatWebControl } from '@/modules/webcontrol'
 const webControl = new CocogoatWebControl()
@@ -301,7 +301,7 @@ export default defineComponent({
             })
         })
         return {
-            showUncompatible,
+            showUncompatible: !scannerCompatible,
             S,
             state,
             video,

@@ -32,17 +32,15 @@
             </router-link>
         </div>
     </aside>
-    <main id="tokiapp" class="layer" :class="isMobile ? 'app-mobile' : 'app-desktop'">
-        <router-view v-slot="{ Component }">
-            <transition
-                :name="isMobile ? transitionName : ''"
-                :duration="isMobile ? 100 : -1"
-                :mode="isMobile ? '' : 'out-in'"
-            >
-                <component :is="Component" class="app-box" />
-            </transition>
-        </router-view>
-    </main>
+    <router-view v-slot="{ Component }">
+        <transition
+            :name="isMobile ? transitionName : ''"
+            :duration="isMobile ? 100 : -1"
+            :mode="isMobile ? '' : 'out-in'"
+        >
+            <component :is="Component" />
+        </transition>
+    </router-view>
 </template>
 
 <script>
@@ -219,13 +217,6 @@ a .svg-inline--fa {
         }
     }
 }
-.app-desktop {
-    position: absolute;
-    left: 80px;
-    top: 50px;
-    bottom: 0;
-    right: 0;
-}
 
 .menu-mobile {
     .logo {
@@ -278,24 +269,6 @@ a .svg-inline--fa {
                 }
             }
         }
-    }
-}
-.app-mobile {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    overflow-x: hidden;
-    min-height: 100%;
-    & > * {
-        overflow-x: hidden;
-        min-height: 100%;
-    }
-}
-.layer::v-deep(.mp) {
-    .mp-header {
-        padding: 15px 0;
-        padding-left: 15px;
     }
 }
 header {
@@ -366,40 +339,6 @@ header {
 }
 .slide-left-leave-active {
     transform: translateX(-100%);
-}
-.app-box.full-height {
-    height: 100%;
-}
-.float-add {
-    background: linear-gradient(-45deg, #409eff, #8cc5ff);
-    box-shadow: 0 7px 10px 0 rgba(54, 144, 248, 0.23);
-    border: 0;
-    width: 50px;
-    height: 50px;
-    border-radius: 100%;
-    color: #fff;
-    font-weight: bold;
-    font-size: 20px;
-    position: fixed;
-    bottom: 25px;
-    right: 25px;
-    outline: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 50px;
-    &:hover {
-        opacity: 0.9;
-        transform: scale(1.02);
-    }
-}
-.app-mobile .float-add {
-    right: 15px;
-    bottom: 65px;
-    width: 44px;
-    height: 44px;
-    line-height: 44px;
 }
 .m .hidden-mobile {
     display: none;

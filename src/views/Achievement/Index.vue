@@ -36,7 +36,7 @@
         </template>
         <div v-if="showScanner" class="scanner-area">
             <iframe class="scanner-frame" :src="frameSrc"></iframe>
-            <div class="scanner-flex">
+            <div class="scanner-back">
                 <div class="scanner-box">
                     <div class="scanner-title">成就识别</div>
                 </div>
@@ -89,22 +89,20 @@ export default defineComponent({
         bottom: 0;
         z-index: 2;
     }
-    .scanner-flex {
+    .scanner-back {
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
         z-index: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         .scanner-box {
             width: 600px;
             height: 650px;
             background: #fff;
-            margin-top: -170px;
             border-radius: 5px;
+            margin: 0 auto;
+            margin-top: calc(10vh - 60px);
             .scanner-title {
                 height: 40px;
                 line-height: 40px;

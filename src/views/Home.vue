@@ -1,5 +1,5 @@
 <template>
-    <Layout full-height class="home">
+    <Layout class="home">
         <template #title><span style="font-family: genshin">椰羊 · 首页</span></template>
         <div class="root">
             <h1>

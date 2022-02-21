@@ -1,5 +1,5 @@
 <template>
-    <div class="layout" :class="fullHeight ? 'full-height' : ''">
+    <div class="layout" :class="{ 'full-height': fullHeight }">
         <header class="component-header">
             <div class="app-title"><slot name="title" /></div>
             <div v-if="!$root.isMobile" class="app-actions"><slot name="actions" /></div>
@@ -16,7 +16,7 @@
                 <slot name="actions" />
             </el-popover>
         </header>
-        <main class="component-main" :style="fullHeight ? 'height:100%' : ''">
+        <main class="component-main">
             <slot />
         </main>
     </div>
@@ -42,59 +42,71 @@ export default {
     left: 0;
     right: 0;
     z-index: 999;
-}
-.app-title {
-    padding-left: 100px;
-    line-height: 50px;
-    font-size: 20px;
-    user-select: none;
-    cursor: default;
+    .app-title {
+        padding-left: 100px;
+        line-height: 50px;
+        font-size: 20px;
+        user-select: none;
+        cursor: default;
+    }
 }
 .full-height {
-    height: 100%;
+    height: 100vh;
+    .component-main {
+        height: 100%;
+        box-sizing: border-box;
+    }
+}
+.layout {
+    min-height: 100vh;
+    padding-top: 50px;
+    padding-left: 80px;
     box-sizing: border-box;
+    .component-main {
+        height: 100%;
+        box-sizing: border-box;
+    }
 }
 .m {
     .layout {
-        box-sizing: content-box;
-        padding-top: 50px;
-        padding-bottom: 130px;
+        box-sizing: border-box;
+        padding-bottom: 60px;
+        padding-left: 0;
     }
     .app-title {
         padding-left: 60px;
     }
-    .full-height {
-        height: 100vh;
-    }
-}
-.pc .app-actions {
-    height: 100%;
-    position: absolute;
-    top: 0;
-    right: 130px;
-    line-height: 48px;
-    vertical-align: middle;
-}
 
-.btn-actions {
-    border-radius: 5px;
-    width: 35px;
-    height: 35px;
-    text-align: center;
-    padding: 0;
-    border-color: #0079cc;
-    color: #0079cc;
-    position: absolute;
-    right: 10px;
-    top: 8px;
-    &:hover {
-        background: #0079cc;
-        color: #fff;
+    .btn-actions {
+        border-radius: 5px;
+        width: 35px;
+        height: 35px;
+        text-align: center;
+        padding: 0;
+        border-color: #0079cc;
+        color: #0079cc;
+        position: absolute;
+        right: 10px;
+        top: 8px;
+        &:hover {
+            background: #0079cc;
+            color: #fff;
+        }
+        svg {
+            width: 23px;
+            height: 23px;
+            fill: currentColor;
+        }
     }
-    svg {
-        width: 23px;
-        height: 23px;
-        fill: currentColor;
+}
+.pc {
+    .app-actions {
+        height: 100%;
+        position: absolute;
+        top: 0;
+        right: 130px;
+        line-height: 48px;
+        vertical-align: middle;
     }
 }
 </style>

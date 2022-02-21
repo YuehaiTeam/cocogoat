@@ -12,6 +12,8 @@ ocrMap.unshift('\0')
 ocrMap.push(' ')
 
 ort.env.wasm.wasmPaths = resources
+// disable MultiThreading
+ort.env.wasm.numThreads = 1
 
 let session: ort.InferenceSession | null = null
 

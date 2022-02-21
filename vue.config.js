@@ -8,15 +8,21 @@ const AutoImport = require('unplugin-auto-import/webpack')
 const Components = require('unplugin-vue-components/webpack')
 const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 const gitInfo = require('git-repo-info')()
-const singleFile = process.argv.includes('--singlefile')
+const singleFileDLL = process.argv.includes('--singlefile-dll')
+const singleFile = process.argv.includes('--singlefile') || singleFileDLL
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
+process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
 process.env.VUE_APP_LOCALRES = singleFile || process.env.NODE_ENV === 'development' ? 'true' : 'false'
 process.env.VUE_APP_TIMESTAMP = Date.now()
 process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
 process.env.VUE_APP_GIT_MSG = gitInfo.commitMessage
 module.exports = defineConfig({
-    publicPath: process.env.NODE_ENV === 'production' ? 'https://cocogoat-1251105598.file.myqcloud.com/' : '/',
+    publicPath: singleFile
+        ? '.'
+        : process.env.NODE_ENV === 'production'
+        ? 'https://cocogoat-1251105598.file.myqcloud.com/'
+        : '/',
     transpileDependencies: true,
     productionSourceMap: false,
     parallel: false,
@@ -55,7 +61,28 @@ module.exports = defineConfig({
         })
         config.plugin('corsWorkerPlugin').use(corsWorkerPlugin)
         if (singleFile) {
-            config.output.filename('[name].js')
+            config.output.filename((pathData) => {
+                return typeof pathData.chunk.name === 'string' && pathData.chunk.name.includes('-dll')
+                    ? pathData.chunk.name.replace('-dll', '.[contenthash:4]') + '.dll.js'
+                    : '[name].js'
+            })
+            if (singleFileDLL) {
+                config.optimization.splitChunks({
+                    chunks: (chunk) => {
+                        if (typeof chunk.name === 'string' && chunk.name.includes('-dll')) {
+                            chunk.preventIntegration = true
+                        }
+                        return true
+                    },
+                    cacheGroups: {
+                        commons: {
+                            test: /\.(wasm|ort)/,
+                            name: 'libcocogoat-dll',
+                            chunks: 'all',
+                        },
+                    },
+                })
+            }
             config.plugin('limitchunk').use(
                 new webpack.optimize.LimitChunkCountPlugin({
                     maxChunks: 1,
@@ -80,8 +107,15 @@ module.exports = defineConfig({
                 .type('asset/inline')
                 .set('resourceQuery', /raw/)
                 .set('generator', {
-                    dataUrl: {
-                        mimetype: 'application/octet-stream',
+                    dataUrl: (content, { filename }) => {
+                        // gzip it
+                        console.log('gzipping', filename)
+                        const zlib = require('zlib')
+                        const data = Buffer.from(content)
+                        const compressed = zlib.gzipSync(data, {
+                            level: 9,
+                        })
+                        return `data:application/gzip;base64,${compressed.toString('base64')}`
                     },
                 })
             config.module

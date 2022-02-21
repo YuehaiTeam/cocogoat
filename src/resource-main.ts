@@ -10,6 +10,9 @@ import ocrModel from '@/plugins/ocr/ppocr.ort?raw'
 
 import resources, { IResourceItem, resourceInfo, setResources } from '@/resources'
 import testResources from '@/../resources.json'
+import { ElMessageBox } from 'element-plus'
+import 'element-plus/theme-chalk/el-overlay.css'
+import 'element-plus/theme-chalk/el-message-box.css'
 
 function absoluteify(url: string) {
     if (url.startsWith('data:') || url.startsWith('blob:')) return url
@@ -83,13 +86,72 @@ export function speedTest() {
         )
         waitPromises.push(...promises)
     }
-    return [Promise.allSettled(allPromises), Promise.all(waitPromises)]
+    return [Promise.allSettled(allPromises), Promise.allSettled(waitPromises)]
+}
+declare global {
+    interface Window {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        DecompressionStream: any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        pako: any
+    }
 }
 export function getBlobWithProgress(
     url: string,
     onprogress: (finished: number, total: number) => unknown,
     fallbackSize = 8 * 1024 * 1024, // 8M
 ): Promise<Blob> {
+    if (url.startsWith('data:application/gzip')) {
+        return (async () => {
+            const f = fetch(url)
+            try {
+                if (window.DecompressionStream) {
+                    const ds = new window.DecompressionStream('gzip')
+                    const response = await f
+                    if (!response.body) {
+                        throw new Error('No body')
+                    }
+                    const decompressedStream = response.body.pipeThrough(ds)
+                    console.log('Decompressed successfully using stream')
+                    return await new Response(decompressedStream).blob()
+                } else {
+                    throw new Error('DecompressionStream not available')
+                }
+            } catch (e) {
+                if (!window.pako) {
+                    try {
+                        await loadScript('https://lib.baomitu.com/pako/2.0.4/pako_inflate.min.js')
+                    } catch (e) {
+                        try {
+                            await loadScript('https://cdn.staticfile.org/pako/2.0.4/pako_inflate.min.js')
+                        } catch (e) {}
+                    }
+                }
+                if (!window.pako) {
+                    if (!document.querySelector('.el-overlay.is-message-box'))
+                        ElMessageBox({
+                            title: '出错了！',
+                            message: '您当前的浏览器版本过低，请升级浏览器或连接网络再试。',
+                            showConfirmButton: false,
+                            showClose: false,
+                            closeOnClickModal: false,
+                            closeOnPressEscape: false,
+                        })
+                    throw new Error('cannot decompress file')
+                }
+                const response = await f
+                if (!response.body) {
+                    throw new Error('No body')
+                }
+                const arrayBuffer = await response.arrayBuffer()
+                const decompressed = window.pako.inflate(new Uint8Array(arrayBuffer))
+                console.log('Decompressed successfully using pako')
+                return new Blob([decompressed], { type: 'application/octet-stream' })
+            }
+        })()
+    } else if (url.startsWith('data:')) {
+        return fetch(url).then((res) => res.blob())
+    }
     const xhr = new XMLHttpRequest()
     xhr.open('GET', url, true)
     xhr.responseType = 'blob'
@@ -127,7 +189,7 @@ export async function requireAsBlob(
             url: resources[name],
             progress: 0,
         }))
-        .filter((item) => !item.url.includes('blob:') && !item.url.includes('data:'))
+        .filter((item) => !item.url.includes('blob:'))
     const sendProgress = () => {
         onprogress(Math.round((urls.reduce((acc, item) => acc + item.progress, 0) / urls.length) * 9999) / 100)
     }
@@ -168,7 +230,28 @@ export async function requireAsBlob(
         })(name)
     })
     const ret = await Promise.all(promises)
-    ret.forEach((item) => {
-        resources[item.name] = URL.createObjectURL(item.blob)
+    for (const item of ret) {
+        if (location.protocol === 'file:') {
+            // blob not supported in file protocol, use base64 instead
+            resources[item.name] = await blobToBase64(item.blob)
+        } else {
+            resources[item.name] = URL.createObjectURL(item.blob)
+        }
+    }
+}
+function blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.readAsDataURL(blob)
+    })
+}
+function loadScript(url: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.onload = () => resolve()
+        script.onerror = (e) => reject(e)
+        document.head.appendChild(script)
     })
 }

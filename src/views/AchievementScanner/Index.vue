@@ -56,7 +56,7 @@ export default defineComponent({
         const scanned = ref(0)
         const dup = ref(0)
         const progress = ref(0)
-        const progressText = ref('获取资源地址')
+        const progressText = ref(process.env.VUE_APP_SINGLEFILE ? '解压资源文件' : '获取资源地址')
         onProgress((pvalue) => {
             if (progress.value < 0) {
                 return

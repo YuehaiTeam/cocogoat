@@ -76,7 +76,6 @@ export default {
             const navs = ['', 'artifact', 'achievement', 'options']
             let toDepth = navs.indexOf(to.path.split('/')[1])
             let fromDepth = navs.indexOf(from.path.split('/')[1])
-            console.log(toDepth, fromDepth)
             if (toDepth == fromDepth) {
                 toDepth = to.path.split('/').length
                 fromDepth = from.path.split('/').length

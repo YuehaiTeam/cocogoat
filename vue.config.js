@@ -25,7 +25,7 @@ module.exports = defineConfig({
         : '/',
     transpileDependencies: true,
     productionSourceMap: false,
-    parallel: false,
+    parallel: !singleFile,
     // worker-loader与thread-loader冲突
     css: {
         extract: !singleFile,
@@ -60,6 +60,10 @@ module.exports = defineConfig({
             '@genshin-data': require('path').resolve(__dirname, 'src', 'plugins', 'genshin-data', 'data'),
         })
         config.plugin('corsWorkerPlugin').use(corsWorkerPlugin)
+        config.module.rule('ts').use('ifdef-loader').loader('ifdef-loader').options({
+            SINGLEFILE: singleFile,
+        })
+
         if (singleFile) {
             config.output.filename((pathData) => {
                 return typeof pathData.chunk.name === 'string' && pathData.chunk.name.includes('-dll')
@@ -131,14 +135,14 @@ module.exports = defineConfig({
                 .type('asset')
                 .set('resourceQuery', /raw/)
                 .set('generator', { filename: 'assets/[name].[contenthash:8][ext]' })
-            config.module
-                .rule('worker')
-                .test(/\.worker\.expose\.ts$/)
-                .use('worker')
-                .loader('worker-loader')
-                .options({
-                    worker: 'CorsWorker',
-                })
+            config.module.set('parser', {
+                'javascript/auto': {
+                    worker: ['Worker from @/utils/corsWorker', '...'],
+                },
+                'javascript/esm': {
+                    worker: ['Worker from @/utils/corsWorker', '...'],
+                },
+            })
         }
     },
 })

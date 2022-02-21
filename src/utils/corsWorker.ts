@@ -1,4 +1,4 @@
-const WebWorker = window.Worker
+export const WebWorker = window.Worker
 export class Worker extends WebWorker {
     url: string
     constructor(_url: string | URL) {
@@ -18,4 +18,6 @@ export class Worker extends WebWorker {
 interface WindowWithCorsWorker extends Window {
     CorsWorker: typeof Worker
 }
-;(window as unknown as WindowWithCorsWorker).CorsWorker = Worker
+export function installToWindow() {
+    ;(window as unknown as WindowWithCorsWorker).CorsWorker = Worker
+}

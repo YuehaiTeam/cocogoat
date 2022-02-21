@@ -3,16 +3,24 @@ import type { W } from './scanner.worker.expose'
 import resources from '@/resources'
 import { requireAsBlob, speedTest } from '@/resource-main'
 import { hasSimd } from '@/utils/WasmFeatureCheck'
-import '@/utils/corsWorker'
+import { Worker, installToWindow } from '@/utils/corsWorker'
 export function createWorker() {
+    let _worker: Worker
+    /// #if SINGLEFILE
+    installToWindow()
     const Worker = require('./scanner.worker.expose.ts').default
-    const worker = new Worker()
-    const link = wrap(worker) as Remote<typeof W>
-    return [link, worker]
+    _worker = new Worker() as Worker
+    console.log('Worker created using worker-loader')
+    /// #else
+    _worker = new Worker(new URL('./scanner.worker.expose.ts', import.meta.url)) as Worker
+    console.log('Worker created using worker-plugin')
+    /// #endif
+    const worker = wrap(_worker) as Remote<typeof W>
+    return { worker, _worker }
 }
 export function initScanner() {
-    const [workerCV, w1] = createWorker()
-    const [workerOCR, w2] = createWorker()
+    const { worker: workerCV, _worker: w1 } = createWorker()
+    const { worker: workerOCR, _worker: w2 } = createWorker()
     const { scannerOnImage, recognizeAchievement: recognizeAchievement2 } = workerCV
     const { recognizeAchievement } = workerOCR
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -72,7 +72,9 @@ export default defineComponent({
         const showFaildImages = ref(false)
         const finished = ref(false)
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
-        const faildResults = computed(() => results.value.filter((item) => !item.success).map((e) => e.images?.main))
+        const faildResults = computed(() =>
+            results.value.filter((item) => !item.success).map((e) => (e.images || {}).main || ''),
+        )
         const contentFrame = ref<HTMLIFrameElement | null>(null)
 
         const route = useRoute()
@@ -162,13 +164,15 @@ localStorage.last_update = (new Date()).toISOString()
 location.href='/achievements'`
         })
         const reset = () => {
-            contentFrame.value?.contentWindow?.postMessage(
-                {
-                    app: 'cocogoat.scanner.achievement',
-                    event: 'reset',
-                },
-                '*',
-            )
+            if (contentFrame.value && contentFrame.value.contentWindow) {
+                contentFrame.value.contentWindow.postMessage(
+                    {
+                        app: 'cocogoat.scanner.achievement',
+                        event: 'reset',
+                    },
+                    '*',
+                )
+            }
         }
         return {
             finished,

@@ -15,8 +15,13 @@
         </div>
         <div class="nav">
             <router-link active-class="" exact-active-class="router-link-active" :to="{ name: 'home' }">
-                <fa-icon icon="house" />
-                <span class="txt">首页</span>
+                <fa-icon :icon="showUncompatible ? ['fab', 'internet-explorer'] : 'house'" />
+                <span class="txt">
+                    首页
+                    <span v-if="showUncompatible" :class="$style.uncompatibleWarning">
+                        <fa-icon icon="triangle-exclamation" />
+                    </span>
+                </span>
             </router-link>
             <router-link :to="{ name: 'artifact.index' }">
                 <icon-artifact class="v-icon artifact" />
@@ -44,12 +49,14 @@
 </template>
 
 <script>
+import { showUncompatible } from '@/main'
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import IconArtifact from '@/components/Icons/artifact.vue'
 import IconAchievement from '@/components/Icons/achievement.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faHouse, faGear } from '@fortawesome/free-solid-svg-icons'
-library.add(faHouse, faGear)
+import { faHouse, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons'
+library.add(faHouse, faGear, faTriangleExclamation, faInternetExplorer)
 export default {
     components: {
         IconCocogoat,
@@ -61,6 +68,7 @@ export default {
             transitionName: '',
             isMobile: false,
             pcUserShown: false,
+            showUncompatible,
         }
     },
     computed: {
@@ -116,6 +124,16 @@ export default {
 $main: #007acc;
 $front: rgba(255, 255, 255, 0.75);
 $--color-primary: #409eff;
+.uncompatibleWarning {
+    color: #fe6565;
+    position: absolute !important;
+    left: 50%;
+    bottom: 15px;
+    svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+}
 :global(.pc) .menu {
     :global {
         .logo {
@@ -171,6 +189,7 @@ $--color-primary: #409eff;
                 font-size: 14px;
                 padding-top: 4px;
                 display: block;
+                position: relative;
             }
             &.router-link-active {
                 background: #fff;
@@ -282,19 +301,22 @@ $--color-primary: #409eff;
                         width: 25px;
                         margin: 0 auto;
                         &.v-icon.artifact {
-                            width: 32px;
-                            margin-bottom: -2px;
-                            margin-top: -3px;
+                            width: 44px;
+                            height: 37px;
+                            margin-bottom: -4px;
+                            margin-top: -7px;
                         }
                         &.v-icon.achievement {
-                            width: 32px;
+                            width: 40px;
+                            height: 30px;
                             margin-bottom: -3px;
-                            margin-top: -2px;
+                            margin-top: -1px;
                         }
                         fill: #888;
                     }
                     span {
                         font-size: 12px;
+                        position: relative;
                     }
                     &.router-link-active {
                         color: $--color-primary;

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { showUncompatible } from '@/main'
 import BuildInfo from '@/components/BuildInfo.vue'
 import { CocogoatWebControl } from '@/modules/webcontrol'
 const webControl = new CocogoatWebControl()
@@ -26,6 +27,10 @@ import FastQ from 'fastq'
 import type { IAScannerData, IAScannerLine, IAScannerFaild } from './scanner/scanner'
 import type { Rect } from '@/utils/opencv'
 import { useRoute } from 'vue-router'
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
+library.add(faTriangleExclamation, faInternetExplorer)
 function send<T>(event: string, data: T) {
     parent &&
         window !== parent &&
@@ -56,7 +61,7 @@ export default defineComponent({
         const scanned = ref(0)
         const dup = ref(0)
         const progress = ref(0)
-        const progressText = ref(process.env.VUE_APP_SINGLEFILE ? '解压资源文件' : '获取资源地址')
+        const progressText = ref(process.env.VUE_APP_SINGLEFILE === 'true' ? '解压资源文件' : '获取资源地址')
         onProgress((pvalue) => {
             if (progress.value < 0) {
                 return
@@ -296,6 +301,7 @@ export default defineComponent({
             })
         })
         return {
+            showUncompatible,
             S,
             state,
             video,
@@ -316,7 +322,16 @@ export default defineComponent({
 })
 </script>
 <template>
-    <main>
+    <div v-if="showUncompatible" :class="$style.showUncompatible">
+        <span class="l">
+            <fa-icon :icon="['fab', 'internet-explorer']" />
+            <span class="x">
+                <fa-icon icon="triangle-exclamation" />
+            </span>
+        </span>
+        <div class="text">当前浏览器不支持此功能<br />请升级或更换浏览器</div>
+    </div>
+    <main v-else>
         <section v-if="state === S.Init">
             <div :class="$style.loader">
                 <div class="loader-animation">
@@ -409,6 +424,34 @@ export default defineComponent({
     </main>
 </template>
 <style lang="scss" module>
+.show-uncompatible {
+    width: 200px;
+    padding-top: 30vh;
+    margin: 0 auto;
+    text-align: center;
+    user-select: none;
+    :global {
+        .l {
+            display: inline-block;
+            font-size: 120px;
+            color: #777;
+            position: relative;
+            margin-left: -10px;
+            .x {
+                font-size: 50px;
+                position: absolute;
+                color: #444;
+                bottom: 7px;
+                right: -21px;
+            }
+        }
+        .text {
+            color: #888;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+    }
+}
 .loader {
     width: 200px;
     padding-top: 40vh;

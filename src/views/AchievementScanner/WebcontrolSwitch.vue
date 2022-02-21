@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="switcher">
+        <div :class="$style.switcher">
             <a v-if="loading" href="javascript:">检测中</a>
             <a v-else-if="!modelValue" href="javascript:" @click="enable">{{
                 gameNotFound
@@ -12,7 +12,7 @@
             <a v-else href="javascript:" @click="$emit('update:modelValue', 0)">关闭自动滚动</a>
         </div>
         <teleport to="body">
-            <div v-if="showModel" class="model-backdrop">
+            <div v-if="showModel" :class="$style.modelBackdrop">
                 <div class="model">
                     <div class="title">
                         {{ needUpdate ? '您的客户端版本过低' : '自动滚动需要客户端' }}
@@ -108,54 +108,13 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
 .switcher a {
     color: #0067d1;
     text-decoration: none;
     display: block;
     text-align: center;
     margin-top: 20px;
-}
-.model {
-    width: 380px;
-    height: 250px;
-    max-width: 100%;
-    background: #fff;
-    border-radius: 10px;
-    margin: 0 auto;
-    margin-top: calc(30vh - 100px);
-    text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
-
-    .title {
-        font-size: 23px;
-        margin-bottom: 10px;
-    }
-    button {
-        width: 230px;
-        height: 45px;
-        background: #333;
-        border-radius: 45px;
-        border: 0;
-        color: #fff;
-        display: block;
-        margin: 20px auto;
-        margin-bottom: 15px;
-        font-size: 15px;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    a {
-        color: #555;
-        text-decoration: none;
-        &.dlink {
-            margin-top: 8px;
-            display: block;
-            color: #0068b7;
-        }
-    }
 }
 
 .model-backdrop {
@@ -165,5 +124,48 @@ export default defineComponent({
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
+    :global {
+        .model {
+            width: 380px;
+            height: 250px;
+            max-width: 100%;
+            background: #fff;
+            border-radius: 10px;
+            margin: 0 auto;
+            margin-top: calc(30vh - 100px);
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+
+            .title {
+                font-size: 23px;
+                margin-bottom: 10px;
+            }
+            button {
+                width: 230px;
+                height: 45px;
+                background: #333;
+                border-radius: 45px;
+                border: 0;
+                color: #fff;
+                display: block;
+                margin: 20px auto;
+                margin-bottom: 15px;
+                font-size: 15px;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            a {
+                color: #555;
+                text-decoration: none;
+                &.dlink {
+                    margin-top: 8px;
+                    display: block;
+                    color: #0068b7;
+                }
+            }
+        }
+    }
 }
 </style>

@@ -1,19 +1,19 @@
 <template>
     <div>
-        <div class="float-content">
+        <div :class="$style.floatContent">
             <slot />
         </div>
         <canvas
             ref="canvas"
             :width="width * 2"
             :height="height * 2"
-            class="float-canvas"
+            :class="$style.floatCanvas"
             :style="{ width: `${width}px`, height: `${height}px` }"
         ></canvas>
         <video
             ref="video"
             autoplay
-            class="float-video"
+            :class="$style.floatVideo"
             :style="{ width: `${width}px`, height: `${height}px` }"
             @leavepictureinpicture="$emit('exit')"
         ></video>
@@ -81,7 +81,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
 .float-content,
 .float-canvas,
 .float-video {

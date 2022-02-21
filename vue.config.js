@@ -23,6 +23,15 @@ module.exports = defineConfig({
     // worker-loader与thread-loader冲突
     css: {
         extract: !singleFile,
+        loaderOptions: {
+            css: {
+                modules: {
+                    auto: false,
+                    localIdentName: '[local]-[hash:6]',
+                    exportLocalsConvention: 'camelCaseOnly',
+                },
+            },
+        },
     },
     configureWebpack: {
         plugins: [
@@ -30,6 +39,7 @@ module.exports = defineConfig({
                 resolvers: [ElementPlusResolver()],
             }),
             Components({
+                dirs: [],
                 resolvers: [ElementPlusResolver()],
             }),
         ],

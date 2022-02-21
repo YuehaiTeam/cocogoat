@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "clean": "rimraf node_modules/.cache",
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "build:singlefile": "vue-cli-service build --singlefile",

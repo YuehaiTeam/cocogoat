@@ -34,7 +34,7 @@
                 </el-button>
             </div>
         </template>
-        <div v-if="showScanner" class="scanner-area">
+        <div v-if="showScanner" :class="$style.scannerArea">
             <iframe class="scanner-frame" :src="frameSrc"></iframe>
             <div class="scanner-back">
                 <div class="scanner-box">
@@ -69,47 +69,63 @@ export default defineComponent({
     },
 })
 </script>
-<style lang="scss" scoped>
+<style lang="scss" module>
 .scanner-area {
     position: absolute;
-    top: 0;
+    top: 50px;
     left: 0;
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.2);
     overflow: hidden;
-    .scanner-frame {
-        width: 100%;
-        height: 100%;
-        border: 0;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 2;
-    }
-    .scanner-back {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: 1;
-        .scanner-box {
-            width: 600px;
-            height: 650px;
-            background: #fff;
-            border-radius: 5px;
-            margin: 0 auto;
-            margin-top: calc(10vh - 60px);
-            .scanner-title {
-                height: 40px;
-                line-height: 40px;
-                font-size: 20px;
-                padding-left: 20px;
-                padding-top: 10px;
+    :global {
+        .scanner-frame {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+        }
+        .scanner-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            .scanner-box {
+                max-width: 100%;
+                width: 600px;
+                height: 650px;
+                background: #fff;
+                border-radius: 5px;
+                margin: 0 auto;
+                margin-top: calc(10vh - 60px);
+                .scanner-title {
+                    height: 40px;
+                    line-height: 40px;
+                    font-size: 20px;
+                    padding-left: 20px;
+                    padding-top: 10px;
+                }
             }
+        }
+    }
+}
+:global(.pc) .scanner-area {
+    left: 80px;
+}
+:global(.m) .scanner-area {
+    bottom: 50px;
+    :global {
+        .scanner-box {
+            margin-top: 0;
+            height: 100%;
+            border-radius: 0;
         }
     }
 }

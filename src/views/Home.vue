@@ -1,17 +1,16 @@
 <template>
-    <Layout class="home">
+    <Layout :class="$style.home">
         <template #title><span style="font-family: genshin">椰羊 · 首页</span></template>
-        <div class="root">
-            <h1>
+        <div :class="$style.root">
+            <h1 :class="$style.title">
                 椰羊cocogoat
                 <small>纯网页圣遗物管理·成就扫描·更多功能开发中</small>
             </h1>
-            <div class="block-nav card-list"></div>
-            <div class="more-tools">
-                <div class="card">
+            <div>
+                <div :class="$style.card">
                     <div class="card-title">额外工具</div>
                     <div class="card-body">
-                        <router-link class="extra-one" to="/achievement/scan-and-export?to=paimon-moe">
+                        <router-link :class="$style.extraOne" to="/achievement/scan-and-export?to=paimon-moe">
                             <div class="circle">
                                 <img src="@/assets/images/paimon.png" />
                                 <div class="svg-w">
@@ -21,7 +20,7 @@
                             <div class="text">扫描成就并导出<br />到Paimon.moe</div>
                         </router-link>
                         <router-link
-                            class="extra-one"
+                            :class="$style.extraOne"
                             style="color: #7424c5"
                             to="/achievement/scan-and-export?to=seelie"
                         >
@@ -36,30 +35,30 @@
                     </div>
                 </div>
             </div>
-            <div class="about card-list">
-                <a class="card" href="http://github.com/yuehaiTeam/cocogoat" target="_blank">
+            <div :class="$style.cardList">
+                <a :class="$style.card" href="http://github.com/yuehaiTeam/cocogoat" target="_blank">
                     <fa-icon :icon="['fab', 'github-alt']" />
                     <h4>开源地址</h4>
                     <div>本工具已在Github以BSD-3协议完全开源，可任意修改使用</div>
                 </a>
-                <a class="card" href="https://github.com/YuehaiTeam/cocogoat/tree/main/docs" target="_blank">
+                <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat/tree/main/docs" target="_blank">
                     <fa-icon icon="infinity" />
                     <h4>接入文档</h4>
                     <div>本工具中各类扫描器组件均提供接口，可以嵌入到任何项目中</div>
                 </a>
-                <a class="card" href="http://77.cocogoat.work/web/" target="_blank">
+                <a :class="$style.card" href="http://77.cocogoat.work/web/" target="_blank">
                     <fa-icon icon="folder-tree" />
                     <h4>本地使用</h4>
                     <div>如需离线使用，请点这里下载本地专用版。</div>
                 </a>
-                <a class="card" href="https://jq.qq.com/?_wv=1027&k=5w1TPQL4" target="_blank">
+                <a :class="$style.card" href="https://jq.qq.com/?_wv=1027&k=5w1TPQL4" target="_blank">
                     <fa-icon :icon="['fab', 'qq']" />
                     <h4>反馈聊天</h4>
                     <div>无论功能反馈还是聊天吹水，都可以加入反馈群( 933468075 )</div>
                 </a>
             </div>
+            <div :class="$style.copyright">&copy;2022 YuehaiTeam <build-info /></div>
         </div>
-        <div class="copyright">&copy;2022 YuehaiTeam <build-info /></div>
     </Layout>
 </template>
 
@@ -81,17 +80,27 @@ export default defineComponent({
     },
 })
 </script>
-<style lang="scss">
+<style lang="scss" module>
 .home {
     background: #eee;
 }
 .root {
     padding: 20px;
 }
-.m .root {
-    padding: 20px 5px;
+:global(.m) {
+    .root {
+        padding: 20px 5px;
+    }
+    .title {
+        padding: 0;
+        text-align: center;
+        small {
+            display: block;
+            padding: 10px 0;
+        }
+    }
 }
-h1 {
+.title {
     margin: 0;
     color: #0079cc;
     font-family: genshin;
@@ -104,13 +113,6 @@ h1 {
         color: #555;
     }
 }
-.m h1 {
-    padding: 0;
-    text-align: center;
-    small {
-        display: block;
-    }
-}
 .card-list {
     display: flex;
 
@@ -118,9 +120,7 @@ h1 {
         flex-wrap: wrap;
     }
 }
-a {
-    text-decoration: none !important;
-}
+
 .card {
     flex: 1;
     margin: 10px;
@@ -167,17 +167,20 @@ a {
             width: 30px;
         }
     }
-    .card-title {
-        margin-top: -5px;
-        font-size: 17px;
-        font-weight: normal;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 10px;
-        margin-bottom: 10px;
+    :global {
+        .card-title {
+            margin-top: -5px;
+            font-size: 17px;
+            font-weight: normal;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
     }
 }
 a.card {
     cursor: pointer;
+    text-decoration: none !important;
     &:hover {
         transform: translateY(-5px);
     }
@@ -193,40 +196,43 @@ a.card {
     transition: all 0.2s;
     color: #af7400;
     margin: 10px;
+    text-decoration: none !important;
     &:hover {
         background: #eee;
     }
-    .text {
-        font-size: 13px;
-        line-height: 13px;
-        padding-top: 10px;
-    }
-    .circle {
-        position: relative;
-        width: 88px;
-        height: 88px;
-        img {
-            width: 100%;
-            height: 100%;
-            border-radius: 100%;
-            border: 2px solid #e3c996;
+    :global {
+        .text {
+            font-size: 13px;
+            line-height: 13px;
+            padding-top: 10px;
         }
+        .circle {
+            position: relative;
+            width: 88px;
+            height: 88px;
+            img {
+                width: 100%;
+                height: 100%;
+                border-radius: 100%;
+                border: 2px solid #e3c996;
+            }
 
-        .svg-w {
-            position: absolute;
-            bottom: -5px;
-            right: -5px;
-            width: 40px;
-            height: 40px;
-            background: #e3c996;
-            border-radius: 100%;
-            svg {
-                width: 35px;
-                height: 32px;
-                display: block;
-                margin: 0 auto;
-                padding-top: 4px;
-                fill: #af7400;
+            .svg-w {
+                position: absolute;
+                bottom: -5px;
+                right: -5px;
+                width: 40px;
+                height: 40px;
+                background: #e3c996;
+                border-radius: 100%;
+                svg {
+                    width: 35px;
+                    height: 32px;
+                    display: block;
+                    margin: 0 auto;
+                    padding-top: 4px;
+                    fill: #af7400;
+                }
             }
         }
     }

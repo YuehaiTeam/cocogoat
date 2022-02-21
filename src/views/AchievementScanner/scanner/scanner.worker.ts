@@ -1,15 +1,18 @@
 import { Remote, wrap } from 'comlink'
 import type { W } from './scanner.worker.expose'
-import resources, { requireAsBlob, speedTest } from '@/resources'
-import '@/utils/corsWorker'
+import resources from '@/resources'
+import { requireAsBlob, speedTest } from '@/resource-main'
 import { hasSimd } from '@/utils/WasmFeatureCheck'
+import '@/utils/corsWorker'
 export function createWorker() {
     const Worker = require('./scanner.worker.expose.ts').default
-    return wrap(new Worker()) as Remote<typeof W>
+    const worker = new Worker()
+    const link = wrap(worker) as Remote<typeof W>
+    return [link, worker]
 }
 export function initScanner() {
-    const workerCV = createWorker()
-    const workerOCR = createWorker()
+    const [workerCV, w1] = createWorker()
+    const [workerOCR, w2] = createWorker()
     const { scannerOnImage, recognizeAchievement: recognizeAchievement2 } = workerCV
     const { recognizeAchievement } = workerOCR
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -19,6 +22,12 @@ export function initScanner() {
     const onProgress = (handler: (progress: number) => unknown) => {
         progressHandler = handler
     }
+    const workerErrorHandler = (e: ErrorEvent) => {
+        progressHandler(-99)
+        throw e
+    }
+    w1.addEventListener('error', workerErrorHandler)
+    w2.addEventListener('error', workerErrorHandler)
     const initPromise = (async () => {
         try {
             const [race, all] = speedTest()
@@ -33,6 +42,8 @@ export function initScanner() {
             progressHandler(-1)
             throw e
         }
+        w1.removeEventListener('error', workerErrorHandler)
+        w2.removeEventListener('error', workerErrorHandler)
         await workerCV.init()
         await workerOCR.init()
     })()

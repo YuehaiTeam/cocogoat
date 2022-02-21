@@ -10,7 +10,9 @@ export default {
         const gitmsg = (process.env.VUE_APP_GIT_MSG || '') as string
         return {
             buildTime: process.env.VUE_APP_BUILD,
-            buildDesc: `#${gitsha} - ${build.format('YYYY-MM-DD HH:mm:ss')}<br>${gitmsg.replace(/\n/g, '<br>')}`,
+            buildDesc: `#${gitsha} - ${build.format('YYYY-MM-DD HH:mm:ss')}${
+                gitmsg ? `<br/ >` + gitmsg.replace(/\n/g, '<br>') : ''
+            }`,
         }
     },
 }

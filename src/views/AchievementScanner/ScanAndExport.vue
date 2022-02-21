@@ -25,8 +25,8 @@
                 </el-button>
             </el-tooltip>
         </template>
-        <iframe ref="contentFrame" :src="frameUrl" frameborder="0"></iframe>
-        <div v-if="finished" class="model-backdrop">
+        <iframe ref="contentFrame" :class="$style.fr" :src="frameUrl" frameborder="0"></iframe>
+        <div v-if="finished" :class="$style.modelBackdrop">
             <div class="model">
                 <div class="title">扫描完成</div>
                 <div v-if="showFaildImages" class="faildResults">
@@ -84,7 +84,7 @@ export default defineComponent({
             window.addEventListener('message', (ev: MessageEvent) => {
                 const { app, event, data } = ev.data
                 if (app !== 'cocogoat.scanner.achievement') return
-                console.log(ev)
+                console.log(event, data)
                 if (event === 'ready') {
                     finished.value = false
                     return
@@ -186,67 +186,11 @@ location.href='/achievements'`
 })
 </script>
 
-<style lang="scss" scoped>
-.titlebar {
-    height: 50px;
-    background: #409eff;
-    color: #fff;
-    line-height: 48px;
-    box-sizing: border-box;
-    font-size: 18px;
-    padding-left: 20px;
-}
-iframe {
+<style lang="scss" module>
+.fr {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-}
-.model {
-    width: 500px;
-    height: 380px;
-    max-width: 100%;
-    background: #fff;
-    border-radius: 10px;
-    margin: 0 auto;
-    margin-top: calc(30vh - 100px);
-    text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
-
-    .title {
-        font-size: 23px;
-        margin-bottom: 20px;
-    }
-
-    .operations {
-        color: #777;
-        font-size: 13px;
-        margin-top: 15px;
-        cursor: pointer;
-        user-select: none;
-    }
-
-    textarea,
-    .faildResults {
-        width: 100%;
-        height: 260px;
-        border-radius: 10px;
-        border: 1px solid #ddd;
-        font-family: Consolas, monospace;
-        padding: 10px;
-        box-sizing: border-box;
-        display: block;
-    }
-    .faildResults {
-        overflow-y: scroll;
-        img {
-            max-width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            display: block;
-            margin-bottom: 5px;
-        }
-    }
 }
 
 .model-backdrop {
@@ -256,5 +200,54 @@ iframe {
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
+    :global {
+        .model {
+            width: 500px;
+            height: 380px;
+            max-width: 100%;
+            background: #fff;
+            border-radius: 10px;
+            margin: 0 auto;
+            margin-top: calc(30vh - 100px);
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+
+            .title {
+                font-size: 23px;
+                margin-bottom: 20px;
+            }
+
+            .operations {
+                color: #777;
+                font-size: 13px;
+                margin-top: 15px;
+                cursor: pointer;
+                user-select: none;
+            }
+
+            textarea,
+            .faildResults {
+                width: 100%;
+                height: 260px;
+                border-radius: 10px;
+                border: 1px solid #ddd;
+                font-family: Consolas, monospace;
+                padding: 10px;
+                box-sizing: border-box;
+                display: block;
+            }
+            .faildResults {
+                overflow-y: scroll;
+                img {
+                    max-width: 100%;
+                    border: 1px solid #ddd;
+                    border-radius: 5px;
+                    display: block;
+                    margin-bottom: 5px;
+                }
+            }
+        }
+    }
 }
 </style>

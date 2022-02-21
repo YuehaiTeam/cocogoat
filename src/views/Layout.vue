@@ -1,6 +1,6 @@
 <template>
-    <header :class="isMobile ? 'header-mobile' : 'header-desktop'">
-        <div v-if="isMobile" class="m-logo">
+    <header :class="$style.header">
+        <div class="logo">
             <icon-cocogoat class="v-icon cocogoat" />
         </div>
         <div class="actions">
@@ -9,7 +9,7 @@
             <button @click="hendleAction($event, 'exit')"><i class="el-icon-close"></i></button>
         </div>
     </header>
-    <aside :class="isMobile ? 'menu-mobile' : 'menu-desktop'">
+    <aside :class="$style.menu">
         <div class="logo">
             <icon-cocogoat class="v-icon cocogoat" />
         </div>
@@ -113,165 +113,102 @@ export default {
     methods: {},
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss" module>
 $main: #007acc;
 $front: rgba(255, 255, 255, 0.75);
 $--color-primary: #409eff;
-.m-logo {
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
-    padding-top: 6px;
-    background: $--color-primary;
-    svg {
-        width: 40px;
-        height: 40px;
-        display: block;
-        margin: 0 auto;
-        fill: #fff;
-    }
-}
-.v-icon.artifact {
-    width: 45px;
-    margin-bottom: -7px;
-    margin-top: -10px;
-}
-.v-icon.achievement {
-    width: 38px;
-    margin-bottom: -8px;
-    margin-top: -6px;
-}
-a .svg-inline--fa {
-    height: 22px;
-    margin-bottom: -2px;
-}
-.menu-desktop {
-    .logo {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 50px;
-        background: #409eff;
-        box-shadow: 2px 0 12px 0 rgb(0 0 0 / 10%);
-        .cocogoat {
-            width: 50px;
-            margin: 0 auto;
-            display: block;
-            fill: #fff;
-        }
-    }
-    user-select: none;
-    box-shadow: 2px 0 12px 0 rgb(0 0 0 / 10%);
-    position: fixed;
-    z-index: 999;
-    width: 80px;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    background: $main;
-    color: $front;
-    font-family: genshin;
-    svg {
-        transition: fill 0.2s;
-        fill: $front;
-    }
-    padding: 13px 10px;
-    padding-top: 65px;
-    box-sizing: border-box;
-    .nav a {
-        display: block;
-        height: 60px;
-        overflow: hidden;
-        border-radius: 3px;
-        box-sizing: border-box;
-        text-align: center;
-        color: $front;
-        text-decoration: none;
-        margin-bottom: 10px;
-        padding: 10px 0;
-        transition: all 0.2s;
-        i {
-            display: block;
-            font-size: 25px;
-        }
-        span {
-            font-size: 14px;
-            padding-top: 4px;
-            display: block;
-        }
-        &.router-link-active {
-            background: #fff;
-            color: $main;
-            svg {
-                fill: $main;
+:global(.pc) .menu {
+    :global {
+        .logo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #409eff;
+            box-shadow: 2px 0 12px 0 rgb(0 0 0 / 10%);
+            .cocogoat {
+                width: 50px;
+                margin: 0 auto;
+                display: block;
+                fill: #fff;
             }
         }
-        &.pc-user {
-            cursor: pointer;
-            position: absolute;
-            bottom: 5px;
-            left: 10px;
-            right: 10px;
-            outline: 0;
+        user-select: none;
+        box-shadow: 2px 0 12px 0 rgb(0 0 0 / 10%);
+        position: fixed;
+        z-index: 999;
+        width: 80px;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        background: $main;
+        color: $front;
+        font-family: genshin;
+        svg {
+            transition: fill 0.2s;
+            fill: $front;
+        }
+        padding: 13px 10px;
+        padding-top: 65px;
+        box-sizing: border-box;
+        .nav a {
+            display: block;
+            height: 60px;
+            overflow: hidden;
+            border-radius: 3px;
+            box-sizing: border-box;
+            text-align: center;
+            color: $front;
+            text-decoration: none;
+            margin-bottom: 10px;
+            padding: 10px 0;
+            transition: all 0.2s;
+            i {
+                display: block;
+                font-size: 25px;
+            }
+            span {
+                font-size: 14px;
+                padding-top: 4px;
+                display: block;
+            }
+            &.router-link-active {
+                background: #fff;
+                color: $main;
+                svg {
+                    fill: $main;
+                }
+            }
+            &.pc-user {
+                cursor: pointer;
+                position: absolute;
+                bottom: 5px;
+                left: 10px;
+                right: 10px;
+                outline: 0;
+            }
+            .svg-inline--fa {
+                height: 22px;
+                margin-bottom: -2px;
+            }
+        }
+        .v-icon {
+            &.artifact {
+                width: 45px;
+                margin-bottom: -7px;
+                margin-top: -10px;
+            }
+            &.achievement {
+                width: 38px;
+                margin-bottom: -8px;
+                margin-top: -6px;
+            }
         }
     }
 }
 
-.menu-mobile {
-    .logo {
-        display: none;
-    }
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 55px;
-    z-index: 999;
-    background: #fff;
-    font-family: genshin;
-    .nav {
-        display: flex;
-        height: 100%;
-        align-items: center;
-        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-        a {
-            transition: all 0.2s;
-            flex: 1;
-            text-align: center;
-            text-decoration: none;
-            color: #888;
-            -webkit-tap-highlight-color: transparent;
-            svg {
-                display: block;
-                font-size: 25px;
-                width: 25px;
-                margin: 0 auto;
-                &.v-icon.artifact {
-                    width: 32px;
-                    margin-bottom: -2px;
-                    margin-top: -3px;
-                }
-                &.v-icon.achievement {
-                    width: 32px;
-                    margin-bottom: -3px;
-                    margin-top: -2px;
-                }
-                fill: #888;
-            }
-            span {
-                font-size: 12px;
-            }
-            &.router-link-active {
-                color: $--color-primary;
-                & > svg.v-icon {
-                    fill: $--color-primary;
-                }
-            }
-        }
-    }
-}
-header {
+.header {
     user-select: none;
     -webkit-app-region: drag;
     overflow: hidden;
@@ -286,61 +223,136 @@ header {
     border-bottom: 0;
     box-sizing: border-box;
     box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
-    &.header-mobile {
-        padding-left: 0;
-    }
-    .actions {
-        -webkit-app-region: no-drag;
-        position: absolute;
-        top: 10px;
-        right: 7px;
-        display: inline-block;
-        button {
-            width: 30px;
-            height: 30px;
-            -webkit-appearance: none;
-            background: transparent;
-            border: 1px solid transparent;
-            cursor: pointer;
-            box-sizing: border-box;
-            transition: all 0.1s;
-            margin: 0 3px;
-            outline: 0;
-            &:hover {
-                border-color: #55baff;
-                border-radius: 2px;
-                color: #55baff;
-                background: #f7fcff;
+    :global {
+        .actions {
+            -webkit-app-region: no-drag;
+            position: absolute;
+            top: 10px;
+            right: 7px;
+            display: inline-block;
+            button {
+                width: 30px;
+                height: 30px;
+                -webkit-appearance: none;
+                background: transparent;
+                border: 1px solid transparent;
+                cursor: pointer;
+                box-sizing: border-box;
+                transition: all 0.1s;
+                margin: 0 3px;
+                outline: 0;
+                &:hover {
+                    border-color: #55baff;
+                    border-radius: 2px;
+                    color: #55baff;
+                    background: #f7fcff;
+                }
             }
         }
     }
 }
-</style>
-<style lang="scss">
-.slide-right-enter-active,
-.slide-right-leave-active,
-.slide-left-enter-active,
-.slide-left-leave-active {
-    will-change: transform;
-    transition: all 0.1s linear;
-    position: absolute;
-    width: 100%;
-    left: 0;
-    z-index: 991;
+:global(.m) {
+    .menu {
+        :global {
+            .logo {
+                display: none;
+            }
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 55px;
+            z-index: 999;
+            background: #fff;
+            font-family: genshin;
+            .nav {
+                display: flex;
+                height: 100%;
+                align-items: center;
+                box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+                a {
+                    transition: all 0.2s;
+                    flex: 1;
+                    text-align: center;
+                    text-decoration: none;
+                    color: #888;
+                    -webkit-tap-highlight-color: transparent;
+                    svg {
+                        display: block;
+                        font-size: 25px;
+                        width: 25px;
+                        margin: 0 auto;
+                        &.v-icon.artifact {
+                            width: 32px;
+                            margin-bottom: -2px;
+                            margin-top: -3px;
+                        }
+                        &.v-icon.achievement {
+                            width: 32px;
+                            margin-bottom: -3px;
+                            margin-top: -2px;
+                        }
+                        fill: #888;
+                    }
+                    span {
+                        font-size: 12px;
+                    }
+                    &.router-link-active {
+                        color: $--color-primary;
+                        & > svg.v-icon {
+                            fill: $--color-primary;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    .header {
+        padding-left: 0;
+        :global {
+            .logo {
+                width: 50px;
+                height: 50px;
+                line-height: 50px;
+                padding-top: 6px;
+                background: $--color-primary;
+                svg {
+                    width: 40px;
+                    height: 40px;
+                    display: block;
+                    margin: 0 auto;
+                    fill: #fff;
+                }
+            }
+        }
+    }
 }
-.slide-right-enter-from {
-    transform: translateX(-100%);
-}
-.slide-right-leave-active {
-    transform: translateX(100%);
-}
-.slide-left-enter-from {
-    transform: translateX(100%);
-}
-.slide-left-leave-active {
-    transform: translateX(-100%);
-}
-.m .hidden-mobile {
-    display: none;
+:global {
+    .slide-right-enter-active,
+    .slide-right-leave-active,
+    .slide-left-enter-active,
+    .slide-left-leave-active {
+        will-change: transform;
+        transition: all 0.1s linear;
+        position: absolute;
+        width: 100%;
+        left: 0;
+        z-index: 991;
+    }
+    .slide-right-enter-from {
+        transform: translateX(-100%);
+    }
+    .slide-right-leave-active {
+        transform: translateX(100%);
+    }
+    .slide-left-enter-from {
+        transform: translateX(100%);
+    }
+    .slide-left-leave-active {
+        transform: translateX(-100%);
+    }
+    .m .hidden-mobile {
+        display: none;
+    }
 }
 </style>

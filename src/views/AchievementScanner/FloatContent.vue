@@ -1,10 +1,10 @@
 <template>
     <div>
         <div v-if="state === 0" class="wait-page">
-            <div class="icon"></div>
-            <div class="text">请切换到游戏窗口<br />打开"天地万象"页面</div>
+            <div :class="$style.icon"></div>
+            <div :class="$style.text">请切换到游戏窗口<br />打开"天地万象"页面</div>
         </div>
-        <div v-if="state === 1" class="down-page">
+        <div v-if="state === 1" :class="$style.downPage">
             <div class="icon"></div>
             <div class="text">
                 <div class="count">
@@ -78,7 +78,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" module>
 .icon {
     height: 100%;
     width: 70px;
@@ -111,39 +111,41 @@ export default defineComponent({
     padding-top: 32px;
 }
 .down-page {
-    .icon {
-        background: #4096fe;
-        &.capture {
-            background: #003f8d;
+    :global {
+        .icon {
+            background: #4096fe;
+            &.capture {
+                background: #003f8d;
+            }
         }
-    }
-    .text {
-        color: #4096fe;
-        padding: 10px 0;
-    }
-    .down-page .text {
-        padding-top: 12px;
-    }
-
-    .count {
-        & > div {
-            display: inline-block;
-            width: 40px;
+        .text {
+            color: #4096fe;
+            padding: 10px 0;
         }
-        margin-bottom: 4px;
-        .success {
-            color: #00b57a;
+        .down-page .text {
+            padding-top: 12px;
         }
 
-        .faild {
-            color: #cf0000;
-        }
-        .dup {
-            color: #999;
-        }
+        .count {
+            & > div {
+                display: inline-block;
+                width: 40px;
+            }
+            margin-bottom: 4px;
+            .success {
+                color: #00b57a;
+            }
 
-        .number {
-            font-size: 20px;
+            .faild {
+                color: #cf0000;
+            }
+            .dup {
+                color: #999;
+            }
+
+            .number {
+                font-size: 20px;
+            }
         }
     }
 }

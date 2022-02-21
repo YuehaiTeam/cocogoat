@@ -51,8 +51,7 @@ export function initScanner() {
         }
         w1.removeEventListener('error', workerErrorHandler)
         w2.removeEventListener('error', workerErrorHandler)
-        await workerCV.init()
-        await workerOCR.init()
+        await Promise.all([workerCV.init(), workerOCR.init()])
     })()
     return {
         recognizeAchievement,

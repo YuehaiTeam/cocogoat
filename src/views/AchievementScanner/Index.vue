@@ -171,7 +171,7 @@ export default defineComponent({
                     if (title) {
                         const { x, y } = await webControl.toAbsolute(
                             webControlEnabled.value,
-                            rect.x + title.rect.x / 2,
+                            rect.x + (title.rect.x * 2) / 3 + 10,
                             rect.y + title.rect.y * 1.5,
                         )
                         webControl.SetCursorPos(x, y)
@@ -404,7 +404,11 @@ export default defineComponent({
                     <div v-if="state === S.Finish" class="restart" @click="reset">重新开始</div>
                 </div>
             </div>
-            <button v-if="state === S.Wait" @click="state = S.Capture">
+            <button
+                v-if="state === S.Wait"
+                style="display: block; margin: 0 auto; margin-top: 10vh"
+                @click="state = S.Capture"
+            >
                 我已切换到成就页面（自动识别页面未完成）
                 <template v-if="webControlEnabled">
                     <br />

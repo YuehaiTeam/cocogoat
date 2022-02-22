@@ -17,6 +17,7 @@ export type IStore = ReturnType<typeof createEmptyStore>
 export function createEmptyOptions() {
     return {
         lang: navigator.language.toLowerCase(),
+        achievements_recent_export: 'paimon',
     }
 }
 export type IOptions = ReturnType<typeof createEmptyOptions>

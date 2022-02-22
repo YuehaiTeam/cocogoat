@@ -28,7 +28,7 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/Layout.vue'),
         children: [
             {
-                path: '',
+                path: ':cat?',
                 name: 'achievement.index',
                 component: () => import('@/views/Achievement/Index.vue'),
             },

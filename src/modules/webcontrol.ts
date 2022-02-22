@@ -95,7 +95,7 @@ export class CocogoatWebControl {
         } as RequestConfig)
     }
     async sendMessage(hWnd: number, Msg: number, wParam: number, lParam: number) {
-        return this.client.post('/api/sendMessage', {}, {
+        return this.client.post('/api/SendMessage', {}, {
             params: {
                 hWnd,
                 Msg,

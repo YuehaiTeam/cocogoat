@@ -1,12 +1,14 @@
-[English](blob/main/README_en.md)
+[English](README_en.md)
 <div align="center">
 
 # 椰羊·卷土重来
-网页端原神工具箱。也是半仙之兽。  
-https://cocogoat.work  
+[![https://cocogoat.work](https://img.shields.io/website?down_message=APP%20DOWN&label=APP&style=for-the-badge&up_color=%2300adff&up_message=https%3A%2F%2Fcocogoat.work&url=https%3A%2F%2Fcocogoat.work)](https://cocogoat.work)
 
-[![Build Production](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml/badge.svg)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
-![MIT License](https://shields.io/badge/license-MIT-green)
+网页端原神工具箱。也是半仙之兽。
+
+[![Build Production](https://img.shields.io/github/workflow/status/YuehaiTeam/cocogoat/Build%20Production?style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
+[![Build Singlefile](https://img.shields.io/github/workflow/status/YuehaiTeam/cocogoat/Build%20SingleFile?label=SINGLEFILE&style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
+![BSD-3 License](https://img.shields.io/github/license/YuehaiTeam/cocogoat?style=for-the-badge)
 
 </div>
 
@@ -24,7 +26,7 @@ https://cocogoat.work
 
 **常见问题：**
  - Q: 有没有离线版？  
-   A: 有，但不是现在。
+   A: 有，可以到Actions里下载或加群获取。
  - Q: 为什么有些功能需要客户端？  
    A: 由于浏览器限制，这些需要模拟操作键盘鼠标的功能没办法直接实现。
  - Q: 为什么不只做客户端？  

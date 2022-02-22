@@ -29,7 +29,7 @@
                 <icon-achievement class="v-icon achievement" />
                 <span class="txt">成就</span>
             </router-link>
-            <router-link :class="!isMobile ? 'pc-user' : ''" :to="{ name: 'options' }">
+            <router-link :class="!isMobile ? 'pc-user' : ''" :to="{ name: 'options.basic' }">
                 <fa-icon icon="gear" />
                 <span class="txt">设置</span>
             </router-link>

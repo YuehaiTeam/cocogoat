@@ -7,6 +7,12 @@ import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'vue-router'
 library.add(faAngleDown)
 export default defineComponent({
+    props: {
+        hideMore: {
+            type: Boolean,
+            default: false,
+        },
+    },
     setup() {
         function getAvatar(avatar: string) {
             try {
@@ -74,8 +80,8 @@ export default defineComponent({
                             </span>
                         </div>
                     </el-dropdown-item>
-                    <el-dropdown-item divided :command="['more']">账号管理</el-dropdown-item>
-                    <el-dropdown-item divided :command="['cloud']">
+                    <el-dropdown-item v-if="!hideMore" divided :command="['more']">账号管理</el-dropdown-item>
+                    <el-dropdown-item v-if="!hideMore" divided :command="['cloud']">
                         <div :class="$style.userInfo">
                             <span class="user-text" style="padding-left: 0">
                                 <span class="user-name">云同步</span>
@@ -107,7 +113,7 @@ export default defineComponent({
     padding-right: 0;
     &:hover,
     &:global(.open) {
-        background: #eee;
+        background-color: var(--el-dropdown-menuItem-hover-fill);
     }
     :global {
         .down {
@@ -135,12 +141,11 @@ export default defineComponent({
     }
 }
 .user-info {
-    transition: all 0.2s;
+    transition: all 0.1s;
     position: relative;
     img {
         height: 36px;
         width: 36px;
-        border-radius: 100%;
         float: left;
     }
     :global {

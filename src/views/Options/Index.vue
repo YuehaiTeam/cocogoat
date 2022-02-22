@@ -1,7 +1,11 @@
 <template>
-    <Layout>
-        <template #title> <span style="font-family: genshin">椰羊 · </span> 设置 </template>
-        <el-empty description="施工中" />
+    <Layout :class="$style.options">
+        <template #title>设置</template>
+        <el-tabs :model-value="$route.name" @update:model-value="$router.replace({ name: $event })">
+            <el-tab-pane name="options.basic" label="基本设置"></el-tab-pane>
+            <el-tab-pane name="options.user" label="账号管理"></el-tab-pane>
+        </el-tabs>
+        <router-view />
     </Layout>
 </template>
 
@@ -13,4 +17,13 @@ export default {
 }
 </script>
 
-<style lang="scss" module></style>
+<style lang="scss" module>
+.options {
+    background: #eee;
+    :global {
+        .el-tabs__nav-scroll {
+            padding: 0 20px;
+        }
+    }
+}
+</style>

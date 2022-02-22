@@ -31,22 +31,19 @@ export function loadOptions(): IOptions {
     return Object.assign(createEmptyOptions(), data)
 }
 export function loadAllUsers() {
-    const keys = list()
-    if (keys.length === 0) {
-        return [
-            {
-                id: 'empty-uid',
-                name: '默认',
-                avatar: 'traveler',
-            },
-        ]
+    const keys = list().map((key) => key.replace(/^cocogoat\.v1\./, ''))
+    const alist = keys.map((key) => ({
+        id: key,
+        ...(get(key) as IStore).user,
+    }))
+    if (!keys.find((e) => e == currentUser.value)) {
+        alist.unshift({
+            id: currentUser.value,
+            name: '默认',
+            avatar: 'traveler',
+        })
     }
-    return keys
-        .map((key) => key.replace(/^cocogoat\.v1\./, ''))
-        .map((key) => ({
-            id: key,
-            ...(get(key) as IStore).user,
-        }))
+    return alist
 }
 export function useAutoSave(currentUser: Ref<string>, store: Ref<IStore>, options: Ref<IOptions>) {
     const watchStore = () =>

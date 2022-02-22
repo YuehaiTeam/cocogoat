@@ -47,6 +47,18 @@ const routes: Array<RouteRecordRaw> = [
                 path: '',
                 name: 'options',
                 component: () => import('@/views/Options/Index.vue'),
+                children: [
+                    {
+                        path: '',
+                        name: 'options.basic',
+                        component: () => import('@/views/Options/Basic.vue'),
+                    },
+                    {
+                        path: 'user',
+                        name: 'options.user',
+                        component: () => import('@/views/Options/User.vue'),
+                    },
+                ],
             },
         ],
     },

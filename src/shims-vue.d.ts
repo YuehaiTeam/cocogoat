@@ -27,5 +27,10 @@ declare module '@genshin-data/*/achievements.json' {
     const t: AchievementCategory[]
     export default t
 }
+declare module '@genshin-data/*/characters.json' {
+    import { ICharacter } from '@/typings/Character'
+    const t: ICharacter[]
+    export default t
+}
 
-declare module 'flyio/dist/npm/fly';
+declare module 'flyio/dist/npm/fly'

@@ -104,7 +104,7 @@ export default {
         height: 100%;
         position: absolute;
         top: 0;
-        right: 130px;
+        right: 150px;
         line-height: 48px;
         vertical-align: middle;
     }

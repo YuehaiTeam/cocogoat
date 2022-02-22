@@ -3,12 +3,10 @@
         <div class="logo">
             <icon-cocogoat class="v-icon cocogoat" />
         </div>
-        <div class="actions">
-            <button @click="hendleAction($event, 'minimizeApp')"><i class="el-icon-minus"></i></button>
-            <button @click="hendleAction($event, 'maximizeApp')"><i class="el-icon-copy-document"></i></button>
-            <button @click="hendleAction($event, 'exit')"><i class="el-icon-close"></i></button>
-        </div>
     </header>
+    <div v-if="!isMobile" :class="$style.userCorner">
+        <user-selector />
+    </div>
     <aside :class="$style.menu">
         <div class="logo">
             <icon-cocogoat class="v-icon cocogoat" />
@@ -52,15 +50,20 @@
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import IconArtifact from '@/components/Icons/artifact.vue'
 import IconAchievement from '@/components/Icons/achievement.vue'
+
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faHouse, faGear, faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons'
 library.add(faHouse, faGear, faTriangleExclamation, faInternetExplorer)
+
+import UserSelector from '@/components/UserSelector.vue'
+
 export default {
     components: {
         IconCocogoat,
         IconArtifact,
         IconAchievement,
+        UserSelector,
     },
     data() {
         return {
@@ -123,6 +126,15 @@ export default {
 $main: #007acc;
 $front: rgba(255, 255, 255, 0.75);
 $--color-primary: #409eff;
+.user-corner {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 140px;
+    height: 50px;
+    z-index: 1000;
+    background: #fff;
+}
 .uncompatibleWarning {
     color: #fe6565;
     position: absolute !important;
@@ -240,33 +252,6 @@ $--color-primary: #409eff;
     border-bottom: 0;
     box-sizing: border-box;
     box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
-    :global {
-        .actions {
-            -webkit-app-region: no-drag;
-            position: absolute;
-            top: 10px;
-            right: 7px;
-            display: inline-block;
-            button {
-                width: 30px;
-                height: 30px;
-                -webkit-appearance: none;
-                background: transparent;
-                border: 1px solid transparent;
-                cursor: pointer;
-                box-sizing: border-box;
-                transition: all 0.1s;
-                margin: 0 3px;
-                outline: 0;
-                &:hover {
-                    border-color: #55baff;
-                    border-radius: 2px;
-                    color: #55baff;
-                    background: #f7fcff;
-                }
-            }
-        }
-    }
 }
 :global(.m) {
     .menu {

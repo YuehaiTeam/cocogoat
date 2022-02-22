@@ -1,6 +1,6 @@
 import { IAchievementStore } from '@/typings/Achievement'
 import { IArtifact } from '@/typings/Artifact'
-import { currentUser as storageCurrentUser, get, set } from './impl'
+import { currentUser as storageCurrentUser, get, set, list } from './impl'
 import { Ref, ref, watch } from 'vue'
 
 export function createEmptyStore() {
@@ -30,21 +30,39 @@ export function loadOptions(): IOptions {
     const data = get('options') || {}
     return Object.assign(createEmptyOptions(), data)
 }
+export function loadAllUsers() {
+    const keys = list()
+    if (keys.length === 0) {
+        return [
+            {
+                id: 'empty-uid',
+                name: '默认',
+                avatar: 'traveler',
+            },
+        ]
+    }
+    return keys
+        .map((key) => key.replace(/^cocogoat\.v1\./, ''))
+        .map((key) => ({
+            id: key,
+            ...(get(key) as IStore).user,
+        }))
+}
 export function useAutoSave(currentUser: Ref<string>, store: Ref<IStore>, options: Ref<IOptions>) {
     const watchStore = () =>
         watch(
             store,
             (storeval) => {
                 set(currentUser.value, storeval)
+                storageCurrentUser(currentUser.value)
             },
             { deep: true },
         )
     let unwatch = watchStore()
-    watch(currentUser, (user, oldUser) => {
+    watch(currentUser, (user) => {
         unwatch()
-        set(oldUser, store.value)
         storageCurrentUser(user)
-        loadStore()
+        store.value = loadStore()
         unwatch = watchStore()
     })
     watch(
@@ -58,4 +76,8 @@ export function useAutoSave(currentUser: Ref<string>, store: Ref<IStore>, option
 export const currentUser = ref(storageCurrentUser())
 export const store = ref(loadStore())
 export const options = ref(loadOptions())
+export const allUsers = ref(loadAllUsers())
+export function reloadAllUsers() {
+    allUsers.value = loadAllUsers()
+}
 useAutoSave(currentUser, store, options)

@@ -1,15 +1,18 @@
+import characterImages from '@/assets/characters'
 import { options } from '@/store'
 import { AchievementCategory } from '@/typings/Achievement'
+import { ICharacter } from '@/typings/Character'
 import { ref, watch } from 'vue'
 function createEmptyI18n() {
     return {
         achievements: [] as AchievementCategory[],
+        character: [] as ICharacter[],
+        characterAvatar: {} as Record<string, string>,
     }
 }
 export const i18n = ref(createEmptyI18n())
 const langEntrance = require.context('./', true, /\.\/(.*?)\/index\.ts$/, 'lazy')
 const langLoader = {} as Record<string, () => Promise<ReturnType<typeof createEmptyI18n>>>
-console.log(langLoader)
 langEntrance.keys().forEach((key) => {
     langLoader[key.replace(/^\.\/(.*?)\/index\.ts$/, '$1')] = () => langEntrance(key)
 })
@@ -22,6 +25,7 @@ export async function loadi18n() {
     const langModule = langLoader[lang]
     if (langModule) {
         const langmodule = await langModule()
+        langmodule.characterAvatar = characterImages
         i18n.value = langmodule
     }
 }

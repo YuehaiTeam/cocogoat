@@ -93,7 +93,7 @@ export default defineComponent({
     setup() {
         function getAvatar(avatar: string) {
             try {
-                const a = i18n.value.characterAvatar[avatar]
+                const a = i18n.value.characterAvatar[avatar.replace(/_/g, '')]
                 if (!a) throw new Error()
                 return a
             } catch (e) {

@@ -16,6 +16,10 @@ const langLoader = {} as Record<string, () => Promise<ReturnType<typeof createEm
 langEntrance.keys().forEach((key) => {
     langLoader[key.replace(/^\.\/(.*?)\/index\.ts$/, '$1')] = () => langEntrance(key)
 })
+export const langNames = {
+    'zh-cn': '简体中文',
+    'en-us': 'English',
+}
 export async function loadi18n() {
     let lang = options.value.lang || navigator.language.toLowerCase()
     if (!langLoader[lang]) {

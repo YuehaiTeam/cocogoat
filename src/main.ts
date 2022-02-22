@@ -5,7 +5,7 @@ import resources, { setResourcesAndUpdateInfo } from './resources'
 import { defaultResources } from './resource-main'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import View from '@/views/View.vue'
-import { store, currentUser } from './store'
+import { store, currentUser, options } from './store'
 import { initi18n, i18n } from '@/i18n'
 
 // 兼容性检查：
@@ -26,6 +26,7 @@ declare global {
         $cocogoat: {
             app: TypeApp
             store: typeof store
+            options: typeof options
             i18n: typeof i18n
             resources: typeof resources
             currentUser: typeof currentUser
@@ -41,6 +42,7 @@ declare global {
         app,
         store,
         i18n,
+        options,
         resources,
         currentUser,
     }

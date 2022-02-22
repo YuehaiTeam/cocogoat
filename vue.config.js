@@ -28,7 +28,11 @@ module.exports = defineConfig({
     parallel: !singleFile,
     // worker-loader与thread-loader冲突
     css: {
-        extract: !singleFile,
+        extract: singleFile
+            ? false
+            : {
+                  ignoreOrder: true,
+              },
         loaderOptions: {
             css: {
                 modules: {

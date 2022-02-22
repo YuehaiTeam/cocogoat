@@ -1,0 +1,67 @@
+export enum IStatType {
+    static = 'static',
+    percent = 'percent',
+}
+
+export enum ISlotType {
+    flower = 'flower',
+    plume = 'plume',
+    sands = 'sands',
+    goblet = 'goblet',
+    circlet = 'circlet',
+}
+
+export enum IStatType {
+    'hp',
+    'atk',
+    'def',
+    'element', // 精通
+    'recharge', // 充能
+    'heal',
+    'crit', // 暴击率
+    'crit_dmg', // 暴击伤害
+    'physical_dmg',
+    'anemo_dmg',
+    'geo_dmg',
+    'electro_dmg',
+    'hydro_dmg',
+    'pyro_dmg',
+    'cryo_dmg',
+    'dendro_dmg',
+}
+
+// 包含数值的：hp,atk,def,精通
+export const IStatTypeWithStatic = [IStatType.hp, IStatType.atk, IStatType.def, IStatType.element]
+
+// 没有百分比的：精通
+export const IStatTypeWithoutPercent = [IStatType.element]
+
+export interface IArtifact {
+    // UUID
+    id: string
+    // hash，用于比对升级
+    hash: string
+    //  套装
+    set: string
+    //  位置
+    slot: ISlotType
+    //  等级
+    level: number
+    //  星级
+    stars: number
+    //  主词条
+    mainstat: {
+        key: string
+        type: IStatType
+    }
+    //  副词条
+    substat: {
+        key: string
+        type: IStatType
+        value: number
+    }[]
+    //  锁
+    locked: boolean
+    //  角色
+    character: string | null
+}

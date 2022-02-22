@@ -4,6 +4,7 @@ import resources from '@/resources'
 import { requireAsBlob, speedTest } from '@/resource-main'
 import { Worker, installToWindow } from '@/utils/corsWorker'
 import { hasSIMD } from '@/utils/compatibility'
+import { i18n } from '@/i18n'
 export function createWorker() {
     let _worker: Worker
     /// #if SINGLEFILE
@@ -43,7 +44,12 @@ export function initScanner() {
             const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
             await race
             await requireAsBlob([ortWasm, ocvWasm, 'ppocr.ort'], (e) => progressHandler(e), all)
-            await Promise.all([workerCV.setResources(resources), workerOCR.setResources(resources)])
+            await Promise.all([
+                workerCV.setResources(resources),
+                workerOCR.setResources(resources),
+                workerCV.initAchievementMap(i18n.value.achievements),
+                workerOCR.initAchievementMap(i18n.value.achievements),
+            ])
             progressHandler(100)
         } catch (e) {
             progressHandler(-1)

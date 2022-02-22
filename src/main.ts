@@ -1,10 +1,12 @@
-import { createApp } from 'vue'
+import { App as TypeApp, createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import { setResourcesAndUpdateInfo } from './resources'
+import resources, { setResourcesAndUpdateInfo } from './resources'
 import { defaultResources } from './resource-main'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import View from '@/views/View.vue'
+import { store, currentUser } from './store'
+import { initi18n, i18n } from '@/i18n'
 
 // 兼容性检查：
 export let notInSameoriginFrame = parent === window
@@ -19,7 +21,27 @@ if (!notInSameoriginFrame) {
 }
 
 setResourcesAndUpdateInfo(defaultResources)
-const app = createApp(App)
-app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(router).mount('#toki')
+declare global {
+    interface Window {
+        $cocogoat: {
+            app: TypeApp
+            store: typeof store
+            i18n: typeof i18n
+            resources: typeof resources
+            currentUser: typeof currentUser
+        }
+    }
+}
+;(async () => {
+    await initi18n()
+    const app = createApp(App)
+    app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(router).mount('#toki')
 
-Reflect.set(window, 'app', app)
+    window.$cocogoat = {
+        app,
+        store,
+        i18n,
+        resources,
+        currentUser,
+    }
+})()

@@ -10,3 +10,9 @@ export interface AchievementCategory {
     order: number
     achievements: Achievement[]
 }
+export interface IAchievementStore {
+    id: number
+    status: string
+    date: string
+    images: Record<string, string>
+}

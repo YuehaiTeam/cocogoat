@@ -49,7 +49,6 @@
 </template>
 
 <script>
-import { showUncompatible } from '@/main'
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import IconArtifact from '@/components/Icons/artifact.vue'
 import IconAchievement from '@/components/Icons/achievement.vue'
@@ -68,7 +67,7 @@ export default {
             transitionName: '',
             isMobile: false,
             pcUserShown: false,
-            showUncompatible,
+            showUncompatible: false,
         }
     },
     computed: {

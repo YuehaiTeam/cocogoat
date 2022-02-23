@@ -18,8 +18,8 @@
                         {{ i.name }}
                     </div>
                     <small>
-                        {{ achievementFinCount[i.originalId] || 0 }}/{{ i.achievements.length }} ({{
-                            Math.round(((achievementFinCount[i.originalId] || 0) / i.achievements.length) * 100)
+                        {{ achievementFinCount[i.originalId || 0] || 0 }}/{{ i.achievements.length }} ({{
+                            Math.round(((achievementFinCount[i.originalId || 0] || 0) / i.achievements.length) * 100)
                         }}%)
                     </small>
                 </router-link>

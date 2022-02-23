@@ -75,7 +75,8 @@
                     class="progress-in"
                     :style="{
                         width:
-                            ((achievementFinCount[currentCat.originalId] || 0) / currentCat.achievements.length) * 100 +
+                            ((achievementFinCount[currentCat.originalId || 0] || 0) / currentCat.achievements.length) *
+                                100 +
                             '%',
                     }"
                 ></div>
@@ -159,6 +160,7 @@ export default defineComponent({
             const newCount = {} as Record<number, number>
             const newFin = {} as Record<number, IAchievementStore>
             store.value.achievements.forEach((e) => {
+                e.categoryId = e.categoryId || 0
                 if (e.id) {
                     newFin[e.id] = e
                     newCount[e.categoryId] = newCount[e.categoryId] || 0
@@ -220,7 +222,7 @@ export default defineComponent({
             const finishedData = {
                 id,
                 status: '手动勾选',
-                categoryId: currentCat.value.originalId,
+                categoryId: currentCat.value.originalId || 0,
                 date: dayjs().format('YYYY/MM/DD'),
             } as IAchievementStore
             store.value.achievements.push(finishedData)

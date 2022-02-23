@@ -36,8 +36,11 @@ declare global {
 ;(async () => {
     await initi18n()
     const app = createApp(App)
+    if (options.value.reporting) {
+        const { init } = await import('@/utils/reporting')
+        init(app, router)
+    }
     app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(router).mount('#toki')
-
     window.$cocogoat = {
         app,
         store,

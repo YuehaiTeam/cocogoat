@@ -36,3 +36,4 @@ declare module '@genshin-data/*/characters.json' {
 declare module 'flyio/dist/npm/fly'
 declare module 'vue-virtual-scroller'
 declare module 'vue-virtual-scroller/src/index'
+declare module '@/plugins/tongji'

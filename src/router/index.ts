@@ -83,7 +83,14 @@ const router = createRouter({
     history: process.env.VUE_APP_ROUTER_HASH === 'true' ? createWebHashHistory() : createWebHistory('/'),
     routes,
 })
-
+declare global {
+    interface Window {
+        _hmt: string[][]
+    }
+}
+router.afterEach((to) => {
+    window._hmt.push(['_trackPageview', to.fullPath])
+})
 export default router
 export function getUrl(name: string) {
     return router.resolve({ name }).href

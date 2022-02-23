@@ -11,6 +11,14 @@
                     <div class="desc">包含界面语言与识别器OCR语言。目前界面翻译基本未完成。</div>
                 </div>
             </el-form-item>
+            <el-form-item label="错误报告和统计">
+                <div>
+                    <div class="select">
+                        <el-switch v-model="options.reporting"></el-switch>
+                    </div>
+                    <div class="desc">关闭后刷新页面生效。</div>
+                </div>
+            </el-form-item>
         </el-form>
     </section>
 </template>

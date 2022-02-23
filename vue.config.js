@@ -1,3 +1,5 @@
+const path = require('path')
+const fsex = require('fs-extra')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
@@ -10,6 +12,8 @@ const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 const gitInfo = require('git-repo-info')()
 const singleFileDLL = process.argv.includes('--singlefile-dll')
 const singleFile = process.argv.includes('--singlefile') || singleFileDLL
+const SentryPlugin = require('@sentry/webpack-plugin')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
 process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
@@ -24,9 +28,9 @@ module.exports = defineConfig({
         ? 'https://cocogoat-1251105598.file.myqcloud.com/'
         : '/',
     transpileDependencies: true,
-    productionSourceMap: false,
-    parallel: !singleFile,
-    // worker-loader与thread-loader冲突
+    productionSourceMap: true,
+    parallel: false,
+    // worker-loader、sentry-plugin都和thread-loader冲突
     css: {
         extract: singleFile
             ? false
@@ -147,6 +151,29 @@ module.exports = defineConfig({
                     worker: ['Worker from @/utils/corsWorker', '...'],
                 },
             })
+            if (process.env.NODE_ENV === 'production' && process.env.SENTRY_KEY && !singleFile) {
+                config.plugin('sentry').use(SentryPlugin, [
+                    {
+                        url: process.env.SENTRY_URL,
+                        authToken: process.env.SENTRY_KEY,
+                        org: 'yuehaiteam',
+                        project: 'cocogoat-web',
+                        ignore: ['node_modules'],
+                        include: './dist',
+                        release: process.env.VUE_APP_GIT_SHA,
+                        setCommits: {
+                            auto: true,
+                        },
+                        urlPrefix: '~/',
+                    },
+                ])
+                config.plugin('CleanWebpackPlugin').use(CleanWebpackPlugin, [
+                    {
+                        cleanAfterEveryBuildPatterns: ['**/*.map'],
+                        protectWebpackAssets: false,
+                    },
+                ])
+            }
         }
     },
 })

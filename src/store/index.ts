@@ -18,6 +18,7 @@ export function createEmptyOptions() {
     return {
         lang: navigator.language.toLowerCase(),
         achievements_recent_export: 'paimon',
+        reporting: true,
     }
 }
 export type IOptions = ReturnType<typeof createEmptyOptions>

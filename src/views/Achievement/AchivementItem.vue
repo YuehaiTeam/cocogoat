@@ -91,7 +91,7 @@ export default {
                 user-select: none;
                 display: inline-block;
                 height: 25px;
-                vertical-align: middle;
+                vertical-align: top;
                 color: #409eff;
                 font-size: 12px;
                 padding: 0 5px;
@@ -199,6 +199,49 @@ export default {
                         background: #0079cc;
                     }
                 }
+            }
+        }
+    }
+}
+:global(.m) .achievement-item {
+    :global {
+        .ntxt {
+            max-width: calc(100% - 120px);
+            font-size: 15px;
+        }
+        .single {
+            padding-left: 10px;
+            small {
+                max-width: calc(100% - 60px);
+                font-size: 12px;
+            }
+        }
+        .check {
+            left: 10px;
+        }
+        .middle {
+            margin-left: 40px;
+        }
+        .award {
+            width: 45px;
+            margin-right: 5px;
+            img {
+                width: 15px;
+                height: 15px;
+                padding-top: 5px;
+            }
+        }
+        .right {
+            width: 65px;
+            position: absolute;
+            right: 10px;
+            input {
+                width: 65px;
+                font-size: 12px;
+            }
+            .status input {
+                font-size: 15px;
+                height: 17px;
             }
         }
     }

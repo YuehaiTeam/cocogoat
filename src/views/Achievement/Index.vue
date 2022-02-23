@@ -80,35 +80,7 @@
                     }"
                 ></div>
             </div>
-            <div class="sidebar">
-                <el-scrollbar>
-                    <div class="sidebar-in">
-                        <router-link
-                            v-for="i in achievementCat"
-                            :key="i.id"
-                            :to="{
-                                ...$route,
-                                params: {
-                                    cat: i.id === 'wonders_of_the_world' ? '' : i.id,
-                                },
-                            }"
-                            :active-class="i.id === 'wonders_of_the_world' ? '' : 'router-link-active'"
-                            :exact-active-class="i.id === 'wonders_of_the_world' ? 'router-link-active' : ''"
-                        >
-                            <div>
-                                {{ i.name }}
-                            </div>
-                            <small>
-                                {{ achievementFinCount[i.originalId] || 0 }}/{{ i.achievements.length }} ({{
-                                    Math.round(
-                                        ((achievementFinCount[i.originalId] || 0) / i.achievements.length) * 100,
-                                    )
-                                }}%)
-                            </small>
-                        </router-link>
-                    </div>
-                </el-scrollbar>
-            </div>
+            <achievement-sidebar :achievementCat="achievementCat" :achievementFinCount="achievementFinCount" />
             <article>
                 <DynamicScroller
                     :items="currentAch"
@@ -116,13 +88,8 @@
                     :custom-scrollbar="CustomElScrollVue"
                     class="scroller"
                 >
-                    <template v-slot="{ item: i, index, active }">
-                        <DynamicScrollerItem
-                            :item="i"
-                            :active="active"
-                            :size-dependencies="[i.preStage, i.postStage]"
-                            :data-index="index"
-                        >
+                    <template v-slot="{ item: i, active }">
+                        <DynamicScrollerItem :item="i" :active="active" :size-dependencies="[i.preStage, i.postStage]">
                             <achievement-item
                                 :i="i"
                                 :fin="achievementFin[i.id]"
@@ -168,13 +135,16 @@ import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller/src/i
 
 import { useScannerFrame } from './scannerFrame'
 import { useExportAchievements } from './useExport'
+
 import AchievementItem from './AchivementItem.vue'
+import AchievementSidebar from './AchievementSidebar.vue'
 
 export default defineComponent({
     name: 'ArtifactIndex',
     components: {
         IconCocogoat,
         AchievementItem,
+        AchievementSidebar,
         DynamicScroller,
         DynamicScrollerItem,
     },
@@ -371,35 +341,21 @@ export default defineComponent({
                 box-sizing: border-box;
             }
         }
-        .sidebar {
-            background: #fff;
-            box-shadow: 2px 0px 12px 0 rgb(0 0 0 / 10%);
-            width: 235px;
-            position: absolute;
+    }
+}
+:global(.m) .achievement-view {
+    :global {
+        .progress {
             left: 0;
-            top: 0;
-            bottom: 0;
-            overflow: overlay;
-            box-sizing: border-box;
-            .sidebar-in {
-                padding: 15px;
-            }
-            a {
-                display: block;
-                padding: 12px;
-                padding-left: 5px;
-                padding-right: 20px;
-                text-decoration: none;
-                text-align: right;
-                color: #666;
-                border-right: 2px solid #eee;
-                font-size: 14px;
-                transition: all 0.2s;
-                &.router-link-active {
-                    color: #409eff;
-                    border-color: #409eff;
-                }
-            }
+        }
+
+        article {
+            top: 55px;
+            left: 0;
+        }
+
+        .scroller {
+            padding: 0 5px;
         }
     }
 }

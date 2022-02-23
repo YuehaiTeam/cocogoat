@@ -23,7 +23,7 @@ export function init(app: App, router: Router) {
         ],
         tracesSampleRate: 1.0,
         release: process.env.VUE_APP_GIT_SHA,
-        environment: process.env.VUE_APP_SINGLEFILE ? 'singlefile' : process.env.NODE_ENV,
+        environment: process.env.VUE_APP_SINGLEFILE === 'true' ? 'singlefile' : process.env.NODE_ENV,
         transport: SimpleFetchTransport,
     })
 }

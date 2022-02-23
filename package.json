@@ -8,7 +8,7 @@
     "build": "vue-cli-service build",
     "build:singlefile": "vue-cli-service build --singlefile",
     "lint": "vue-cli-service lint",
-    "postinstall": "git submodule update --init && node scripts/genereate-json"
+    "postinstall": "patch-package && git submodule update --init && node scripts/genereate-json"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.3.0",
@@ -27,11 +27,14 @@
     "lodash-es": "^4.17.21",
     "nd4js": "^1.3.0",
     "onnxruntime-web": "^1.10.0",
+    "patch-package": "^6.4.7",
     "pinia": "^2.0.9",
+    "postinstall-postinstall": "^2.1.0",
     "util": "^0.12.4",
     "vue": "^3.2.31",
     "vue-demi": "^0.12.1",
-    "vue-router": "^4.0.3"
+    "vue-router": "^4.0.3",
+    "vue-virtual-scroller": "^2.0.0-alpha.1"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",

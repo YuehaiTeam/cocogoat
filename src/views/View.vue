@@ -70,7 +70,7 @@ export default {
 :global(.m) {
     .layout {
         box-sizing: border-box;
-        padding-bottom: 60px;
+        padding-bottom: 55px;
         padding-left: 0;
     }
     .app-title {

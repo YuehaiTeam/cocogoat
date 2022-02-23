@@ -41,6 +41,9 @@ async function combineData() {
                                 return
                             }
                         }
+                        if (folder === 'achievements') {
+                            processAchievement(jsondata)
+                        }
                         data.push(jsondata)
                     })
                     const newFilePath = path.join(MIN_PATH, lang, `${folder}.json`)
@@ -52,5 +55,10 @@ async function combineData() {
     }
     await Promise.all(promises)
 }
-
+function processAchievement(jsondata) {
+    jsondata.achievements = jsondata.achievements.filter((e) => !e.name.includes('(test)'))
+    jsondata.achievements.forEach((e) => {
+        e.postStage = jsondata.achievements.find((p) => p.preStage === e.id)?.id
+    })
+}
 combineData()

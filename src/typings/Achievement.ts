@@ -2,6 +2,7 @@ import { Achievement as GenshinDataAchievement } from '@/plugins/genshin-data/sr
 export interface Achievement extends GenshinDataAchievement {
     categoryId: number
     preStage?: number
+    postStage?: number
     sub?: Achievement[]
 }
 export interface AchievementCategory {

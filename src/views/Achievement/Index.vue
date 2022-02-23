@@ -1,5 +1,5 @@
 <template>
-    <Layout style="background: #eee">
+    <Layout full-height style="background: #eee">
         <template #title>
             <div class="teleport-title">
                 <span style="font-family: genshin">椰羊 · 成就</span>
@@ -50,10 +50,20 @@
                 </div>
             </div>
         </div>
-        <el-dialog v-model="exportData.show" :title="exportData.title" :custom-class="$style.exportDialog">
+        <el-dialog
+            v-model="exportData.show"
+            :title="exportData.title"
+            :custom-class="$style.exportDialog"
+            destroy-on-close
+        >
             <el-input type="textarea" :model-value="exportData.content"></el-input>
         </el-dialog>
-        <el-dialog v-model="scannerResult.show" title="扫描结束" :custom-class="$style.scannerResultDialog">
+        <el-dialog
+            v-model="scannerResult.show"
+            title="扫描结束"
+            :custom-class="$style.scannerResultDialog"
+            destroy-on-close
+        >
             以下为失败列表，您可以自行检查后添加。
             <div class="faildResults">
                 <img v-for="(image, index) in scannerResult.faildImages" :key="index" :src="image" />
@@ -63,7 +73,11 @@
             <div class="progress">
                 <div
                     class="progress-in"
-                    :style="{ width: (currentCat.finished / currentCat.achievements.length) * 100 + '%' }"
+                    :style="{
+                        width:
+                            ((achievementFinCount[currentCat.originalId] || 0) / currentCat.achievements.length) * 100 +
+                            '%',
+                    }"
                 ></div>
             </div>
             <div class="sidebar">
@@ -85,8 +99,10 @@
                                 {{ i.name }}
                             </div>
                             <small>
-                                {{ i.finished }}/{{ i.achievements.length }} ({{
-                                    Math.round((i.finished / i.achievements.length) * 100)
+                                {{ achievementFinCount[i.originalId] || 0 }}/{{ i.achievements.length }} ({{
+                                    Math.round(
+                                        ((achievementFinCount[i.originalId] || 0) / i.achievements.length) * 100,
+                                    )
                                 }}%)
                             </small>
                         </router-link>
@@ -94,76 +110,37 @@
                 </el-scrollbar>
             </div>
             <article>
-                <section v-for="i in currentAch" :key="i.id">
-                    <div class="single">
-                        <div class="check">
-                            <div
-                                class="check-circle"
-                                :class="{ checked: achievementFin[i.id] }"
-                                @click="updateFinished(i.id)"
-                            >
-                                <fa-icon icon="check" />
-                            </div>
-                        </div>
-                        <div class="middle">
-                            <div class="name">
-                                <div class="award" :class="{ checked: achievementFin[i.id] }">
-                                    <img src="@/assets/images/yuanshi.png" alt="原石" />
-                                    <span class="number">{{ i.reward }}</span>
-                                </div>
-                                <div class="ntxt">
-                                    {{ i.name }}
-                                </div>
-                            </div>
-                            <small>
-                                {{ i.desc }}
-                            </small>
-                        </div>
-                        <div v-if="achievementFin[i.id]" class="right">
-                            <div class="status">
-                                <input v-model="achievementFin[i.id].status" type="text" />
-                            </div>
-                            <div class="date">
-                                <input v-model="achievementFin[i.id].date" type="text" />
-                            </div>
-                        </div>
-                    </div>
-                    <template v-if="i.sub">
-                        <div v-for="j in i.sub" :key="j.id" class="single sub">
-                            <div class="check">
-                                <div
-                                    class="check-circle"
-                                    :class="{ checked: achievementFin[j.id] }"
-                                    @click="updateFinished(j.id)"
-                                >
-                                    <fa-icon icon="check" />
-                                </div>
-                            </div>
-                            <div class="middle">
-                                <div class="name">
-                                    <div class="award" :class="{ checked: achievementFin[j.id] }">
-                                        <img src="@/assets/images/yuanshi.png" alt="原石" />
-                                        <span class="number">{{ j.reward }}</span>
-                                    </div>
-                                    <div class="ntxt">
-                                        {{ j.name }}
-                                    </div>
-                                </div>
-                                <small>
-                                    {{ j.desc }}
-                                </small>
-                            </div>
-                            <div v-if="achievementFin[j.id]" class="right">
-                                <div class="status">
-                                    <input v-model="achievementFin[j.id].status" type="text" />
-                                </div>
-                                <div class="date">
-                                    <input v-model="achievementFin[j.id].date" type="text" />
-                                </div>
-                            </div>
+                <DynamicScroller
+                    :items="currentAch"
+                    :min-item-size="80"
+                    :custom-scrollbar="CustomElScrollVue"
+                    class="scroller"
+                >
+                    <template v-slot="{ item: i, index, active }">
+                        <DynamicScrollerItem
+                            :item="i"
+                            :active="active"
+                            :size-dependencies="[i.preStage, i.postStage]"
+                            :data-index="index"
+                        >
+                            <achievement-item
+                                :i="i"
+                                :fin="achievementFin[i.id]"
+                                :preFin="achievementFin[i.preStage]"
+                                @check="updateFinished(i.id)"
+                                @input-date="achievementFin[i.id].date = $event"
+                                @input-status="achievementFin[i.id].status = $event"
+                            />
+                        </DynamicScrollerItem>
+                    </template>
+                    <template #after>
+                        <div class="page-after">
+                            <el-divider>
+                                <icon-cocogoat />
+                            </el-divider>
                         </div>
                     </template>
-                </section>
+                </DynamicScroller>
             </article>
         </section>
     </Layout>
@@ -171,48 +148,59 @@
 
 <script lang="ts">
 import '@/styles/actions.scss'
-import { ref, defineComponent, computed } from 'vue'
-import { faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan } from '@fortawesome/free-solid-svg-icons'
-import { library } from '@fortawesome/fontawesome-svg-core'
 import { useRoute, useRouter } from 'vue-router'
+import { ref, defineComponent, computed, watch } from 'vue'
+
+import { faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan, faEllipsis } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
+library.add(faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan, faEllipsis)
+import IconCocogoat from '@/components/Icons/cocogoat.vue'
+
 import { i18n } from '@/i18n'
-import { options, store } from '@/store'
-import { IAchievementStore } from '@/typings/Achievement'
+import { store } from '@/store'
+import { Achievement, IAchievementStore } from '@/typings/Achievement'
 import { ElMessageBox } from 'element-plus'
-library.add(faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan)
-import { useScannerFrame } from './scannerFrame'
 import dayjs from 'dayjs'
+
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
+import CustomElScrollVue from '@/components/ElCustomScroll.vue'
+import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller/src/index'
+
+import { useScannerFrame } from './scannerFrame'
+import { useExportAchievements } from './useExport'
+import AchievementItem from './AchivementItem.vue'
+
 export default defineComponent({
     name: 'ArtifactIndex',
-    components: {},
+    components: {
+        IconCocogoat,
+        AchievementItem,
+        DynamicScroller,
+        DynamicScrollerItem,
+    },
     setup() {
         const selectedIds = ref<string[]>([])
         const showScanner = ref(false)
         const router = useRouter()
         const frameSrc = router.resolve({ name: 'frames.achievement.scan' }).href
-        const achievementFin = computed(() => {
-            const achievementStore = store.value.achievements
-            const fin = {} as Record<number, IAchievementStore>
-            achievementStore.forEach((i) => {
-                if (i.id) {
-                    fin[i.id] = i
+        const achievementFin = ref({} as Record<number, IAchievementStore>)
+        const achievementFinCount = ref({} as Record<number, number>)
+        const calcFin = () => {
+            const newCount = {} as Record<number, number>
+            const newFin = {} as Record<number, IAchievementStore>
+            store.value.achievements.forEach((e) => {
+                if (e.id) {
+                    newFin[e.id] = e
+                    newCount[e.categoryId] = newCount[e.categoryId] || 0
+                    newCount[e.categoryId]++
                 }
             })
-            return fin
-        })
+            achievementFinCount.value = newCount
+            achievementFin.value = newFin
+        }
+        watch(store, calcFin, { deep: true, immediate: true })
         const achievementCat = computed(() => {
             const ach = i18n.value.achievements.concat([]).sort((a, b) => a.order - b.order)
-            ach.forEach((i) => {
-                i.id = i.id.toLowerCase()
-                let finished = 0
-                i.achievements.forEach((j) => {
-                    if (achievementFin.value[j.id]) {
-                        finished++
-                    }
-                })
-                i.achievements = i.achievements.filter((e) => !e.name.includes('(test)'))
-                i.finished = finished
-            })
             return ach
         })
         const route = useRoute()
@@ -223,29 +211,40 @@ export default defineComponent({
             return achievementCat.value.find((i) => i.id === currentCatId.value) || achievementCat.value[0]
         })
         const currentAch = computed(() => {
-            const ach = currentCat.value.achievements.concat([]).sort((a, b) => a.order - b.order)
-            ach.forEach((i) => {
-                i.sub = []
-            })
-            return ach.filter((e) => {
-                if (e.preStage) {
-                    let pre = e
-                    while (pre.preStage && pre.preStage !== pre.id) {
-                        const find = ach.find((i) => i.id === pre.preStage)
-                        if (!find) break
-                        pre = find
+            return currentCat.value.achievements.concat([]).sort((a, b) => {
+                let ret = 0
+                let fa = achievementFin.value[a.id]
+                let fb = achievementFin.value[b.id]
+                if (a.postStage) {
+                    let p = a
+                    while (p.postStage) {
+                        const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
+                        p = q || p
                     }
-                    // now pre is root
-                    pre.sub = pre.sub || []
-                    pre.sub.push(e)
-                    return false
+                    fa = achievementFin.value[p.id]
                 }
-                return true
+                if (b.postStage) {
+                    let p = b
+                    while (p.postStage) {
+                        const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
+                        p = q || p
+                    }
+                    fb = achievementFin.value[p.id]
+                }
+                if (a.preStage === b.id) return 1
+                if (fa && !fb) return 1
+                if (!fa && fb) return -1
+                return ret
             })
         })
         const updateFinished = (id: number) => {
             if (achievementFin.value[id]) {
-                store.value.achievements = store.value.achievements.filter((i) => i.id !== id)
+                const ids = [id]
+                let ach: Achievement | undefined
+                while ((ach = currentAch.value.find((e) => e.id === ids[0])) && ach.postStage) {
+                    ids.unshift(ach.postStage)
+                }
+                store.value.achievements = store.value.achievements.filter((i) => !ids.includes(i.id))
                 return
             }
             const finishedData = {
@@ -255,55 +254,6 @@ export default defineComponent({
                 date: dayjs().format('YYYY/MM/DD'),
             } as IAchievementStore
             store.value.achievements.push(finishedData)
-        }
-        const exportData = ref({
-            show: false,
-            title: '',
-            content: '',
-        })
-        const doExport = (_to: 'paimon' | 'seelie' | '') => {
-            const to = _to || options.value.achievements_recent_export
-            options.value.achievements_recent_export = to
-            let content = ''
-            if (to === 'seelie') {
-                const exportArray = store.value.achievements.map((i) => {
-                    return [i.id, (i.status + ' ' + i.date).trim()]
-                })
-                content = `/*
-* 复制此处所有内容，
-* 在Seelie.me页面按F12打开调试器，
-* 选择控制台(Console)
-* 粘贴并回车执行完成导入
-*/
-const z = ${JSON.stringify(exportArray)};
-const a = localStorage.account || 'main'
-const b = JSON.parse(localStorage.getItem(\`\${a}-achievements\`)||'{}')
-z.forEach(c=>{b[c[0]]={done:true,notes:c[1]}})
-localStorage.setItem(\`\${a}-achievements\`,JSON.stringify(b))
-localStorage.last_update = (new Date()).toISOString()
-location.href='/achievements'`
-            } else {
-                const exportArray = store.value.achievements.map((a) => {
-                    return [a.categoryId, a.id]
-                })
-                content = `/*
-* 复制此处所有内容，
-* 在Paimon.moe页面按F12打开调试器，
-* 选择控制台(Console)
-* 粘贴并回车执行完成导入
-*/
-const b = ${JSON.stringify(exportArray)};
-const a = (await localforage.getItem('achievement')) || {};
-b.forEach(c=>{a[c[0]]=a[c[0]]||{};a[c[0]][c[1]]=true})
-await localforage.setItem('achievement',a);
-location.href='/achievement'`
-            }
-            exportData.value = {
-                show: true,
-                content,
-                title: '导出到' + (to === 'paimon' ? 'Paimon.moe' : 'Seelie.me'),
-            }
-            // do nothing
         }
         const doClear = async () => {
             try {
@@ -322,6 +272,7 @@ location.href='/achievement'`
             showScanner,
         })
         return {
+            store,
             showScanner,
             selectedIds,
             frameSrc,
@@ -329,13 +280,14 @@ location.href='/achievement'`
             currentCatId,
             currentCat,
             achievementFin,
+            achievementFinCount,
             currentAch,
             updateFinished,
-            doExport,
-            exportData,
             doClear,
             scannerFrame,
             scannerResult,
+            CustomElScrollVue,
+            ...useExportAchievements(),
         }
     },
 })
@@ -379,9 +331,9 @@ location.href='/achievement'`
     :global {
         .progress {
             height: 3px;
-            position: fixed;
-            top: 50px;
-            left: 315px;
+            position: absolute;
+            top: 0;
+            left: 235px;
             right: 0;
             z-index: 99;
             .progress-in {
@@ -391,148 +343,42 @@ location.href='/achievement'`
             }
         }
         article {
-            padding: 15px 10px;
-            padding-left: 260px;
-            min-height: 100%;
-            section {
-                background: #fff;
-                border-radius: 3px;
-                margin-bottom: 15px;
-                color: #555;
-                .single {
-                    position: relative;
-                    padding: 15px;
-                    &.sub {
-                        background: #f0f7ff;
-                        border-top: 1px solid #d3e8ff;
+            left: 235px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            .page-after {
+                .el-divider {
+                    border-color: #ccc;
+                    margin: 40px 0;
+                    .el-divider__text {
+                        background: #eee;
                     }
-                    .ntxt {
-                        display: inline-block;
-                        white-space: nowrap;
-                        max-width: calc(100% - 200px);
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                    }
-                    small {
-                        max-width: calc(100% - 145px);
-                        overflow: hidden;
-                        white-space: nowrap;
-                        display: inline-block;
-                        text-overflow: ellipsis;
-                    }
-                    .award {
-                        user-select: none;
-                        display: inline-block;
-                        height: 25px;
-                        vertical-align: middle;
-                        color: #409eff;
-                        font-size: 12px;
-                        padding: 0 5px;
-                        box-sizing: border-box;
-                        border-radius: 3px;
-                        margin-right: 10px;
-                        width: 55px;
-                        text-align: center;
-                        border: 1px solid #409eff;
-                        &.checked {
-                            background: #409eff;
-                            color: #fff;
-                        }
-                        img {
-                            height: 18px;
-                            vertical-align: top;
-                            padding-top: 3px;
-                            padding-right: 4px;
-                            display: inline-block;
-                            margin-left: -2px;
-                        }
-                        .number {
-                            height: 18px;
-                            vertical-align: top;
-                            padding-top: 4px;
-                            display: inline-block;
-                        }
-                    }
-                }
-
-                .right {
-                    width: 80px;
-                    position: absolute;
-                    right: 15px;
-                    top: 15px;
-                    input {
-                        appearance: none;
-                        border: 0;
-                        color: #409eff;
-                        width: 100%;
-                        text-align: center;
-                        background: transparent;
+                    svg {
+                        fill: #aaa;
+                        width: 50px;
+                        height: 50px;
+                        margin: -8px auto;
                         display: block;
-                        outline: 0;
-                        border: 1px solid transparent;
-                        border-radius: 3px;
-                        &:focus,
-                        &:hover {
-                            border-color: #409eff;
-                        }
-                    }
-                    .status input {
-                        font-size: 17px;
-                        height: 22px;
                     }
                 }
+            }
 
-                .name {
-                    font-weight: bold;
-                }
-                .desc {
-                    color: #888;
-                    font-size: 13px;
-                }
-                .check {
-                    float: left;
-                    user-select: none;
-                    height: 40px;
-                    width: 40px;
-                    padding-left: 2px;
-                    padding-top: 6px;
-                    box-sizing: border-box;
-                    margin-right: 10px;
-                    .check-circle {
-                        cursor: pointer;
-                        width: 34px;
-                        height: 34px;
-                        border: 2px solid #bfdfff;
-                        border-radius: 100%;
-                        box-sizing: border-box;
-                        color: #bfdfff;
-                        font-size: 23px;
-                        text-align: center;
-                        transition: all 0.3s;
-                        &.checked {
-                            color: #fff;
-                            background: #409eff;
-                            border-color: #409eff;
-                        }
-                        &:hover {
-                            border-color: #409eff;
-                        }
-                        &.checked:hover {
-                            border-color: #0079cc;
-                            background: #0079cc;
-                        }
-                    }
-                }
+            .scroller {
+                height: 100%;
+                padding: 0 20px;
+                box-sizing: border-box;
             }
         }
         .sidebar {
             background: #fff;
             box-shadow: 2px 0px 12px 0 rgb(0 0 0 / 10%);
             width: 235px;
-            position: fixed;
-            left: 80px;
-            top: 50px;
-            height: calc(100vh - 50px);
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
             overflow: overlay;
             box-sizing: border-box;
             .sidebar-in {
@@ -558,7 +404,7 @@ location.href='/achievement'`
     }
 }
 .scanner-area {
-    position: fixed;
+    position: absolute;
     top: 50px;
     left: 0;
     right: 0;

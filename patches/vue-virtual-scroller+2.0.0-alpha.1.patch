@@ -1,0 +1,64 @@
+diff --git a/node_modules/vue-virtual-scroller/src/components/RecycleScroller.vue b/node_modules/vue-virtual-scroller/src/components/RecycleScroller.vue
+index 64fe216..1e75f67 100644
+--- a/node_modules/vue-virtual-scroller/src/components/RecycleScroller.vue
++++ b/node_modules/vue-virtual-scroller/src/components/RecycleScroller.vue
+@@ -1,4 +1,5 @@
+ <template>
++<component :is="customScrollbar" ref="customScrollbar" @custom-scroll="handleScroll">
+   <div
+     v-observe-visibility="handleVisibilityChange"
+     class="vue-recycle-scroller"
+@@ -51,6 +52,7 @@
+ 
+     <ResizeObserver @notify="handleResize" />
+   </div>
++</component>
+ </template>
+ 
+ <script>
+@@ -76,6 +78,12 @@ export default {
+   },
+ 
+   props: {
++
++    customScrollbar:{
++      type:[Object,String],
++      default:'div'
++    },
++
+     ...props,
+ 
+     itemSize: {
+@@ -505,7 +513,10 @@ export default {
+     },
+ 
+     getScroll () {
+-      const { $el: el, direction } = this
++      let { $el: el, direction } = this
++      if(this.$refs.customScrollbar && this.$refs.customScrollbar.getCustomScrollEl){
++        el = this.$refs.customScrollbar.getCustomScrollEl(el)
++      }
+       const isVertical = direction === 'vertical'
+       let scrollState
+ 
+@@ -547,7 +558,6 @@ export default {
+         this.removeListeners()
+       }
+     },
+-
+     addListeners () {
+       this.listenerTarget = this.getListenerTarget()
+       this.listenerTarget.addEventListener('scroll', this.handleScroll, supportsPassive
+diff --git a/node_modules/vue-virtual-scroller/src/index.js b/node_modules/vue-virtual-scroller/src/index.js
+index 6400a50..96f5f17 100644
+--- a/node_modules/vue-virtual-scroller/src/index.js
++++ b/node_modules/vue-virtual-scroller/src/index.js
+@@ -23,7 +23,7 @@ function registerComponents (app, prefix) {
+ 
+ const plugin = {
+   // eslint-disable-next-line no-undef
+-  version: VERSION,
++  version: "custom",
+   install (app, options) {
+     const finalOptions = Object.assign({}, {
+       installComponents: true,

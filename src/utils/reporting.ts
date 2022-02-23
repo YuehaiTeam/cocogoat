@@ -11,6 +11,7 @@ import { BaseTransport } from '@sentry/browser/esm/transports/base'
 import { FetchImpl, getNativeFetchImplementation } from '@sentry/browser/esm/transports/utils'
 
 export function init(app: App, router: Router) {
+    if (process.env.NODE_ENV === 'development') return
     Sentry.init({
         app,
         dsn: process.env.VUE_APP_SENTRY,

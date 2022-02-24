@@ -1,4 +1,3 @@
-import '@/plugins/tongji'
 import * as Sentry from '@sentry/vue'
 import { BrowserTracing } from '@sentry/tracing'
 import { App } from 'vue'
@@ -12,6 +11,7 @@ import { FetchImpl, getNativeFetchImplementation } from '@sentry/browser/esm/tra
 
 export function init(app: App, router: Router) {
     if (process.env.NODE_ENV === 'development') return
+    require('@/plugins/tongji')
     Sentry.init({
         app,
         dsn: process.env.VUE_APP_SENTRY,

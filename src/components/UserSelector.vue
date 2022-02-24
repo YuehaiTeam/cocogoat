@@ -3,9 +3,18 @@ import { i18n } from '@/i18n'
 import { defineComponent, computed, ref } from 'vue'
 import { store, allUsers, currentUser } from '@/store'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faAngleDown } from '@fortawesome/free-solid-svg-icons'
+import {
+    faAngleDown,
+    faCheck,
+    faXmark,
+    faEllipsis,
+    faExclamation,
+    faArrowsRotate,
+    faLaptopCode,
+} from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'vue-router'
-library.add(faAngleDown)
+import { syncStatus, SYNCSTAT } from '@/store/sync'
+library.add(faAngleDown, faCheck, faXmark, faEllipsis, faExclamation, faArrowsRotate, faLaptopCode)
 export default defineComponent({
     props: {
         hideMore: {
@@ -35,7 +44,26 @@ export default defineComponent({
                 case 'more':
                     router.push('/options/user')
                     break
+                case 'cloud':
+                    router.push('/options/sync')
+                    break
             }
+        }
+        const syncStatusText = {
+            [SYNCSTAT.OFFLINE]: '未同步',
+            [SYNCSTAT.SYNCING]: '同步中',
+            [SYNCSTAT.SYNCED]: '同步成功',
+            [SYNCSTAT.FAILED]: '同步失败',
+            [SYNCSTAT.WAITING]: '等待同步',
+            [SYNCSTAT.PARTIALLY]: '部分失败',
+        }
+        const syncIcon = {
+            [SYNCSTAT.OFFLINE]: 'laptop-code',
+            [SYNCSTAT.SYNCING]: 'arrows-rotate',
+            [SYNCSTAT.SYNCED]: 'check',
+            [SYNCSTAT.FAILED]: 'xmark',
+            [SYNCSTAT.WAITING]: 'ellipsis',
+            [SYNCSTAT.PARTIALLY]: 'exclamation',
         }
         const menuState = ref(false)
         return {
@@ -46,6 +74,9 @@ export default defineComponent({
             getAvatar,
             currentUser,
             menuState,
+            syncStatus,
+            syncStatusText,
+            syncIcon,
         }
     },
 })
@@ -56,6 +87,9 @@ export default defineComponent({
         <el-dropdown :show-timeout="0" :hide-timeout="50" @command="onSelect" @visible-change="menuState = $event">
             <div :class="[$style.userInfo, $style.currentUser, menuState ? 'open' : '']">
                 <img :src="avatar" />
+                <div :class="[$style.syncIcon, syncStatus.status, 'head-sync-icon']">
+                    <fa-icon :icon="syncIcon[syncStatus.status]" />
+                </div>
                 <span class="user-text">
                     <span class="user-name">{{ store.user.name }}</span>
                     <span class="user-id">{{ currentUser }}</span>
@@ -83,9 +117,12 @@ export default defineComponent({
                     <el-dropdown-item v-if="!hideMore" divided :command="['more']">账号管理</el-dropdown-item>
                     <el-dropdown-item v-if="!hideMore" divided :command="['cloud']">
                         <div :class="$style.userInfo">
-                            <span class="user-text" style="padding-left: 0">
+                            <div :class="[$style.syncIcon, syncStatus.status, 'menu-sync-icon']">
+                                <fa-icon :icon="syncIcon[syncStatus.status]" />
+                            </div>
+                            <span class="user-text">
                                 <span class="user-name">云同步</span>
-                                <span class="user-id">开发中...</span>
+                                <span class="user-id">{{ syncStatusText[syncStatus.status] }}</span>
                             </span>
                         </div>
                     </el-dropdown-item>
@@ -99,6 +136,53 @@ export default defineComponent({
 .userSelector {
     height: 100%;
     width: 100%;
+}
+
+.sync-icon {
+    position: absolute;
+    border-radius: 100%;
+    text-align: center;
+    background: #bfdef2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #227acc;
+    &:global(.menu-sync-icon) {
+        width: 33px;
+        height: 33px;
+        left: 0;
+        top: 0;
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+    &:global(.head-sync-icon) {
+        bottom: 2px;
+        left: 29px;
+        width: 16px;
+        height: 16px;
+        svg {
+            width: 10px;
+            height: 10px;
+        }
+    }
+    &:global(.offline) {
+        color: #888;
+        background: #ddd;
+    }
+    &:global(.synced) {
+        background: #0079cc;
+        color: #fff;
+    }
+    &:global(.failed) {
+        background: #c10000;
+        color: #fff;
+    }
+    &:global(.partially) {
+        background: #e36900;
+        color: #fff;
+    }
 }
 .selected {
     background-color: var(--el-dropdown-menuItem-hover-fill);

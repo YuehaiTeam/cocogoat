@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import View from '@/views/View.vue'
 import { store, currentUser, options } from './store'
 import { initi18n, i18n } from '@/i18n'
+import { initSync } from './store/sync'
 
 // 兼容性检查：
 export let notInSameoriginFrame = parent === window
@@ -41,6 +42,10 @@ declare global {
         init(app, router)
     }
     app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(router).mount('#toki')
+    if (top === window) {
+        // Don't sync in iframes
+        initSync()
+    }
     window.$cocogoat = {
         app,
         store,

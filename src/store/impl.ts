@@ -1,25 +1,26 @@
+import * as localStorageImpl from './impl/localStorage'
+import { debouncedSingleSync } from './sync'
 export function get(user: string) {
-    const item = localStorage.getItem(`cocogoat.v1.${user}`)
-    try {
-        return JSON.parse(item as string)
-    } catch (e) {
-        return null
-    }
+    return localStorageImpl.get(user)
 }
 export function set(user: string, data: unknown) {
-    localStorage.setItem(`cocogoat.v1.${user}`, JSON.stringify(data))
+    const now = new Date()
+    const last = localStorageImpl.set(user, data, now)
+    debouncedSingleSync({ user, data, now, last })
 }
 export function del(user: string) {
-    localStorage.removeItem(`cocogoat.v1.${user}`)
+    const now = new Date()
+    const last = localStorageImpl.del(user)
+    debouncedSingleSync({ user, data: null, now, last })
 }
 export function list() {
-    return Object.keys(localStorage).filter(
-        (key) => key.startsWith('cocogoat.v1.') && !key.endsWith('.options') && !key.endsWith('.currentUser'),
-    )
+    return localStorageImpl.list()
 }
 export function currentUser(user?: string): string {
+    const now = new Date()
     if (user) {
-        set('currentUser', user)
+        const [_user, last] = localStorageImpl.currentUser(user, now)
+        debouncedSingleSync({ user: 'currentUser', data: _user, now, last })
     }
-    return get('currentUser') || 'empty-uid'
+    return localStorageImpl.currentUser(user, now)[0]
 }

@@ -58,6 +58,11 @@ const routes: Array<RouteRecordRaw> = [
                         name: 'options.user',
                         component: () => import('@/views/Options/User.vue'),
                     },
+                    {
+                        path: 'sync/:app?',
+                        name: 'options.sync',
+                        component: () => import('@/views/Options/Sync.vue'),
+                    },
                 ],
             },
         ],
@@ -89,7 +94,9 @@ declare global {
     }
 }
 router.afterEach((to) => {
-    window._hmt.push(['_trackPageview', to.fullPath])
+    try {
+        window._hmt.push(['_trackPageview', to.fullPath])
+    } catch (e) {}
 })
 export default router
 export function getUrl(name: string) {

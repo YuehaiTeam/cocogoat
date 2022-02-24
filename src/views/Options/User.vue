@@ -136,8 +136,13 @@ export default defineComponent({
             }
         }
         function saveForm() {
-            if (['options', 'currentUser', 'cocogoat'].includes(edit.value.id)) {
-                ElMessageBox.alert('UID已被占用', '出错了')
+            if (
+                ['options', 'currentUser', 'cocogoat'].includes(edit.value.id) ||
+                edit.value.id.includes('/') ||
+                edit.value.id.includes('\\') ||
+                edit.value.id.includes(' ')
+            ) {
+                ElMessageBox.alert('UID不合适', '出错了')
                 return
             }
             if (!edit.value.edit) {

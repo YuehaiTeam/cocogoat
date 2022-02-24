@@ -3,6 +3,8 @@ import { IArtifact } from '@/typings/Artifact'
 import { currentUser as storageCurrentUser, get, set, list } from './impl'
 import { Ref, ref, watch } from 'vue'
 
+export const disableAutoSave = ref(false)
+
 export function createEmptyStore() {
     return {
         achievements: [] as IAchievementStore[],
@@ -33,7 +35,7 @@ export function loadOptions(): IOptions {
     return Object.assign(createEmptyOptions(), data)
 }
 export function loadAllUsers() {
-    const keys = list().map((key) => key.replace(/^cocogoat\.v1\./, ''))
+    const keys = list()
     const alist = keys.map((key) => ({
         id: key,
         ...(get(key) as IStore).user,
@@ -52,21 +54,30 @@ export function useAutoSave(currentUser: Ref<string>, store: Ref<IStore>, option
         watch(
             store,
             (storeval) => {
+                if (disableAutoSave.value) return
                 set(currentUser.value, storeval)
-                storageCurrentUser(currentUser.value)
+                const changedUser = storageCurrentUser()
+                if (changedUser !== currentUser.value) {
+                    storageCurrentUser(currentUser.value)
+                }
             },
             { deep: true },
         )
     let unwatch = watchStore()
     watch(currentUser, (user) => {
+        if (disableAutoSave.value) return
         unwatch()
-        storageCurrentUser(user)
-        store.value = loadStore()
+        const changedUser = storageCurrentUser()
+        if (changedUser !== user) {
+            storageCurrentUser(user)
+            store.value = loadStore()
+        }
         unwatch = watchStore()
     })
     watch(
         options,
         (options) => {
+            if (disableAutoSave.value) return
             set('options', options)
         },
         { deep: true },

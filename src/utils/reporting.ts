@@ -18,7 +18,7 @@ export function init(app: App, router: Router) {
         integrations: [
             new BrowserTracing({
                 routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-                tracingOrigins: ['77.cocogoat.work', /^\//],
+                tracingOrigins: ['77.cocogoat.work', 'api.xyget.cn', /^\//],
             }),
         ],
         tracesSampleRate: 1.0,

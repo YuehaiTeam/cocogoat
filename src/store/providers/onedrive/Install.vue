@@ -48,6 +48,7 @@ export default defineComponent({
         const loginMsft = () => {
             const redirectUrl = location.href.replace(location.search, '').replace(location.hash, '')
             sessionStorage.setItem('msftTempRedirectUrl', redirectUrl)
+            step.value = 2
             location.href =
                 `https://login.microsoftonline.com/consumers/oauth2/v2.0/authorize?client_id=` +
                 clientId +

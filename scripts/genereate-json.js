@@ -57,7 +57,8 @@ async function combineData() {
 }
 function processAchievement(jsondata) {
     jsondata.achievements = jsondata.achievements.filter(
-        (e) => ![84027, 82011, 82016, 82018, 85000, 85001, 85002, 85003, 85004, 85005, 85006].includes(e.id),
+        (e) =>
+            ![84027, 82011, 82016, 82018, 84517, 84521, 85000, 85001, 85002, 85003, 85004, 85005, 85006].includes(e.id),
     )
     jsondata.achievements.forEach((e) => {
         e.postStage = jsondata.achievements.find((p) => p.preStage === e.id)?.id

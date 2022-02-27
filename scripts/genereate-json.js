@@ -56,7 +56,7 @@ async function combineData() {
     await Promise.all(promises)
 }
 function processAchievement(jsondata) {
-    jsondata.achievements = jsondata.achievements.filter((e) => !e.name.includes('(test)'))
+    jsondata.achievements = jsondata.achievements.filter((e) => ![84027, 82011, 82016, 82018].includes(e.id))
     jsondata.achievements.forEach((e) => {
         e.postStage = jsondata.achievements.find((p) => p.preStage === e.id)?.id
     })

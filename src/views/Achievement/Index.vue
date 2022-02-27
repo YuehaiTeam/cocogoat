@@ -89,6 +89,19 @@
                     :custom-scrollbar="CustomElScrollVue"
                     class="scroller"
                 >
+                    <template #before>
+                        <div class="page-before">
+                            <div class="before-right">
+                                <el-input v-model="search" placeholder="搜索成就">
+                                    <template #suffix>
+                                        <span class="fa-icon">
+                                            <fa-icon icon="search" />
+                                        </span>
+                                    </template>
+                                </el-input>
+                            </div>
+                        </div>
+                    </template>
                     <template v-slot="{ item: i, active }">
                         <DynamicScrollerItem :item="i" :active="active" :size-dependencies="[i.preStage, i.postStage]">
                             <achievement-item
@@ -119,9 +132,16 @@ import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, defineComponent, computed, watch } from 'vue'
 
-import { faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan, faEllipsis } from '@fortawesome/free-solid-svg-icons'
+import {
+    faCrosshairs,
+    faArrowUpFromBracket,
+    faCheck,
+    faTrashCan,
+    faEllipsis,
+    faSearch,
+} from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
-library.add(faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan, faEllipsis)
+library.add(faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan, faEllipsis, faSearch)
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 
 import { i18n } from '@/i18n'
@@ -152,6 +172,7 @@ export default defineComponent({
     setup() {
         const selectedIds = ref<string[]>([])
         const showScanner = ref(false)
+        const search = ref('')
         const router = useRouter()
         const frameSrc = router.resolve({ name: 'frames.achievement.scan' }).href
         const achievementFin = ref({} as Record<number, IAchievementStore>)
@@ -183,7 +204,7 @@ export default defineComponent({
             return achievementCat.value.find((i) => i.id === currentCatId.value) || achievementCat.value[0]
         })
         const currentAch = computed(() => {
-            return currentCat.value.achievements.concat([]).sort((a, b) => {
+            let data = currentCat.value.achievements.concat([]).sort((a, b) => {
                 let ret = 0
                 let fa = achievementFin.value[a.id]
                 let fb = achievementFin.value[b.id]
@@ -208,6 +229,33 @@ export default defineComponent({
                 if (!fa && fb) return -1
                 return ret
             })
+            if (search.value.trim()) {
+                data = data.filter((e) => {
+                    const hasThis = e.name.toLowerCase().includes(search.value.toLowerCase())
+                    let hasPre = false
+                    let k = e
+                    while (k.preStage) {
+                        const q = currentCat.value.achievements.find((i) => i.id === k.preStage)
+                        k = q || k
+                        if (k.name.toLowerCase().includes(search.value.toLowerCase())) {
+                            hasPre = true
+                            break
+                        }
+                    }
+                    let hasPost = false
+                    k = e
+                    while (k.postStage) {
+                        const q = currentCat.value.achievements.find((i) => i.id === k.postStage)
+                        k = q || k
+                        if (k.name.toLowerCase().includes(search.value.toLowerCase())) {
+                            hasPost = true
+                            break
+                        }
+                    }
+                    return hasThis || hasPre || hasPost
+                })
+            }
+            return data
         })
         const updateFinished = (id: number) => {
             if (achievementFin.value[id]) {
@@ -245,6 +293,7 @@ export default defineComponent({
         })
         return {
             store,
+            search,
             showScanner,
             selectedIds,
             frameSrc,
@@ -320,6 +369,9 @@ export default defineComponent({
             top: 0;
             bottom: 0;
             right: 0;
+            .page-before {
+                padding-top: 15px;
+            }
             .page-after {
                 .el-divider {
                     border-color: #ccc;

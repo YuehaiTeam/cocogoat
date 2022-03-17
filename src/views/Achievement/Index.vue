@@ -7,16 +7,12 @@
         </template>
         <template #actions>
             <div class="actions">
-                <el-button
-                    v-show="!showScanner"
-                    class="import-button"
-                    type="danger"
-                    size="default"
-                    plain
-                    @click="doClear"
-                >
+                <el-button v-show="!showScanner" type="danger" plain @click="doClear">
                     <fa-icon icon="trash-can" />
                     清空
+                </el-button>
+                <el-button v-show="!showScanner" class="import-button" @click="showImport = !showImport">
+                    导入
                 </el-button>
                 <div v-show="!showScanner" class="dropdown">
                     <el-dropdown class="header-plain-dropdown" split-button @click="doExport('')">
@@ -57,6 +53,9 @@
             destroy-on-close
         >
             <el-input type="textarea" :model-value="exportData.content"></el-input>
+        </el-dialog>
+        <el-dialog v-model="showImport" title="导入" :custom-class="$style.importDialog" destroy-on-close>
+            <import-dialog @close="showImport = false" />
         </el-dialog>
         <el-dialog
             v-model="scannerResult.show"
@@ -159,6 +158,7 @@ import { useExportAchievements } from './useExport'
 
 import AchievementItem from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
+import ImportDialog from './ImportDialog.vue'
 
 export default defineComponent({
     name: 'ArtifactIndex',
@@ -166,6 +166,7 @@ export default defineComponent({
         IconCocogoat,
         AchievementItem,
         AchievementSidebar,
+        ImportDialog,
         DynamicScroller,
         DynamicScrollerItem,
     },
@@ -291,6 +292,7 @@ export default defineComponent({
             achievementFin,
             showScanner,
         })
+        const showImport = ref(false)
         return {
             store,
             search,
@@ -309,11 +311,16 @@ export default defineComponent({
             scannerResult,
             CustomElScrollVue,
             ...useExportAchievements(),
+            showImport,
         }
     },
 })
 </script>
 <style lang="scss" module>
+.import-dialog {
+    width: 500px !important;
+    max-width: 90%;
+}
 .export-dialog {
     width: 500px !important;
     max-width: 90%;

@@ -129,7 +129,7 @@
 <script lang="ts">
 import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, defineComponent, computed, watch } from 'vue'
+import { ref, defineComponent, computed, watch, onMounted } from 'vue'
 
 import {
     faCrosshairs,
@@ -159,6 +159,7 @@ import { useExportAchievements } from './useExport'
 import AchievementItem from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
 import ImportDialog from './ImportDialog.vue'
+import { uniqBy } from 'lodash'
 
 export default defineComponent({
     name: 'ArtifactIndex',
@@ -293,6 +294,14 @@ export default defineComponent({
             showScanner,
         })
         const showImport = ref(false)
+        onMounted(() => {
+            // dedupe
+            const dedupedResult = uniqBy(store.value.achievements, (e) => e.id)
+            if (dedupedResult.length !== store.value.achievements.length) {
+                console.log('deduped from ' + store.value.achievements.length + ' to ' + dedupedResult.length)
+                store.value.achievements = dedupedResult
+            }
+        })
         return {
             store,
             search,

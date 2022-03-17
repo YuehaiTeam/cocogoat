@@ -61,7 +61,7 @@
         <br />
         <h4>本地导出</h4>
         <div class="desc">
-            导出的本地文件为zip格式，因此只需通过扇区其中文件即可实现部分导入。<br />导入还没做好。
+            导出的本地文件为zip格式，因此只需通过删除其中不想要的文件即可实现部分导入。<br />导入还没做好。
             <p>
                 <el-button type="primary" plain :loading="exportLoading" @click="exportData">导出数据</el-button>
                 <el-button plain disabled>导入数据</el-button>

@@ -70,8 +70,24 @@ const routes: Array<RouteRecordRaw> = [
     /* Frames */
     {
         path: '/frames/achievement-scanner',
-        name: 'frames.achievement.scan',
         component: () => import('@/views/AchievementScanner/Index.vue'),
+        children: [
+            {
+                path: '',
+                name: 'frames.achievement.scan',
+                component: () => import('@/views/AchievementScanner/Entrance.vue'),
+            },
+            {
+                path: 'capture',
+                name: 'frames.achievement.scan.capture-scanner',
+                component: () => import('@/views/AchievementScanner/CaptureScanner/Index.vue'),
+            },
+            {
+                path: 'line',
+                name: 'frames.achievement.scan.line-scanner',
+                component: () => import('@/views/AchievementScanner/LineScanner/Index.vue'),
+            },
+        ],
     },
     /* Tools */
     {

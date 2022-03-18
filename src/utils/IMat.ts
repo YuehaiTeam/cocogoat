@@ -7,6 +7,15 @@ export function IMatFromImageData(d: ImageData): ICVMat {
         data: new Uint8Array(d.data),
     }
 }
+export function IMatFromImageElement(img: HTMLImageElement): ICVMat {
+    const canvas = document.createElement('canvas')
+    canvas.width = img.width
+    canvas.height = img.height
+    const ctx = canvas.getContext('2d')
+    if (!ctx) throw new Error('canvas.getContext("2d") failed')
+    ctx.drawImage(img, 0, 0)
+    return IMatFromImageData(ctx.getImageData(0, 0, img.width, img.height))
+}
 export function toCanvas(d: ICVMat) {
     if (d.type !== 24) {
         throw new Error(`Converting type ${d.type} to canvas faild. Only CV_8UC4 is supported.`)

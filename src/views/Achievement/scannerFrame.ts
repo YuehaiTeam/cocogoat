@@ -82,6 +82,7 @@ export function useScannerFrame({
             })
             const faildImages = faildData.map((e) => e.images?.main || '')
             if (faildData.length > 0) {
+                console.log('Faild:', faildData)
                 results.value = {
                     show: true,
                     faildImages,

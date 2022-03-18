@@ -1,9 +1,9 @@
 import { cvTranslateError, getCV, ICVMat, toIMat, fromIMat } from '@/utils/cv'
 import type { Mat, Rect } from '@/utils/opencv'
-import { cvDiffImage, cvGetRect, cvSplitAchievement, cvSplitImage } from '../cvUtils'
+import { cvDiffImage, cvGetRect, cvSplitAchievement, cvSplitImage } from './cvUtils'
 import { recognize, init as getOCR } from '@/modules/ocr'
 import { Achievement } from '@/typings/Achievement'
-import { achievementTitles, achievementEC } from './achievementsList'
+import { achievementTitles, achievementEC, achievementSubs } from './achievementsList'
 import { textBestmatch } from '@/utils/textMatch'
 
 export let lastImage: Mat | null = null
@@ -50,7 +50,19 @@ export interface IAScannerLine {
         image: ICVMat
     }[]
 }
-
+export async function scannerOnLine(data: ICVMat) {
+    const cv = await getCV()
+    const raw = fromIMat(cv, data)
+    return cvSplitAchievement(cv, raw).map((e) => {
+        const tmpData = toIMat(cv, e.roi)
+        e.roi.delete()
+        return {
+            name: e.name,
+            rect: e.rect,
+            image: tmpData,
+        }
+    })
+}
 export async function scannerOnImage(data: ICVMat, keepLastRow = false) {
     const cv = await getCV()
     try {
@@ -135,7 +147,9 @@ export async function recognizeAchievement(line: IAScannerLine): Promise<IAScann
     if (title && subtitle) {
         const titleText = await recognize(title.image)
         result.title = titleText
-        const titleObj = !isNaN(titleText.confidence) ? achievementTitles.find((e) => e.str === titleText.text) : false
+        const titleObj = !isNaN(titleText.confidence)
+            ? achievementTitles.find((e) => e.str === titleText.text.replace(/…|「|」/g, ''))
+            : false
         if (
             titleObj &&
             titleText.confidence > 85 &&
@@ -146,10 +160,20 @@ export async function recognizeAchievement(line: IAScannerLine): Promise<IAScann
         } else {
             const subtitleText = await recognize(subtitle.image)
             result.subtitle = subtitleText
-            const ecStr = `${titleText.text}-${subtitleText.text}`
+            const ecStr = `${titleText.text}-${subtitleText.text}`.replace(/…|「|」/g, '')
             const matched = textBestmatch('str', ecStr, achievementEC, ecStr.length / 3)
             if (matched) {
                 res = matched.obj
+            } else {
+                const matched = textBestmatch(
+                    'str',
+                    subtitleText.text.replace(/…|「|」/g, ''),
+                    achievementSubs,
+                    subtitleText.text.length / 3,
+                )
+                if (matched) {
+                    res = matched.obj
+                }
             }
         }
     }
@@ -158,6 +182,17 @@ export async function recognizeAchievement(line: IAScannerLine): Promise<IAScann
         const date = line.blocks.find((e) => e.name === 'date')
         if (status) {
             result.status = await recognize(status.image)
+            const statusArr = result.status.text
+                .split('/')
+                .map((e) => e.trim())
+                .filter((e) => !!e)
+            if (statusArr.length === 2) {
+                const [f, fin] = statusArr
+                if (!isNaN(Number(f)) && !isNaN(Number(fin)) && f < fin) {
+                    // 未完成
+                    return { success: false, result }
+                }
+            }
         }
         if (date) {
             result.date = await recognize(date.image)

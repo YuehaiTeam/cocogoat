@@ -22,8 +22,8 @@ export function createWorker() {
 export function initScanner() {
     const { worker: workerCV, _worker: w1 } = createWorker()
     const { worker: workerOCR, _worker: w2 } = createWorker()
-    const { scannerOnImage, recognizeAchievement: recognizeAchievement2 } = workerCV
-    const { recognizeAchievement } = workerOCR
+    const { scannerOnImage, scannerOnLine, recognizeAchievement: recognizeAchievement2 } = workerCV
+    const { recognizeAchievement, scannerOnLine: scannerOnLine2 } = workerOCR
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let progressHandler = (progress: number) => {
         // do nothing
@@ -62,10 +62,19 @@ export function initScanner() {
     return {
         recognizeAchievement,
         recognizeAchievement2,
+        scannerOnLine,
+        scannerOnLine2,
         scannerOnImage,
         initPromise,
         workerCV,
         workerOCR,
         onProgress,
     }
+}
+let scannerInstance: ReturnType<typeof initScanner>
+export function getScannerInstance() {
+    if (!scannerInstance) {
+        scannerInstance = initScanner()
+    }
+    return scannerInstance
 }

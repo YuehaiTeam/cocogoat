@@ -10,10 +10,10 @@ function hasCocogoatAchievementJson(j: Record<string, any[]>) {
     return (
         Array.isArray(j.achievements) &&
         j.achievements.length > 0 &&
-        j.achievements[0].id &&
-        j.achievements[0].status &&
+        !isNaN(j.achievements[0].id) &&
+        typeof j.achievements[0].status === 'string' &&
         !isNaN(j.achievements[0].categoryId) &&
-        j.achievements[0].date
+        typeof j.achievements[0].date === 'string'
     )
 }
 // eslint-disable-next-line max-params

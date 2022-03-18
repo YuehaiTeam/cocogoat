@@ -63,7 +63,7 @@
             :custom-class="$style.scannerResultDialog"
             destroy-on-close
         >
-            以下为失败列表，您可以自行检查后添加。
+            以下为失败和识别到的未完成成就列表，您可以自行检查确认后手动添加。
             <div class="faildResults">
                 <img v-for="(image, index) in scannerResult.faildImages" :key="index" :src="image" />
             </div>
@@ -90,15 +90,16 @@
                 >
                     <template #before>
                         <div class="page-before">
-                            <div class="before-right">
-                                <el-input v-model="search" placeholder="搜索成就">
-                                    <template #suffix>
-                                        <span class="fa-icon">
-                                            <fa-icon icon="search" />
-                                        </span>
-                                    </template>
-                                </el-input>
-                            </div>
+                            <el-button class="status-switch" @click="sortByStatus = !sortByStatus">
+                                未完成优先：{{ sortByStatus ? '开' : '关' }}
+                            </el-button>
+                            <el-input v-model="search" class="search-box" placeholder="搜索成就">
+                                <template #suffix>
+                                    <span class="fa-icon">
+                                        <fa-icon icon="search" />
+                                    </span>
+                                </template>
+                            </el-input>
                         </div>
                     </template>
                     <template v-slot="{ item: i, active }">
@@ -179,6 +180,7 @@ export default defineComponent({
         const frameSrc = router.resolve({ name: 'frames.achievement.scan' }).href
         const achievementFin = ref({} as Record<number, IAchievementStore>)
         const achievementFinCount = ref({} as Record<number, number>)
+        const sortByStatus = ref(true)
         const calcFin = () => {
             const newCount = {} as Record<number, number>
             const newFin = {} as Record<number, IAchievementStore>
@@ -206,31 +208,33 @@ export default defineComponent({
             return achievementCat.value.find((i) => i.id === currentCatId.value) || achievementCat.value[0]
         })
         const currentAch = computed(() => {
-            let data = currentCat.value.achievements.concat([]).sort((a, b) => {
-                let ret = 0
-                let fa = achievementFin.value[a.id]
-                let fb = achievementFin.value[b.id]
-                if (a.postStage) {
-                    let p = a
-                    while (p.postStage) {
-                        const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
-                        p = q || p
+            let data = currentCat.value.achievements.concat([])
+            if (sortByStatus.value)
+                data = data.sort((a, b) => {
+                    let ret = 0
+                    let fa = achievementFin.value[a.id]
+                    let fb = achievementFin.value[b.id]
+                    if (a.postStage) {
+                        let p = a
+                        while (p.postStage) {
+                            const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
+                            p = q || p
+                        }
+                        fa = achievementFin.value[p.id]
                     }
-                    fa = achievementFin.value[p.id]
-                }
-                if (b.postStage) {
-                    let p = b
-                    while (p.postStage) {
-                        const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
-                        p = q || p
+                    if (b.postStage) {
+                        let p = b
+                        while (p.postStage) {
+                            const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
+                            p = q || p
+                        }
+                        fb = achievementFin.value[p.id]
                     }
-                    fb = achievementFin.value[p.id]
-                }
-                if (a.preStage === b.id) return 1
-                if (fa && !fb) return 1
-                if (!fa && fb) return -1
-                return ret
-            })
+                    if (a.preStage === b.id) return 1
+                    if (fa && !fb) return 1
+                    if (!fa && fb) return -1
+                    return ret
+                })
             if (search.value.trim()) {
                 data = data.filter((e) => {
                     const hasThis = e.name.toLowerCase().includes(search.value.toLowerCase())
@@ -321,6 +325,7 @@ export default defineComponent({
             CustomElScrollVue,
             ...useExportAchievements(),
             showImport,
+            sortByStatus,
         }
     },
 })
@@ -338,6 +343,10 @@ export default defineComponent({
         height: 350px;
         font-family: Consolas, monospace;
     }
+}
+.scanner-result-dialog {
+    width: 600px !important;
+    max-width: 90%;
     :global {
         .faildResults {
             margin-top: 20px;
@@ -348,6 +357,7 @@ export default defineComponent({
             box-sizing: border-box;
             display: block;
             overflow-y: scroll;
+            overflow-x: hidden;
             img {
                 max-width: 100%;
                 border: 1px solid #ddd;
@@ -357,10 +367,6 @@ export default defineComponent({
             }
         }
     }
-}
-.scanner-result-dialog {
-    width: 600px !important;
-    max-width: 90%;
 }
 .achievement-view {
     position: relative;
@@ -387,6 +393,16 @@ export default defineComponent({
             right: 0;
             .page-before {
                 padding-top: 15px;
+                .status-switch {
+                    float: left;
+                    width: 130px;
+                    box-sizing: border-box;
+                }
+
+                .search-box {
+                    width: calc(100% - 130px);
+                    float: right;
+                }
             }
             .page-after {
                 .el-divider {

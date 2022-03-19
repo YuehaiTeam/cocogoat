@@ -162,6 +162,7 @@ export async function scannerOnImage(data: ICVMat, keepLastRow = false, skipDiff
     }
 }
 
+// eslint-disable-next-line complexity
 export async function recognizeAchievement(line: IAScannerBlocks): Promise<IAScannerData | IAScannerFaild> {
     let res: Achievement | null = null
     const title = line.blocks.find((e) => e.name === 'title')
@@ -233,7 +234,7 @@ export async function recognizeAchievement(line: IAScannerBlocks): Promise<IASca
             // 没有切出日期片，也认为是没有完成
             done = false
         }
-        return {
+        const ret = {
             success: true,
             done,
             achievement: res,
@@ -241,6 +242,10 @@ export async function recognizeAchievement(line: IAScannerBlocks): Promise<IASca
             date: result.date?.text ?? '',
             result,
         }
+        if (ret.status === '达成') {
+            ret.done = true
+        }
+        return ret
     } else {
         return { success: false, result }
     }

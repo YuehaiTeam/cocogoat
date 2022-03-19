@@ -102,7 +102,7 @@ class OneDriveSyncProvider implements SyncProvider {
             body: value === null ? undefined : JSON.stringify(fileData, null, 4),
         })
         const t = await res.text()
-        if (res.status === 200 || res.status === 201) {
+        if (res.status === 200 || res.status === 201 || res.status === 404) {
             return {
                 value,
                 lastModified: localNow,

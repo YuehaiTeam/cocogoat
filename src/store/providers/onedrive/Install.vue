@@ -54,7 +54,7 @@ export default defineComponent({
                 clientId +
                 `&response_type=code%20id_token&redirect_uri=` +
                 encodeURIComponent(redirectUrl) +
-                `&scope=openid,offline_access,Files.ReadWrite.AppFolder&response_mode=fragment&state=cocogoat-msft&nonce=` +
+                `&scope=openid,profile,offline_access,Files.ReadWrite.AppFolder&response_mode=fragment&state=cocogoat-msft&nonce=` +
                 new Date().getTime()
         }
         const tokenMsft = async () => {

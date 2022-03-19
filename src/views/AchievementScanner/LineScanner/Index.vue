@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div v-if="step === 2" class="step2">
-                <el-progress type="circle" :percentage="progress" />
+                <el-progress type="circle" :percentage="progress" :format="(percent) => percent.toFixed(2) + '%'" />
                 <div class="inline-status">
                     <float-content
                         :in-float="false"
@@ -153,9 +153,7 @@ export default defineComponent({
             }
         })
         const progress = computed(() => {
-            return Math.round(
-                ((recognized.value.success + recognized.value.fail + dup.value) / images.value.length) * 100,
-            )
+            return ((recognized.value.success + recognized.value.fail + dup.value) / images.value.length) * 100
         })
         watch([images, recognized, dup], () => {
             send('progress', {
@@ -166,29 +164,12 @@ export default defineComponent({
         })
         const route = useRoute()
         const recoginzeWorker = async ({ image, thread }: { image: HTMLImageElement; thread: boolean }) => {
-            let p = recognizeAchievement
-            let c = scannerOnLine
+            let s = scannerOnLine
             if (thread) {
-                p = recognizeAchievement2
-                c = scannerOnLine2
+                s = scannerOnLine2
             }
             const imat = await IMatFromImageElement(image)
-            const line = await c(imat)
-            if (!line || line.length <= 0) {
-                const r = {
-                    success: false,
-                } as IAScannerFaild
-                r.images = {
-                    main: image.src,
-                }
-                results.value.push(r)
-                new Image().src = r.images.main
-                return
-            }
-            const r = await p({
-                image: imat,
-                blocks: line,
-            })
+            const r = await s(imat)
             // 检查重复
             if (r.success) {
                 const r2 = results.value.find((i) => {
@@ -196,7 +177,7 @@ export default defineComponent({
                     const n = i as IAScannerData
                     return n.achievement.id === r.achievement.id
                 })
-                if (route.query.withImage) {
+                if (!r.done || route.query.withImage) {
                     r.images = {
                         main: image.src,
                     }
@@ -239,7 +220,7 @@ export default defineComponent({
             }
         })
 
-        const { recognizeAchievement, recognizeAchievement2, scannerOnLine, scannerOnLine2 } = getScannerInstance()
+        const { scannerOnLine, scannerOnLine2 } = getScannerInstance()
         return {
             step,
             load,

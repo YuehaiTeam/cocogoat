@@ -75,7 +75,9 @@ export default defineComponent({
         const showFaildImages = ref(false)
         const finished = ref(false)
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
-        const faildResults = computed(() => results.value.filter((item) => !item.success).map((e) => e.images?.main))
+        const faildResults = computed(() =>
+            results.value.filter((item) => !item.success || !item.done).map((e) => e.images?.main),
+        )
         const contentFrame = ref<HTMLIFrameElement | null>(null)
 
         const route = useRoute()
@@ -87,7 +89,7 @@ export default defineComponent({
             window.addEventListener('message', (ev: MessageEvent) => {
                 const { app, event, data } = ev.data
                 if (app !== 'cocogoat.scanner.achievement') return
-                console.log(event, data)
+                // console.log(event, data)
                 if (event === 'ready') {
                     finished.value = false
                     return

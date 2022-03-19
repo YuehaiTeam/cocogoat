@@ -37,12 +37,13 @@ export interface IAScannerFaild extends IAScannerBase {
 }
 export interface IAScannerData extends IAScannerBase {
     success: true
+    done: boolean
     achievement: Achievement
     status: string
     date: string
 }
 
-export interface IAScannerLine {
+export interface IAScannerBlocks {
     image: ICVMat
     blocks: {
         name: string
@@ -50,7 +51,34 @@ export interface IAScannerLine {
         image: ICVMat
     }[]
 }
+export interface IAScannerLine {
+    image: ICVMat
+    x: number
+    y: number
+}
 export async function scannerOnLine(data: ICVMat) {
+    const cv = await getCV()
+    const raw = fromIMat(cv, data)
+    const splited = cvSplitAchievement(cv, raw).map((e) => {
+        const tmpData = toIMat(cv, e.roi)
+        e.roi.delete()
+        return {
+            name: e.name,
+            rect: e.rect,
+            image: tmpData,
+        }
+    })
+    if (!splited || splited.length <= 0) {
+        return {
+            success: false,
+        } as IAScannerFaild
+    }
+    return await recognizeAchievement({
+        image: data,
+        blocks: splited,
+    })
+}
+export async function scannerSplitLine(data: ICVMat) {
     const cv = await getCV()
     const raw = fromIMat(cv, data)
     return cvSplitAchievement(cv, raw).map((e) => {
@@ -112,15 +140,8 @@ export async function scannerOnImage(data: ICVMat, keepLastRow = false) {
             const tmpData = toIMat(cv, tmp)
             results.push({
                 image: tmpData,
-                blocks: cvSplitAchievement(cv, tmp).map((e) => {
-                    const tmpData = toIMat(cv, e.roi)
-                    e.roi.delete()
-                    return {
-                        name: e.name,
-                        rect: e.rect,
-                        image: tmpData,
-                    }
-                }),
+                x: 0,
+                y,
             })
             try {
                 tmp.delete()
@@ -134,7 +155,7 @@ export async function scannerOnImage(data: ICVMat, keepLastRow = false) {
     }
 }
 
-export async function recognizeAchievement(line: IAScannerLine): Promise<IAScannerData | IAScannerFaild> {
+export async function recognizeAchievement(line: IAScannerBlocks): Promise<IAScannerData | IAScannerFaild> {
     let res: Achievement | null = null
     const title = line.blocks.find((e) => e.name === 'title')
     const subtitle = line.blocks.find((e) => e.name === 'subtitle')
@@ -178,6 +199,7 @@ export async function recognizeAchievement(line: IAScannerLine): Promise<IAScann
         }
     }
     if (res) {
+        let done = true
         const status = line.blocks.find((e) => e.name === 'status')
         const date = line.blocks.find((e) => e.name === 'date')
         if (status) {
@@ -190,15 +212,23 @@ export async function recognizeAchievement(line: IAScannerLine): Promise<IAScann
                 const [f, fin] = statusArr
                 if (!isNaN(Number(f)) && !isNaN(Number(fin)) && f < fin) {
                     // 未完成
-                    return { success: false, result }
+                    done = false
                 }
             }
         }
         if (date) {
             result.date = await recognize(date.image)
+            // 如果日期长度<4，我们认为是没完成的
+            if (result.date.text.length < 4) {
+                done = false
+            }
+        } else {
+            // 没有切出日期片，也认为是没有完成
+            done = false
         }
         return {
             success: true,
+            done,
             achievement: res,
             status: result.status?.text ?? '',
             date: result.date?.text ?? '',

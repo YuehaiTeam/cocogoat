@@ -60,7 +60,7 @@ export function useScannerFrame({
             const faildData = [] as IAScannerData[]
             const r = result
                 .filter((e: IAScannerData) => {
-                    if (!e.success) {
+                    if (!e.success || !e.done) {
                         faildData.push(e)
                         return false
                     }

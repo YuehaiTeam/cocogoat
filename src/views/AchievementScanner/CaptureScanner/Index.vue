@@ -3,8 +3,7 @@ import { CocogoatWebControl } from '@/modules/webcontrol'
 const webControl = new CocogoatWebControl()
 import { IMatFromImageData, toCanvas } from '@/utils/IMat'
 import { getScannerInstance } from '../scanner/scanner.worker'
-const { recognizeAchievement, recognizeAchievement2, scannerOnImage, initPromise, workerCV, workerOCR } =
-    getScannerInstance()
+const { scannerOnLine, scannerOnLine2, scannerOnImage, initPromise, workerCV, workerOCR } = getScannerInstance()
 enum S {
     Fail = -1,
     Init = 0,
@@ -23,7 +22,7 @@ import WebcontrolSwitch from './WebcontrolSwitch.vue'
 import { send } from '../utils'
 import delay from 'delay'
 import FastQ from 'fastq'
-import type { IAScannerData, IAScannerLine, IAScannerFaild } from '../scanner/scanner'
+import type { IAScannerData, IAScannerFaild, IAScannerLine } from '../scanner/scanner'
 import type { Rect } from '@/utils/opencv'
 import { useRoute } from 'vue-router'
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
@@ -32,6 +31,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 library.add(faTriangleExclamation, faInternetExplorer)
 import Loader from '../Common/Loader.vue'
 import Footer from '../Common/Footer.vue'
+import { ICVMat } from '@/utils/cv'
 export default defineComponent({
     name: 'AchievementScanner',
     components: {
@@ -56,12 +56,12 @@ export default defineComponent({
                 fail: results.value.filter((r) => !r.success).length,
             }
         })
-        const recoginzeWorker = async ({ line, thread }: { line: IAScannerLine | null; thread: boolean }) => {
+        const recoginzeWorker = async ({ line, thread }: { line: ICVMat | null; thread: boolean }) => {
             if (line) {
-                let p = recognizeAchievement
+                let p = scannerOnLine
                 if (thread && state.value === S.Processing) {
                     ocrQueue.concurrency = 2
-                    p = recognizeAchievement2
+                    p = scannerOnLine2
                 }
                 const r = await p(line)
                 // 检查重复
@@ -71,9 +71,9 @@ export default defineComponent({
                         const n = i as IAScannerData
                         return n.achievement.id === r.achievement.id
                     })
-                    if (route.query.withImage) {
+                    if (!r.done || route.query.withImage) {
                         r.images = {
-                            main: toCanvas(line.image).toDataURL(),
+                            main: toCanvas(line).toDataURL(),
                         }
                     }
                     if (r2) {
@@ -83,7 +83,7 @@ export default defineComponent({
                     }
                 } else {
                     r.images = {
-                        main: toCanvas(line.image).toDataURL(),
+                        main: toCanvas(line).toDataURL(),
                     }
                     results.value.push(r)
                     new Image().src = r.images.main
@@ -100,13 +100,16 @@ export default defineComponent({
         const cvWorker = async ({ imageData, keepLastLine }: { imageData: ImageData; keepLastLine: boolean }) => {
             const lines = await scannerOnImage(IMatFromImageData(imageData), keepLastLine)
             const scannedVal = scanned.value
+            const totalHeight = lines.reduce((a, b) => a + b.image.rows, 0)
+            let linepos = 0
             for (const line of lines) {
-                if (line.blocks.length > 2) {
+                if (line.image.rows > ((totalHeight / lines.length) * 2) / 3) {
                     // block太少的，认为是半行
-                    if (!firstLine) {
+                    if (!firstLine || linepos < 2) {
                         firstLine = line
+                        linepos++
                     }
-                    ocrQueue.push({ line, thread: scanned.value % 2 === 0 })
+                    ocrQueue.push({ line: line.image, thread: scanned.value % 2 === 0 })
                     scanned.value++
                 }
             }
@@ -114,7 +117,6 @@ export default defineComponent({
                 ocrQueue.push({ line: null, thread: false })
             }
 
-            let rect: Rect | null = null
             if (webControlEnabled.value) {
                 if (scannedVal === scanned.value) {
                     zeroTimes++
@@ -125,27 +127,6 @@ export default defineComponent({
                     zeroTimes = 0
                     state.value = S.Processing
                     return
-                }
-                if (!rect) {
-                    rect = await workerCV.getRect()
-                }
-                if (firstLine && rect) {
-                    const title = firstLine.blocks.find((e) => e.name === 'title')
-                    if (title) {
-                        const { x, y } = await webControl.toAbsolute(
-                            webControlEnabled.value,
-                            rect.x + (title.rect.x * 2) / 3 + 10,
-                            rect.y + title.rect.y * 1.5,
-                        )
-                        webControl.SetCursorPos(x, y)
-                        await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTDOWN, 0, 0, 0)
-                        await delay(50)
-                        await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTUP, 0, 0, 0)
-                        await delay(50)
-                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 5)
-                        await delay(10)
-                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 5)
-                    }
                 }
             }
         }
@@ -179,15 +160,45 @@ export default defineComponent({
         const scannerLoop = async () => {
             tempCanvas.width = video.value.videoWidth
             tempCanvas.height = video.value.videoHeight
+            let rect: Rect | null = null
+            let clickPos = { x: 0, y: 0 }
+            const doWebControl = async () => {
+                if (!rect) {
+                    rect = await workerCV.getRect()
+                }
+                if (firstLine && rect) {
+                    if (!clickPos.x || !clickPos.y) {
+                        clickPos = await webControl.toAbsolute(
+                            webControlEnabled.value,
+                            rect.x + firstLine.image.rows / 2,
+                            rect.y + firstLine.y + firstLine.image.rows / 2,
+                        )
+                    }
+                    await webControl.SetCursorPos(clickPos.x, clickPos.y)
+                    await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTDOWN, 0, 0, 0)
+                    await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTUP, 0, 0, 0)
+                    for (let i = 0; i < 11; i++) {
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 1)
+                    }
+                }
+                // wait sometime before capture
+                await delay(50)
+            }
             while (state.value === S.Capture) {
                 try {
-                    tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
-                    const imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
-                    if (imageData) {
-                        await Promise.all([cvQueue.push({ imageData, keepLastLine: false }), delay(200)])
-                    } else {
-                        await delay(500)
+                    let imageData = null as ImageData | null
+                    while (!imageData) {
+                        console.info('-> capture')
+                        tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
+                        imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+                        if (!imageData) {
+                            console.warn('->capture FAILD')
+                            await delay(60)
+                        }
                     }
+                    console.info('-> process')
+                    cvQueue.push({ imageData, keepLastLine: false })
+                    await (webControlEnabled.value ? doWebControl() : delay(200))
                 } catch (e) {}
             }
         }

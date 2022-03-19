@@ -18,7 +18,7 @@
                     <h2>
                         自动扫描
                         <small v-if="scannerCompatible">
-                            <div>自动滚动自动扫描</div>
+                            <div>滚动页面自动扫描</div>
                             <div>推荐电脑用户使用</div>
                         </small>
                         <small v-else style="color: #fe6565">
@@ -27,7 +27,7 @@
                         </small>
                     </h2>
                 </router-link>
-                <router-link class="one disabled" :to="{ name: 'frames.achievement.scan' }">
+                <router-link class="one" :to="{ name: 'frames.achievement.scan.screenshot-scanner' }">
                     <i>
                         <fa-icon icon="crop-simple" />
                     </i>
@@ -35,7 +35,7 @@
                         截图识别
                         <small>
                             <div>手动截图上传识别</div>
-                            <div>暂未开发敬请期待</div>
+                            <div>手机用户可以选择</div>
                         </small>
                     </h2>
                 </router-link>

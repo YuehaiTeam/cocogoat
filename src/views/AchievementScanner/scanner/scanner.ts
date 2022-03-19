@@ -91,7 +91,7 @@ export async function scannerSplitLine(data: ICVMat) {
         }
     })
 }
-export async function scannerOnImage(data: ICVMat, keepLastRow = false) {
+export async function scannerOnImage(data: ICVMat, keepLastRow = false, skipDiff = false) {
     const cv = await getCV()
     try {
         /* cut rect */
@@ -117,7 +117,7 @@ export async function scannerOnImage(data: ICVMat, keepLastRow = false) {
         }
         let img = src.clone()
         /* diff */
-        if (lastImage) {
+        if (!skipDiff && lastImage) {
             const diff = await cvDiffImage(lastImage, img)
             if (!diff) {
                 // 滚动太小，不处理
@@ -127,7 +127,10 @@ export async function scannerOnImage(data: ICVMat, keepLastRow = false) {
             }
             img.delete()
             img = diff
-            lastImage.delete()
+            try {
+                lastImage.delete()
+            } catch (e) {}
+            lastImage = null
         }
         /* get new rows */
         const rows = await cvSplitImage(img)
@@ -148,7 +151,11 @@ export async function scannerOnImage(data: ICVMat, keepLastRow = false) {
             } catch (e) {}
         })
         img.delete()
-        lastImage = src
+        if (!skipDiff) {
+            lastImage = src
+        } else {
+            src.delete()
+        }
         return results
     } catch (e) {
         throw cvTranslateError(cv, e)

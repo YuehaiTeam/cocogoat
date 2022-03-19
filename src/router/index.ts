@@ -87,6 +87,11 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'frames.achievement.scan.line-scanner',
                 component: () => import('@/views/AchievementScanner/LineScanner/Index.vue'),
             },
+            {
+                path: 'screenshot',
+                name: 'frames.achievement.scan.screenshot-scanner',
+                component: () => import('@/views/AchievementScanner/ScreenshotScanner/Index.vue'),
+            },
         ],
     },
     /* Tools */

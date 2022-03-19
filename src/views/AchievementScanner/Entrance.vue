@@ -8,18 +8,22 @@
             </h1>
             <div class="method-list">
                 <router-link
-                    v-if="scannerCompatible"
                     :to="{ name: 'frames.achievement.scan.capture-scanner', params: { direct: true } }"
                     class="one"
+                    :class="{ disabled: !scannerCompatible }"
                 >
                     <i>
                         <fa-icon icon="desktop" />
                     </i>
                     <h2>
                         自动扫描
-                        <small>
+                        <small v-if="scannerCompatible">
                             <div>自动滚动自动扫描</div>
                             <div>推荐电脑用户使用</div>
+                        </small>
+                        <small v-else style="color: #fe6565">
+                            <div>暂不支持该浏览器</div>
+                            <div style="font-size: 12px">请换用Chrome或Edge</div>
                         </small>
                     </h2>
                 </router-link>

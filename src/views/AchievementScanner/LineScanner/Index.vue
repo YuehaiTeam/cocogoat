@@ -35,6 +35,9 @@
                         class="scroller"
                         key-field="id"
                     >
+                        <template #before>
+                            <el-empty v-if="images.length <= 0" description="请添加图片" />
+                        </template>
                         <template v-slot="{ item: i, active }">
                             <DynamicScrollerItem :item="i" :active="active" :size-dependencies="[]">
                                 <img :src="i.src" />

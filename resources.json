@@ -13,7 +13,7 @@
     {
         "tag": "ort",
         "test": "ort-wasm-simd.wasm",
-        "prefix": "https://lib.baomitu.com/onnxruntime-web/1.10.0/",
+        "prefix": "https://s1.pstatp.com/cdn/expire-1-y/onnxruntime-web/1.10.0/",
         "resources": {
             "ort-wasm-simd.wasm": "ort-wasm-simd.wasm",
             "ort-wasm-simd-threaded.wasm": "ort-wasm-simd-threaded.wasm",

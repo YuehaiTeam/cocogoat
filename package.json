@@ -38,6 +38,7 @@
     "util": "^0.12.4",
     "vue": "^3.2.31",
     "vue-demi": "^0.12.1",
+    "vue-monaco": "^1.2.2",
     "vue-router": "^4.0.3",
     "vue-virtual-scroller": "^2.0.0-alpha.1"
   },

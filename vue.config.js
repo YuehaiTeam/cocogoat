@@ -67,6 +67,9 @@ module.exports = defineConfig({
             util: require.resolve('util'),
             '@genshin-data': require('path').resolve(__dirname, 'src', 'plugins', 'genshin-data', 'data'),
         })
+        config.externals({
+            'monaco-editor': 'monaco',
+        })
         config.plugin('corsWorkerPlugin').use(corsWorkerPlugin)
         config.module.rule('ts').use('ifdef-loader').loader('ifdef-loader').options({
             SINGLEFILE: singleFile,

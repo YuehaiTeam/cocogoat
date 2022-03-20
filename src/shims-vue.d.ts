@@ -8,9 +8,13 @@ declare module '*.vue' {
 declare module 'nd4js'
 
 declare module '@/plugins/ocr/*'
+declare module '@/plugins/yas/*'
 
 declare module '*?raw'
+declare module '*?txt'
 declare module '*?rawnolocal'
+
+declare module 'vue-monaco'
 
 declare module '@/../resources.json' {
     import { IResourceItem } from './resources'

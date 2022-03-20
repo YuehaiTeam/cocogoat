@@ -94,6 +94,22 @@ const routes: Array<RouteRecordRaw> = [
             },
         ],
     },
+    {
+        path: '/frames/playground',
+        name: 'frames.playground',
+        component: () => import('@/views/Playground/Index.vue'),
+    },
+    {
+        path: '/extra/playground',
+        component: () => import('@/views/Layout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'extra.playground',
+                component: () => import('@/views/Playground/Frame.vue'),
+            },
+        ],
+    },
     /* Tools */
     {
         path: '/extra/achievement-to-seelie',

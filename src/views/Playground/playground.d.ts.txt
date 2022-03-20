@@ -1,0 +1,3 @@
+declare const cv_in: HTMLImageElement
+declare const cv_sub: HTMLImageElement
+declare const cv_canvas: HTMLCanvasElement

@@ -32,6 +32,17 @@
                             </div>
                             <div class="text">扫描成就并导出<br />到Seelie.me</div>
                         </router-link>
+                        <router-link :class="$style.extraOne" style="color: #1e1e1e" :to="{ name: 'extra.playground' }">
+                            <div class="circle">
+                                <div class="img" style="border-color: #1e1e1e">
+                                    <fa-icon icon="terminal" />
+                                </div>
+                                <div class="svg-w" style="background: #1e1e1e">
+                                    <icon-cocogoat style="fill: #fff" />
+                                </div>
+                            </div>
+                            <div class="text">OpenCV.js<br />Playground</div>
+                        </router-link>
                     </div>
                 </div>
             </div>
@@ -65,17 +76,19 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faInfinity, faFolderTree } from '@fortawesome/free-solid-svg-icons'
+import { faInfinity, faFolderTree, faTerminal } from '@fortawesome/free-solid-svg-icons'
 import { faGithubAlt, faQq } from '@fortawesome/free-brands-svg-icons'
-library.add(faGithubAlt, faQq, faInfinity, faFolderTree)
+library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal)
 
 import IconAchievement from '@/components/Icons/achievement.vue'
+import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import BuildInfo from '@/components/BuildInfo.vue'
 
 export default defineComponent({
     name: 'HomeView',
     components: {
         IconAchievement,
+        IconCocogoat,
         BuildInfo,
     },
 })
@@ -210,11 +223,26 @@ a.card {
             position: relative;
             width: 88px;
             height: 88px;
-            img {
+            margin: 0 auto;
+            padding-right: 5px;
+            img,
+            .img {
                 width: 100%;
                 height: 100%;
                 border-radius: 100%;
                 border: 2px solid #e3c996;
+                &.img {
+                    display: flex;
+                    align-content: center;
+                    justify-content: center;
+                    align-items: center;
+                    padding-bottom: 5px;
+                    padding-right: 5px;
+                    box-sizing: border-box;
+                }
+                .svg-inline--fa {
+                    width: 60px;
+                }
             }
 
             .svg-w {

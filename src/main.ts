@@ -42,7 +42,7 @@ declare global {
         init(app, router)
     }
     app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(router).mount('#toki')
-    if (top === window) {
+    if (top === window && !location.href.includes('/frames')) {
         // Don't sync in iframes
         initSync()
     }

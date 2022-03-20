@@ -5,7 +5,7 @@ import resources from '@/resources'
 
 import * as nd from 'nd4js'
 
-import { getCV, ICVMat } from '@/utils/cv'
+import { ICVMat } from '@/utils/cv'
 
 const ocrMap: string[] = ocrString.toString().trim().replace(/\r/g, '').split('\n')
 ocrMap.unshift('\0')
@@ -18,8 +18,7 @@ ort.env.wasm.numThreads = 1
 let session: ort.InferenceSession | null = null
 
 export async function init() {
-    const [s] = await Promise.all([ort.InferenceSession.create(resources['ppocr.ort']), getCV()])
-    session = s
+    session = await ort.InferenceSession.create(resources['ppocr.ort'])
     return session
 }
 

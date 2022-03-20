@@ -2,15 +2,27 @@
     <Layout full-height style="background: #eee">
         <template #title>
             <div class="teleport-title">
-                <span style="font-family: genshin">椰羊 · 成就</span>
+                <span style="font-family: genshin">
+                    椰羊 · 成就 <small :class="$style.totalPercent">{{ totalPercent }}</small>
+                </span>
             </div>
         </template>
         <template #actions>
             <div class="actions">
-                <el-button v-show="!showScanner" type="danger" plain @click="doClear">
-                    <fa-icon icon="trash-can" />
-                    清空
-                </el-button>
+                <el-popover v-model:visible="showClear" :width="190" placement="bottom" append-to-body>
+                    <center>真的要清空吗？</center>
+                    <div style="text-align: center; margin: 0; margin-top: 15px">
+                        <el-link style="margin-right: 15px" @click="showClear = false">取消</el-link>
+                        <el-link type="danger" style="margin-right: 15px" @click="doClear(false)">清空当前</el-link>
+                        <el-button size="small" type="danger" plain @click="doClear(true)">清空全部</el-button>
+                    </div>
+                    <template #reference>
+                        <el-button v-show="!showScanner" type="danger" plain @click="showClear = true">
+                            <fa-icon icon="trash-can" />
+                            清空
+                        </el-button>
+                    </template>
+                </el-popover>
                 <el-button v-show="!showScanner" class="import-button" @click="showImport = !showImport">
                     导入
                 </el-button>
@@ -181,19 +193,24 @@ export default defineComponent({
         const achievementFin = ref({} as Record<number, IAchievementStore>)
         const achievementFinCount = ref({} as Record<number, number>)
         const sortByStatus = ref(true)
+        const totalPercent = ref('0.00%')
         const calcFin = () => {
             const newCount = {} as Record<number, number>
             const newFin = {} as Record<number, IAchievementStore>
+            let totalFin = 0
             store.value.achievements.forEach((e) => {
                 e.categoryId = e.categoryId || 0
                 if (e.id) {
                     newFin[e.id] = e
                     newCount[e.categoryId] = newCount[e.categoryId] || 0
                     newCount[e.categoryId]++
+                    totalFin++
                 }
             })
             achievementFinCount.value = newCount
             achievementFin.value = newFin
+            const totalCount = i18n.value.achievements.reduce((a, b) => a + b.achievements.length, 0)
+            totalPercent.value = `${((totalFin / totalCount) * 100).toFixed(2)}%`
         }
         watch(store, calcFin, { deep: true, immediate: true })
         const achievementCat = computed(() => {
@@ -281,13 +298,16 @@ export default defineComponent({
             } as IAchievementStore
             store.value.achievements.push(finishedData)
         }
-        const doClear = async () => {
-            try {
-                await ElMessageBox.confirm('真的要清空吗？', '提示')
-            } catch (e) {
-                return
+        const showClear = ref(false)
+        const doClear = async (all: boolean) => {
+            if (all) {
+                store.value.achievements = []
+            } else {
+                store.value.achievements = store.value.achievements.filter(
+                    (i) => i.categoryId !== currentCat.value.originalId,
+                )
             }
-            store.value.achievements = []
+            showClear.value = false
         }
         const scannerFrame = ref<HTMLIFrameElement | null>(null)
         const scannerResult = ref({ show: false, faildImages: [] as string[] })
@@ -320,17 +340,24 @@ export default defineComponent({
             currentAch,
             updateFinished,
             doClear,
+            showClear,
             scannerFrame,
             scannerResult,
             CustomElScrollVue,
             ...useExportAchievements(),
             showImport,
             sortByStatus,
+            totalPercent,
         }
     },
 })
 </script>
 <style lang="scss" module>
+.total-percent {
+    color: #999;
+    font-size: 14px;
+    padding-left: 5px;
+}
 .import-dialog {
     width: 500px !important;
     max-width: 90%;

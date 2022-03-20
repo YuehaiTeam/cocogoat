@@ -3,7 +3,7 @@
         <template #title>
             <div class="teleport-title">
                 <span style="font-family: genshin">
-                    椰羊 · 成就 <small :class="$style.totalPercent">{{ totalPercent }}</small>
+                    椰羊 · 成就 <small :class="$style.totalPercent">{{ totalFin }} / {{ totalCount }}</small>
                 </span>
             </div>
         </template>
@@ -193,24 +193,26 @@ export default defineComponent({
         const achievementFin = ref({} as Record<number, IAchievementStore>)
         const achievementFinCount = ref({} as Record<number, number>)
         const sortByStatus = ref(true)
-        const totalPercent = ref('0.00%')
+        const totalCount = ref(0)
+        const totalFin = ref(0)
         const calcFin = () => {
             const newCount = {} as Record<number, number>
             const newFin = {} as Record<number, IAchievementStore>
-            let totalFin = 0
+            let totalFin_ = 0
             store.value.achievements.forEach((e) => {
                 e.categoryId = e.categoryId || 0
                 if (e.id) {
                     newFin[e.id] = e
                     newCount[e.categoryId] = newCount[e.categoryId] || 0
                     newCount[e.categoryId]++
-                    totalFin++
+                    totalFin_++
                 }
             })
             achievementFinCount.value = newCount
             achievementFin.value = newFin
-            const totalCount = i18n.value.achievements.reduce((a, b) => a + b.achievements.length, 0)
-            totalPercent.value = `${((totalFin / totalCount) * 100).toFixed(2)}%`
+            totalCount.value =
+                totalCount.value || i18n.value.achievements.reduce((a, b) => a + b.achievements.length, 0)
+            totalFin.value = totalFin_
         }
         watch(store, calcFin, { deep: true, immediate: true })
         const achievementCat = computed(() => {
@@ -304,7 +306,7 @@ export default defineComponent({
                 store.value.achievements = []
             } else {
                 store.value.achievements = store.value.achievements.filter(
-                    (i) => i.categoryId !== currentCat.value.originalId,
+                    (i) => i.categoryId !== (currentCat.value.originalId || 0),
                 )
             }
             showClear.value = false
@@ -347,7 +349,8 @@ export default defineComponent({
             ...useExportAchievements(),
             showImport,
             sortByStatus,
-            totalPercent,
+            totalCount,
+            totalFin,
         }
     },
 })

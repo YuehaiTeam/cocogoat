@@ -95,6 +95,17 @@ const routes: Array<RouteRecordRaw> = [
         ],
     },
     {
+        path: '/frames/artifact-scanner',
+        component: () => import('@/views/ArtifactScanner/Index.vue'),
+        children: [
+            {
+                path: '',
+                name: 'frames.artifact.scan',
+                component: () => import('@/views/ArtifactScanner/Entrance.vue'),
+            },
+        ],
+    },
+    {
         path: '/frames/playground',
         name: 'frames.playground',
         component: () => import('@/views/Playground/Index.vue'),

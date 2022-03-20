@@ -27,19 +27,19 @@
             <div class="preview">
                 <div>
                     <span class="sel-span" @click="file1.click()">点此选择输入图片(<code>cv_in</code>)</span>
-                    <div class="cc">
-                        <img ref="imgel" />
+                    <div class="cc" @click="$event.currentTarget.classList.toggle('click')">
+                        <img :src="imgsrc" />
                     </div>
                 </div>
                 <div>
                     <span class="sel-span" @click="file2.click()">点此选择第二输入(<code>cv_sub</code>)</span>
-                    <div class="cc">
-                        <img ref="imgel2" />
+                    <div class="cc" @click="$event.currentTarget.classList.toggle('click')">
+                        <img :src="imgsrc2" />
                     </div>
                 </div>
                 <div>
                     <span>输出结果(<code>cv_canvas</code>)</span>
-                    <div class="cc">
+                    <div class="cc" @click="$event.currentTarget.classList.toggle('click')">
                         <canvas ref="cvsel" />
                     </div>
                 </div>
@@ -70,14 +70,17 @@
 <script lang="ts">
 /* eslint-disable @typescript-eslint/ban-ts-comment,@typescript-eslint/no-explicit-any */
 import { init as initOcr } from '@/modules/ocr'
+import { init as initYas } from '@/modules/yas'
 import { requireAsBlob, speedTest } from '@/resource-main'
 import { hasSIMD } from '@/utils/compatibility'
-import { getCV, cvTranslateError } from '@/utils/cv'
+import { getCV, cvTranslateError, toIMat, fromIMat } from '@/utils/cv'
 import { h, defineComponent, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import MonacoEditor from 'vue-monaco'
 import cvdts from './opencv.d.ts.txt?txt'
 import pldts from './playground.d.ts.txt?txt'
 import * as achievementScanner from '@/views/AchievementScanner/scanner/scanner.worker.expose'
+import * as artifactScanner from '@/views/ArtifactScanner/scanner/scanner.expose'
+import { IMatFromImageElement } from '@/utils/IMat'
 MonacoEditor.render = () => h('div')
 export default defineComponent({
     components: {
@@ -91,8 +94,10 @@ src.delete()`)
         const progressText = ref('')
         const amdRequire = ref(null as any)
         const loading = ref(true)
-        const imgel = ref(null as HTMLImageElement | null)
-        const imgel2 = ref(null as HTMLImageElement | null)
+        const imgel = new Image()
+        const imgel2 = new Image()
+        const imgsrc = ref('')
+        const imgsrc2 = ref('')
         const cvsel = ref(null as HTMLCanvasElement | null)
         function loadScript(src: string) {
             return new Promise((resolve, reject) => {
@@ -109,7 +114,7 @@ src.delete()`)
             const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
             await race
             await requireAsBlob(
-                [ortWasm, ocvWasm, 'ppocr.ort'],
+                [ortWasm, ocvWasm, 'ppocr.ort', 'yas.ort'],
                 (e) => {
                     progress.value = e
                 },
@@ -117,6 +122,7 @@ src.delete()`)
             )
             progressText.value = '应用初始化'
             const [cv] = await Promise.all([getCV(), initOcr()])
+            await initYas()
             // @ts-ignore
             const webpackJsonp = window.define
             const monacoBase = 'https://s1.pstatp.com/cdn/expire-1-y/monaco-editor/0.31.1/min/vs'
@@ -130,6 +136,10 @@ src.delete()`)
             // @ts-ignore
             window.c = {
                 achievement: achievementScanner.W,
+                artifact: artifactScanner.W,
+                toIMat,
+                fromIMat,
+                IMatFromImageElement,
             }
             amdRequire.value.config({ paths: { vs: monacoBase } })
             loading.value = false
@@ -139,15 +149,15 @@ src.delete()`)
             window.cvTranslateError = cvTranslateError
         })
         watch(
-            () => imgel.value,
+            () => cvsel.value,
             () => {
-                if (!imgel.value) {
+                if (!cvsel.value) {
                     return
                 }
                 // @ts-ignore
-                window.cv_in = imgel.value
+                window.cv_in = imgel
                 // @ts-ignore
-                window.cv_sub = imgel2.value
+                window.cv_sub = imgel2
                 // @ts-ignore
                 window.cv_canvas = cvsel.value
             },
@@ -158,11 +168,13 @@ src.delete()`)
             const file = files[0]
             const bloburi = URL.createObjectURL(file)
             const el = n === 1 ? imgel : imgel2
-            if (el.value) {
+            const sr = n === 1 ? imgsrc : imgsrc2
+            if (el) {
                 try {
-                    URL.revokeObjectURL(el.value.src)
+                    URL.revokeObjectURL(sr.value)
                 } catch (e) {}
-                el.value.src = bloburi
+                sr.value = bloburi
+                el.src = bloburi
             }
         }
         const editorChange = (ev: unknown) => {
@@ -175,8 +187,14 @@ src.delete()`)
             monaco.languages.typescript.javascriptDefaults.addExtraLib(pldts, 'playground.d.ts')
         }
         const run = function () {
-            // eslint-disable-next-line no-new-func
-            const execWrap = new Function(
+            let AsyncFunction
+            try {
+                // eslint-disable-next-line no-eval
+                AsyncFunction = eval('Object.getPrototypeOf(async function () {}).constructor')
+            } catch (e) {
+                AsyncFunction = Function
+            }
+            const execWrap = new AsyncFunction(
                 `try {;${code.value};} catch (e) {if (typeof e === 'number') {console.error(cvTranslateError(cv, e))}else{console.error(e)}}`,
             )
             try {
@@ -221,8 +239,8 @@ src.delete()`)
             progress,
             progressText,
             code,
-            imgel,
-            imgel2,
+            imgsrc,
+            imgsrc2,
             cvsel,
             onImageChange,
             editorChange,
@@ -296,6 +314,16 @@ src.delete()`)
                         align-items: center;
                         justify-content: center;
                         box-sizing: border-box;
+                        &.click {
+                            position: fixed;
+                            top: 50px;
+                            left: 50px;
+                            right: 50px;
+                            height: calc(100vh - 100px) !important;
+                            background: rgba(255, 255, 255, 0.3);
+                            border-radius: 10px;
+                            z-index: 5;
+                        }
                         img,
                         canvas {
                             border: 2px dashed #409eff;

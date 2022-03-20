@@ -1,3 +1,8 @@
 declare const cv_in: HTMLImageElement
 declare const cv_sub: HTMLImageElement
 declare const cv_canvas: HTMLCanvasElement
+declare const c: {
+    artifact: any
+    achievement: any
+}
+declare const $cocogoat: any

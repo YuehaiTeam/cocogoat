@@ -7,6 +7,7 @@ import cvWasmNormal from '@/plugins/opencv/opencv-normal.wasm?rawnolocal'
 import cvWasmSimd from '@/plugins/opencv/opencv-simd.wasm?raw'
 
 import ocrModel from '@/plugins/ocr/ppocr.ort?raw'
+import yasModel from '@/plugins/yas/yas.ort?raw'
 
 import resources, { IResourceItem, resourceInfo, setResources } from '@/resources'
 import testResources from '@/../resources.json'
@@ -27,6 +28,7 @@ export const defaultResources = {
     'opencv-normal.wasm': absoluteify(cvWasmNormal),
     'opencv-simd.wasm': absoluteify(cvWasmSimd),
     'ppocr.ort': absoluteify(ocrModel),
+    'yas.ort': absoluteify(yasModel),
 } as Record<string, string>
 
 export const absoluteSizes = {
@@ -37,6 +39,7 @@ export const absoluteSizes = {
     'opencv-normal.wasm': 3548861,
     'opencv-simd.wasm': 4752861,
     'ppocr.ort': 4504512,
+    'yas.ort': 8928032,
 } as Record<string, number>
 
 export function speedTest() {

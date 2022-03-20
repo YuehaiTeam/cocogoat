@@ -57,6 +57,7 @@ export class Mat extends NativeObject {
     roi: (rect: Rect) => Mat
     type: () => MatType
     static ones: (rows: number, cols: number, type: number) => Mat
+    ucharPtr: (row: number, col: number) => Uint8Array
 }
 
 export class RotateRect {

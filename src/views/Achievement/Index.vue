@@ -159,7 +159,6 @@ import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import { i18n } from '@/i18n'
 import { store } from '@/store'
 import { Achievement, IAchievementStore } from '@/typings/Achievement'
-import { ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'

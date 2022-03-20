@@ -241,7 +241,7 @@ a.card {
                     box-sizing: border-box;
                 }
                 .svg-inline--fa {
-                    width: 60px;
+                    width: 35px;
                 }
             }
 

@@ -92,9 +92,9 @@ export async function analyzeBag(src: Mat) {
     const borderT = panelRect.y - 10
     const borderB = panelRect.y + panelRect.height + 10
     const centerRect = new cv.Rect(borderL, borderT, borderR - borderL, borderB - borderT)
-    const countRect = rects
-        .filter((e) => e.x > borderR && e.y < borderT && e.width / e.height > 1.1)
-        .sort((a, b) => b.x - a.x)[0]
+    const topRects = rects.filter((e) => e.x > borderR && e.y < borderT)
+    const closeRect = topRects.sort((a, b) => b.x - a.x)[0]
+    const countRect = topRects.filter((e) => e.height !== closeRect.height && e.y < closeRect.y + closeRect.height)[0]
     const deleteRect = rects.filter((e) => e.x < borderL && e.y > borderB).sort((a, b) => a.x - b.x)[0]
     const ptopRect = rects
         .filter(

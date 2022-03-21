@@ -94,6 +94,10 @@ export async function recognizeArtifact(img: ICVMat | Mat) {
                 break
             case 'level':
                 artifact.level = parseInt(i.text, 10)
+                if (isNaN(artifact.level)) {
+                    success = false
+                    break
+                }
                 break
             case 'name':
                 matched = textBestmatch('str', i.text, artifactNames, i.text.length / 3)
@@ -219,7 +223,7 @@ export async function splitBottom(src: Mat) {
     cv.threshold(dst, dst, 200, 255, cv.THRESH_BINARY)
     const contours = new cv.MatVector()
     const hierarchy = new cv.Mat()
-    const M8 = cv.Mat.ones(1, 16, cv.CV_8U)
+    const M8 = cv.Mat.ones(1, 12, cv.CV_8U)
     const M7 = cv.Mat.ones(3, 8, cv.CV_8U)
     cv.erode(dst, dst, M8)
     cv.findContours(dst, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)

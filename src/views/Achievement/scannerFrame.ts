@@ -43,6 +43,7 @@ export function useScannerFrame({
                         if (preStage) {
                             const p = {
                                 ...e,
+                                done: true,
                                 success: true,
                                 date: '后续已完成',
                             }

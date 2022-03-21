@@ -55,10 +55,18 @@ async function combineData() {
     }
     await Promise.all(promises)
 }
+const deprecated = {
+    81006: 85000,
+    81007: 85001,
+    81008: 85002,
+    81009: 85003,
+    81011: 85004,
+    81012: 85005,
+    81013: 85006,
+}
 function processAchievement(jsondata) {
     jsondata.achievements = jsondata.achievements.filter(
-        (e) =>
-            ![84027, 82011, 82016, 82018, 84517, 84521, 85000, 85001, 85002, 85003, 85004, 85005, 85006].includes(e.id),
+        (e) => ![84027, 82011, 82016, 82018, 84517, 84521, ...Object.keys(deprecated)].includes(e.id),
     )
     jsondata.achievements.forEach((e) => {
         e.postStage = jsondata.achievements.find((p) => p.preStage === e.id)?.id

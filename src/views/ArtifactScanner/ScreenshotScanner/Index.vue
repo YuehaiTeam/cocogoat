@@ -15,7 +15,7 @@
                         <i>
                             <fa-icon icon="inbox" />
                         </i>
-                        <span>点击选择成就页面截图（支持多选）<br />或拖动图片到这里</span>
+                        <span>点击选择圣遗物截图（支持多选）<br />或拖动图片到这里</span>
                         <input
                             ref="fileInput"
                             multiple
@@ -32,7 +32,9 @@
                         <el-empty v-if="images.length <= 0">
                             <template #description>
                                 <p>
-                                    请上传完整的成就页面截图
+                                    支持完整背包圣遗物页面截图和圣遗物面板截图
+                                    <br />
+                                    上传背包截图时请确保所有图片分辨率一致
                                     <br />
                                     如无法多选请更换浏览器
                                 </p>
@@ -128,16 +130,12 @@ export default defineComponent({
             images.value = []
             loading.value = true
             const imagePromises = Array.from(files).map((file, index) => {
-                const reader = new FileReader()
-                reader.readAsDataURL(file)
                 return new Promise((resolve) => {
-                    reader.onload = () => {
-                        const img = new Image()
-                        img.src = reader.result as string
-                        img.id = 'rcycle-img-' + index
-                        img.onload = () => {
-                            resolve(img)
-                        }
+                    const img = new Image()
+                    img.src = URL.createObjectURL(file)
+                    img.id = 'rcycle-img-' + index
+                    img.onload = () => {
+                        resolve(img)
                     }
                 }) as Promise<HTMLImageElement>
             })
@@ -200,7 +198,6 @@ export default defineComponent({
                 result: results.value,
                 dup: dup.value,
             })
-            console.log(results.value)
         }
         watch(step, (v) => {
             if (v === 2) {

@@ -6,7 +6,7 @@
         </h1>
         <div class="method-list">
             <router-link
-                :to="{ name: 'frames.achievement.scan.capture-scanner', params: { direct: true } }"
+                :to="{ name: 'frames.artifact.scan.capture-scanner', params: { direct: true } }"
                 class="one"
                 :class="{ disabled: !scannerCompatible }"
             >
@@ -14,7 +14,7 @@
                     <fa-icon icon="desktop" />
                 </i>
                 <h2>
-                    自动扫描
+                    读屏扫描
                     <small v-if="scannerCompatible">
                         <div>滚动页面自动扫描</div>
                         <div>推荐电脑用户使用</div>

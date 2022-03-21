@@ -83,7 +83,7 @@ import { useRoute } from 'vue-router'
 import { IMatFromImageElement, toCanvas } from '@/utils/IMat'
 import FloatContent from '../CaptureScanner/FloatContent.vue'
 import { send } from '../utils'
-import { ICVMat } from '@/utils/cv'
+import type { ICVMat } from '@/utils/cv'
 
 library.add(faInbox)
 

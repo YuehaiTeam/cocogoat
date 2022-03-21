@@ -31,7 +31,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 library.add(faTriangleExclamation, faInternetExplorer)
 import Loader from '../Common/Loader.vue'
 import Footer from '../Common/Footer.vue'
-import { ICVMat } from '@/utils/cv'
+import type { ICVMat } from '@/utils/cv'
+import { measureLatency, tillChanged } from '@/utils/cv/measurement'
 export default defineComponent({
     name: 'AchievementScanner',
     components: {
@@ -162,7 +163,9 @@ export default defineComponent({
             tempCanvas.height = video.value.videoHeight
             let rect: Rect | null = null
             let clickPos = { x: 0, y: 0 }
-            const doWebControl = async () => {
+
+            let webControlLatency = -1
+            const doWebControl = async (doDelay = true) => {
                 if (!rect) {
                     rect = await workerCV.getRect()
                 }
@@ -177,18 +180,45 @@ export default defineComponent({
                     await webControl.SetCursorPos(clickPos.x, clickPos.y)
                     await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTDOWN, 0, 0, 0)
                     await webControl.mouse_event(webControl.MOUSEEVENTF_LEFTUP, 0, 0, 0)
-                    for (let i = 0; i < 11; i++) {
-                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 1)
+                    if (doDelay) {
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 11)
+                    } else {
+                        await webControl.mouse_event(webControl.MOUSEEVENTF_WHEEL, 0, 0, -120, 2)
                     }
                 }
-                // wait sometime before capture
-                await delay(50)
+                if (doDelay) {
+                    // wait sometime before capture
+                    await delay(webControlLatency > 0 ? webControlLatency : 60)
+                }
             }
+            const doMeasure = async () => {
+                console.log('->latency measurement start')
+                const res = await measureLatency(
+                    workerCV.diffCached,
+                    () => {
+                        let imageData = null as ImageData | null
+                        while (!imageData) {
+                            console.info('-> capture')
+                            tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
+                            imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+                            if (!imageData) {
+                                console.warn('->capture FAILD')
+                            }
+                        }
+                        return IMatFromImageData(imageData)
+                    },
+                    () => {
+                        return doWebControl(false)
+                    },
+                )
+                console.log('->latency measurement done', res)
+                webControlLatency = Math.min(130, Math.max(res.latency, 40))
+            }
+            let firstScroll = true
             while (state.value === S.Capture) {
                 try {
                     let imageData = null as ImageData | null
                     while (!imageData) {
-                        console.info('-> capture')
                         tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
                         imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
                         if (!imageData) {
@@ -196,9 +226,38 @@ export default defineComponent({
                             await delay(60)
                         }
                     }
-                    console.info('-> process')
                     cvQueue.push({ imageData, keepLastLine: false })
-                    await (webControlEnabled.value ? doWebControl() : delay(200))
+                    if (webControlEnabled.value) {
+                        if (firstScroll) {
+                            await delay(60)
+                            await doWebControl(false)
+                            await delay(100)
+                            firstScroll = false
+                        } else {
+                            await (webControlLatency > 0 ? doWebControl() : doMeasure())
+                        }
+                    } else {
+                        await tillChanged(
+                            workerCV.diffCached,
+                            () => {
+                                let imageData = null as ImageData | null
+                                while (!imageData) {
+                                    console.info('-> wait for change')
+                                    tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
+                                    imageData =
+                                        tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
+                                    if (!imageData) {
+                                        console.warn('->capture FAILD')
+                                    }
+                                }
+                                return IMatFromImageData(imageData)
+                            },
+                            {
+                                interval: 150,
+                            },
+                        )
+                        console.log('->changed')
+                    }
                 } catch (e) {}
             }
         }

@@ -36,10 +36,10 @@ export async function cvGetRect(src: Mat): Promise<{ x: number; y: number; width
 
 export async function cvDiffImage(m1: Mat, m2: Mat): Promise<Mat | false> {
     const cv = await getCV()
-    const d1 = new cv.Mat()
-    const d2 = new cv.Mat()
-    cv.cvtColor(m1, d1, cv.COLOR_RGBA2GRAY, 0)
-    cv.cvtColor(m2, d2, cv.COLOR_RGBA2GRAY, 0)
+    const d1 = m1.roi(new cv.Rect(50, 0, m1.cols / 2, m1.rows))
+    const d2 = m2.roi(new cv.Rect(50, 0, m2.cols / 2, m2.rows))
+    cv.cvtColor(d1, d1, cv.COLOR_RGBA2GRAY, 0)
+    cv.cvtColor(d2, d2, cv.COLOR_RGBA2GRAY, 0)
     cv.threshold(d1, d1, 160, 255, cv.THRESH_BINARY)
     cv.threshold(d2, d2, 160, 255, cv.THRESH_BINARY)
     const orb = new cv.ORB(300)

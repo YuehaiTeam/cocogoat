@@ -9,8 +9,8 @@
         </template>
         <template #actions>
             <div class="actions">
-                <el-popover v-model:visible="showClear" :width="190" placement="bottom" append-to-body>
-                    <center>真的要清空吗？</center>
+                <el-popover v-model:visible="showClear" :width="190" placement="bottom">
+                    <div style="text-align: center">真的要清空吗？</div>
                     <div style="text-align: center; margin: 0; margin-top: 15px">
                         <el-link style="margin-right: 15px" @click="showClear = false">取消</el-link>
                         <el-link type="danger" style="margin-right: 15px" @click="doClear(false)">清空当前</el-link>
@@ -172,7 +172,15 @@ import AchievementItem from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
 import ImportDialog from './ImportDialog.vue'
 import { uniqBy } from 'lodash'
-
+const deprecated = {
+    81006: 85000,
+    81007: 85001,
+    81008: 85002,
+    81009: 85003,
+    81011: 85004,
+    81012: 85005,
+    81013: 85006,
+} as Record<number, number>
 export default defineComponent({
     name: 'ArtifactIndex',
     components: {
@@ -200,6 +208,11 @@ export default defineComponent({
             let totalFin_ = 0
             store.value.achievements.forEach((e) => {
                 e.categoryId = e.categoryId || 0
+                // 81xxx -> 8500x for compatibility
+                if (deprecated[e.id]) {
+                    console.log('Converted', e.id, 'to', deprecated[e.id])
+                    e.id = deprecated[e.id]
+                }
                 if (e.id) {
                     newFin[e.id] = e
                     newCount[e.categoryId] = newCount[e.categoryId] || 0

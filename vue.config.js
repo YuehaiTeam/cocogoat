@@ -1,5 +1,3 @@
-const path = require('path')
-const fsex = require('fs-extra')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')

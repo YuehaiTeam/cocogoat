@@ -44,6 +44,14 @@ export class CocogoatWebControl {
             }
             return request
         })
+        this.client.interceptors.response.use(undefined, (e) => {
+            const er = e as unknown as FlyError
+            if (er.status === 410) {
+                console.warn('Control stopped by user')
+                return new Error('ECANCEL')
+            }
+            return e
+        })
     }
     async check(): Promise<boolean> {
         try {

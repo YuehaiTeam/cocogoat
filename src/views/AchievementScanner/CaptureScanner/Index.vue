@@ -258,7 +258,11 @@ export default defineComponent({
                         )
                         console.log('->changed')
                     }
-                } catch (e) {}
+                } catch (e) {
+                    if (e instanceof Error && e.message === 'ECANCEL') {
+                        state.value = S.Processing
+                    }
+                }
             }
         }
         watch(

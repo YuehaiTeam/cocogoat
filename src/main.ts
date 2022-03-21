@@ -8,6 +8,7 @@ import View from '@/views/View.vue'
 import { store, currentUser, options } from './store'
 import { initi18n, i18n } from '@/i18n'
 import { initSync } from './store/sync'
+import { createPinia } from 'pinia'
 
 // 兼容性检查：
 export let notInSameoriginFrame = parent === window
@@ -46,6 +47,7 @@ declare global {
         // Don't sync in iframes
         initSync()
     }
+    app.use(createPinia())
     window.$cocogoat = {
         app,
         store,

@@ -23,8 +23,8 @@ export function createWorker() {
 export function initScanner() {
     const { worker: workerCV, _worker: w1 } = createWorker()
     const { worker: workerOCR, _worker: w2 } = createWorker()
-    const { recognize } = workerCV
-    // const { recognizeAchievement, scannerOnLine } = workerOCR
+    const { onScreenShot } = workerCV
+    const { onScreenShot: onScreenShot2 } = workerOCR
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let progressHandler = (progress: number) => {
         // do nothing
@@ -48,8 +48,8 @@ export function initScanner() {
             await Promise.all([
                 workerCV.setResources(resources),
                 workerOCR.setResources(resources),
-                workerCV.initMap(i18n.value.achievements),
-                workerOCR.initMap(i18n.value.achievements),
+                workerCV.initMap(i18n.value.artifacts, i18n.value.atifactParams, i18n.value.characters),
+                workerOCR.initMap(i18n.value.artifacts, i18n.value.atifactParams, i18n.value.characters),
             ])
             progressHandler(100)
         } catch (e) {
@@ -62,7 +62,8 @@ export function initScanner() {
     })()
 
     return {
-        _yas_1: recognize,
+        onScreenShot,
+        onScreenShot2,
         initPromise,
         workerCV,
         workerOCR,

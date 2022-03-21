@@ -37,6 +37,12 @@ declare module '@genshin-data/*/characters.json' {
     export default t
 }
 
+declare module '@genshin-data/*/artifacts.json' {
+    import { IArtifactDesc } from '@/typings/Artifact'
+    const t: IArtifactDesc[]
+    export default t
+}
+
 declare module 'flyio/dist/npm/fly'
 declare module 'vue-virtual-scroller'
 declare module 'vue-virtual-scroller/src/index'

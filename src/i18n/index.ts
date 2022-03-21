@@ -2,11 +2,14 @@ import characterImages from '@/assets/characters'
 import { options } from '@/store'
 import { AchievementCategory } from '@/typings/Achievement'
 import { ICharacter } from '@/typings/Character'
+import { IArtifactDesc } from '@/typings/Artifact'
 import { ref, watch } from 'vue'
 function createEmptyI18n() {
     return {
         achievements: [] as AchievementCategory[],
-        character: [] as ICharacter[],
+        characters: [] as ICharacter[],
+        artifacts: [] as IArtifactDesc[],
+        atifactParams: {} as Record<string, string>,
         characterAvatar: {} as Record<string, string>,
     }
 }

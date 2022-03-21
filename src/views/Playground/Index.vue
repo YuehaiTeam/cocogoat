@@ -80,7 +80,10 @@ import cvdts from './opencv.d.ts.txt?txt'
 import pldts from './playground.d.ts.txt?txt'
 import * as achievementScanner from '@/views/AchievementScanner/scanner/scanner.worker.expose'
 import * as artifactScanner from '@/views/ArtifactScanner/scanner/scanner.expose'
-import { IMatFromImageElement } from '@/utils/IMat'
+import { IMatFromImageElement, toCanvas } from '@/utils/IMat'
+import _ from 'lodash'
+import { initMap } from '../ArtifactScanner/scanner/map'
+import { i18n } from '@/i18n'
 MonacoEditor.render = () => h('div')
 export default defineComponent({
     components: {
@@ -125,6 +128,10 @@ src.delete()`)
             await initYas()
             // @ts-ignore
             const webpackJsonp = window.define
+            try {
+                // @ts-ignore
+                window.require.reset()
+            } catch (e) {}
             const monacoBase = 'https://s1.pstatp.com/cdn/expire-1-y/monaco-editor/0.31.1/min/vs'
             await loadScript(monacoBase + '/loader.min.js')
             // @ts-ignore
@@ -139,6 +146,7 @@ src.delete()`)
                 artifact: artifactScanner.W,
                 toIMat,
                 fromIMat,
+                toCanvas,
                 IMatFromImageElement,
             }
             amdRequire.value.config({ paths: { vs: monacoBase } })
@@ -147,6 +155,9 @@ src.delete()`)
             window.cv = cv
             // @ts-ignore
             window.cvTranslateError = cvTranslateError
+            // @ts-ignore
+            window._ = _
+            initMap(i18n.value.artifacts, i18n.value.atifactParams, i18n.value.characters)
         })
         watch(
             () => cvsel.value,

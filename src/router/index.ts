@@ -103,6 +103,11 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'frames.artifact.scan',
                 component: () => import('@/views/ArtifactScanner/Entrance.vue'),
             },
+            {
+                path: 'screenshot',
+                name: 'frames.artifact.scan.screenshot-scanner',
+                component: () => import('@/views/ArtifactScanner/ScreenshotScanner/Index.vue'),
+            },
         ],
     },
     {

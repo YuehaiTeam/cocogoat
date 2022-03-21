@@ -25,7 +25,7 @@
                     </small>
                 </h2>
             </router-link>
-            <router-link class="one" :to="{ name: 'frames.achievement.scan.screenshot-scanner' }">
+            <router-link class="one" :to="{ name: 'frames.artifact.scan.screenshot-scanner' }">
                 <i>
                     <fa-icon icon="crop-simple" />
                 </i>

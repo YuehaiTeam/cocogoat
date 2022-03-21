@@ -1,6 +1,13 @@
 import { ICVMat } from './cv'
 export function isIMat(d: unknown): d is ICVMat {
-    if (typeof d === 'object' && d && 'type' in d && typeof (d as { type: unknown }).type === 'number') return true
+    if (
+        typeof d === 'object' &&
+        d &&
+        'type' in d &&
+        typeof (d as { type: unknown }).type === 'number' &&
+        typeof (d as { clone: unknown }).clone === 'undefined'
+    )
+        return true
     return false
 }
 export function IMatFromImageData(d: ImageData): ICVMat {

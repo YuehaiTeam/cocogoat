@@ -1,8 +1,12 @@
-import { fromIMat, getCV, ICVMat, toIMat } from '@/utils/cv'
+import { cvTranslateError, fromIMat, getCV, ICVMat, toIMat } from '@/utils/cv'
 import { recognize, init as getYas } from '@/modules/yas'
-import { normalizeToYas } from './cvUtil'
-import { Mat } from '@/utils/opencv'
+import { analyzeBag, normalizeToYas } from './cvUtil'
+import { Mat, Rect } from '@/utils/opencv'
 import { closest } from 'color-diff'
+import { IArtifact, ISlotType, IStatType } from '@/typings/Artifact'
+import { artifactCharacters, artifactNames, artifactParams } from './map'
+import { textBestmatch } from '@/utils/textMatch'
+import { isIMat } from '@/utils/IMat'
 export async function init() {
     await Promise.all([getCV(), getYas()])
 }
@@ -17,9 +21,143 @@ export interface IArScannerLine {
         height: number
     }
 }
-export async function rawRecognizeArtifact(img: ICVMat) {
+export interface IArScannerData {
+    image: string
+    artifact?: IArtifact
+    raw: IArScannerLine[]
+    success: boolean
+}
+export interface IArScannerRawData {
+    image: ICVMat
+    artifact?: IArtifact
+    raw: IArScannerLine[]
+    success: boolean
+}
+export let cachedBag = {} as Record<string, Rect>
+export async function onScreenShot(img: ICVMat | Mat) {
     const cv = await getCV()
-    const src = fromIMat(cv, img)
+    let mat: Mat
+    if (isIMat(img)) {
+        mat = fromIMat(cv, img)
+    } else {
+        mat = img
+    }
+    let panel = mat
+    if (mat.cols > mat.rows) {
+        if (!cachedBag.panelRect) {
+            cachedBag = await analyzeBag(mat)
+        }
+        panel = mat.roi(cachedBag.panelRect)
+    }
+    const image = toIMat(cv, panel, true)
+    let res = { success: false, raw: [], image } as IArScannerRawData
+    try {
+        res = { ...(await recognizeArtifact(panel)), image }
+    } catch (e) {
+        console.error(typeof e === 'number' ? cvTranslateError(cv, e) : e)
+    }
+    try {
+        panel.delete()
+    } catch (e) {}
+    try {
+        mat.delete()
+    } catch (e) {}
+    return res
+}
+export async function recognizeArtifact(img: ICVMat | Mat) {
+    const raw = await rawRecognizeArtifact(img)
+    const artifact = {
+        id: Date.now().toString(16),
+        set: '',
+        slot: ISlotType.plume,
+        level: 0,
+        stars: 0,
+        mainstat: {
+            key: '',
+            type: IStatType.static,
+        },
+        substat: [],
+        locked: false,
+        character: null,
+    } as IArtifact
+    const requiredBlocks = ['name', 'main', 'sub', 'mainval', 'level', 'stars', 'lock']
+    const requiredRecord = {} as Record<string, boolean>
+    let success = true
+    for (const i of raw) {
+        let matched
+        switch (i.type) {
+            case 'lock':
+                artifact.locked = i.text === '1'
+                break
+            case 'stars':
+                artifact.stars = parseInt(i.text, 10)
+                break
+            case 'level':
+                artifact.level = parseInt(i.text, 10)
+                break
+            case 'name':
+                matched = textBestmatch('str', i.text, artifactNames, i.text.length / 3)
+                if (matched) {
+                    artifact.set = matched.obj[0]
+                    artifact.slot = matched.obj[1] as ISlotType
+                }
+                break
+            case 'main':
+                matched = textBestmatch('str', i.text, artifactParams, i.text.length / 3)
+                if (matched) {
+                    artifact.mainstat.key = matched.obj
+                }
+                break
+            case 'mainval':
+                artifact.mainstat.type = i.text.includes('%') ? IStatType.percent : IStatType.static
+                // mainstat doesn't need value
+                // artifact.mainstat.value = Number(i.text.replace(/[^\d.]/g, ''))
+                break
+            case 'sub': {
+                const [l, r] = i.text.split('+')
+                if (!r) {
+                    success = false
+                    break
+                }
+                matched = textBestmatch('str', l, artifactParams, l.length)
+                if (matched) {
+                    artifact.substat.push({
+                        key: matched.obj,
+                        type: r.includes('%') ? IStatType.percent : IStatType.static,
+                        value: Number(r.replace(/[^\d.]/g, '')),
+                    })
+                }
+                break
+            }
+            case 'user':
+                matched = textBestmatch(
+                    'str',
+                    i.text
+                        .replace('已装备', '')
+                        .replace('Equipped', '')
+                        .trim()
+                        .match(/[a-zA-Z\u4e00-\u9fa5]/g)
+                        ?.join('') || '',
+                    artifactCharacters,
+                    i.text.length,
+                )
+                if (matched) {
+                    artifact.character = matched.obj
+                }
+                break
+        }
+        requiredRecord[i.type] = true
+    }
+    requiredBlocks.forEach((k) => {
+        if (!requiredRecord[k]) {
+            success = false
+        }
+    })
+    return { artifact, raw, success }
+}
+export async function rawRecognizeArtifact(img: ICVMat | Mat) {
+    const cv = await getCV()
+    const src = isIMat(img) ? fromIMat(cv, img) : img
     const { splitLine, rects: rects1 } = await splitBottom(src)
     const rects2 = await splitTop(src, splitLine)
     const rects = [...rects2, ...rects1]
@@ -71,7 +209,7 @@ export async function rawRecognizeArtifact(img: ICVMat) {
             },
         })
     }
-    src.delete()
+    if (isIMat(img)) src.delete()
     return results
 }
 export async function splitBottom(src: Mat) {
@@ -91,7 +229,7 @@ export async function splitBottom(src: Mat) {
     let splitLine = 0
     for (let i = 0; i < contours.size(); ++i) {
         const rect = cv.boundingRect(contours.get(i))
-        if (rect.width < 6 || rect.height < 6) continue
+        if (rect.width * rect.height < 40) continue
         if (rect.height > src.rows / 2) {
             splitLine = rect.y - 5
             continue
@@ -132,7 +270,7 @@ export async function splitBottom(src: Mat) {
             maxR - minL - 6,
             maxB - minT - 4,
         )
-        maybeUser.roi = await await normalizeToYas(src.roi(maybeUser.rect), false)
+        maybeUser.roi = await normalizeToYas(src.roi(maybeUser.rect), false)
         rects.push(maybeUser)
     }
     let index = 0
@@ -157,14 +295,14 @@ export async function splitBottom(src: Mat) {
                 }
                 roi.delete()
                 el.rect = new cv.Rect(el.rect.x + minL, el.rect.y + minT, maxR - minL, maxB - minT)
-                el.roi = await await normalizeToYas(src.roi(el.rect), false, {
+                el.roi = await normalizeToYas(src.roi(el.rect), false, {
                     post: (mat) => {
                         cv.threshold(mat, mat, 155, 255, cv.THRESH_BINARY)
                         cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0)
                     },
                 })
             }
-        } else {
+        } else if (!el.type) {
             el.type = 'sub'
             const ldiff = (el.rect.height * 3) / 4
             el.rect.x += ldiff
@@ -175,9 +313,7 @@ export async function splitBottom(src: Mat) {
                 el.type = ''
             }
         }
-        if (!el.roi) {
-            el.roi = src.roi(el.rect)
-        }
+        el.roi = el.roi || src.roi(el.rect)
         index++
     }
     dst.delete()

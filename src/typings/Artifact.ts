@@ -39,8 +39,6 @@ export const IStatTypeWithoutPercent = [IStatType.element]
 export interface IArtifact {
     // UUID
     id: string
-    // hash，用于比对升级
-    hash: string
     //  套装
     set: string
     //  位置
@@ -64,4 +62,24 @@ export interface IArtifact {
     locked: boolean
     //  角色
     character: string | null
+}
+
+export interface IArtifactDescItem {
+    id: string
+    name: string
+    description: string
+}
+
+export interface IArtifactDesc {
+    id: string
+    name: string
+    min_rarity: number
+    max_rarity: number
+    two_pc: string
+    four_pc: string
+    goblet?: IArtifactDescItem
+    plume?: IArtifactDescItem
+    circlet?: IArtifactDescItem
+    flower?: IArtifactDescItem
+    sands?: IArtifactDescItem
 }

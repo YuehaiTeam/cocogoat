@@ -132,8 +132,11 @@ export class CocogoatWebControl {
     async getMonitor(): Promise<IWindow> {
         return (await this.client.get('/api/monitors')).data
     }
-    async toAbsolute(hWnd: number, x: number, y: number) {
+    async toAbsolute(hWnd: number, x: number, y: number, { dx = 1, dy = 1 } = { dx: 1, dy: 1 }) {
         const win = await this.getWindow(hWnd)
-        return { x: x + win.x, y: y + win.y }
+        const xdelta = dx === 1 ? 1 : win.width / dx
+        const ydelta = dy === 1 ? 1 : win.height / dy
+        console.log({ x: x * xdelta, y: y * ydelta })
+        return { x: x * xdelta + win.x, y: y * ydelta + win.y }
     }
 }

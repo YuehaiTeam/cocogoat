@@ -66,10 +66,15 @@ const deprecated = {
 }
 function processAchievement(jsondata) {
     jsondata.achievements = jsondata.achievements.filter(
-        (e) => ![84027, 82011, 82016, 82018, 84517, 84521, ...Object.keys(deprecated)].includes(e.id),
+        (e) =>
+            ![84027, 82011, 82016, 82018, 84517, 84521, ...Object.keys(deprecated).map((e) => Number(e))].includes(
+                e.id,
+            ),
     )
+    jsondata.totalReward = 0
     jsondata.achievements.forEach((e) => {
         e.postStage = jsondata.achievements.find((p) => p.preStage === e.id)?.id
+        jsondata.totalReward += e.reward || 0
     })
 }
 combineData()

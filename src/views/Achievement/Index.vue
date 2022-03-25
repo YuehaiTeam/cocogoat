@@ -3,7 +3,14 @@
         <template #title>
             <div class="teleport-title">
                 <span style="font-family: genshin">
-                    椰羊 · 成就 <small :class="$style.totalPercent">{{ totalFin }} / {{ totalCount }}</small>
+                    椰羊 · 成就
+                    <small :class="$style.totalPercent">
+                        <div class="count">{{ totalFin.count }} / {{ totalCount }}</div>
+                        <div class="reward">
+                            <img src="@/assets/images/yuanshi.png" alt="原石" />
+                            {{ totalFin.reward }} / {{ totalReward }}
+                        </div>
+                    </small>
                 </span>
             </div>
         </template>
@@ -86,13 +93,14 @@
                     class="progress-in"
                     :style="{
                         width:
-                            ((achievementFinCount[currentCat.originalId || 0] || 0) / currentCat.achievements.length) *
+                            ((achievementFinStat[currentCat.originalId || 0]?.count || 0) /
+                                currentCat.achievements.length) *
                                 100 +
                             '%',
                     }"
                 ></div>
             </div>
-            <achievement-sidebar :achievementCat="achievementCat" :achievementFinCount="achievementFinCount" />
+            <achievement-sidebar :achievementCat="achievementCat" :achievementFinStat="achievementFinStat" />
             <article>
                 <DynamicScroller
                     :items="currentAch"
@@ -128,6 +136,19 @@
                     </template>
                     <template #after>
                         <div class="page-after">
+                            <div class="select-this-page">
+                                <el-link
+                                    v-if="
+                                        !achievementFinStat[currentCat.originalId || 0] ||
+                                        achievementFinStat[currentCat.originalId || 0]?.count <
+                                            currentCat.achievements.length
+                                    "
+                                    type="primary"
+                                    @click="selectCat(currentCat)"
+                                >
+                                    全选本页
+                                </el-link>
+                            </div>
                             <el-divider>
                                 <icon-cocogoat />
                             </el-divider>
@@ -158,7 +179,7 @@ import IconCocogoat from '@/components/Icons/cocogoat.vue'
 
 import { i18n } from '@/i18n'
 import { store } from '@/store'
-import { Achievement, IAchievementStore } from '@/typings/Achievement'
+import { Achievement, AchievementCategory, IAchievementStore } from '@/typings/Achievement'
 import dayjs from 'dayjs'
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
@@ -198,14 +219,43 @@ export default defineComponent({
         const router = useRouter()
         const frameSrc = router.resolve({ name: 'frames.achievement.scan' }).href
         const achievementFin = ref({} as Record<number, IAchievementStore>)
-        const achievementFinCount = ref({} as Record<number, number>)
+        const achievementFinStat = ref(
+            {} as Record<
+                number,
+                {
+                    count: number
+                    reward: number
+                }
+            >,
+        )
         const sortByStatus = ref(true)
         const totalCount = ref(0)
-        const totalFin = ref(0)
+        const totalFin = ref({ count: 0, reward: 0 } as {
+            count: number
+            reward: number
+        })
+        const achievementCat = computed(() => {
+            const ach = i18n.value.achievements.concat([]).sort((a, b) => a.order - b.order)
+            return ach
+        })
+        const totalReward = computed(() => {
+            return achievementCat.value.reduce((acc, cur) => {
+                return acc + cur.totalReward
+            }, 0)
+        })
         const calcFin = () => {
-            const newCount = {} as Record<number, number>
+            const newCount = {} as Record<
+                number,
+                {
+                    count: number
+                    reward: number
+                }
+            >
             const newFin = {} as Record<number, IAchievementStore>
-            let totalFin_ = 0
+            let totalFin_ = { count: 0, reward: 0 } as {
+                count: number
+                reward: number
+            }
             store.value.achievements.forEach((e) => {
                 e.categoryId = e.categoryId || 0
                 // 81xxx -> 8500x for compatibility
@@ -215,22 +265,27 @@ export default defineComponent({
                 }
                 if (e.id) {
                     newFin[e.id] = e
-                    newCount[e.categoryId] = newCount[e.categoryId] || 0
-                    newCount[e.categoryId]++
-                    totalFin_++
+                    newCount[e.categoryId] = newCount[e.categoryId] || {
+                        count: 0,
+                        reward: 0,
+                    }
+                    const currentReward =
+                        achievementCat.value
+                            .find((k) => (k.originalId || 0) === e.categoryId)
+                            ?.achievements.find((k) => k.id === e.id)?.reward || 0
+                    newCount[e.categoryId].count++
+                    newCount[e.categoryId].reward += currentReward
+                    totalFin_.count++
+                    totalFin_.reward += currentReward
                 }
             })
-            achievementFinCount.value = newCount
+            achievementFinStat.value = newCount
             achievementFin.value = newFin
             totalCount.value =
                 totalCount.value || i18n.value.achievements.reduce((a, b) => a + b.achievements.length, 0)
             totalFin.value = totalFin_
         }
         watch(store, calcFin, { deep: true, immediate: true })
-        const achievementCat = computed(() => {
-            const ach = i18n.value.achievements.concat([]).sort((a, b) => a.order - b.order)
-            return ach
-        })
         const route = useRoute()
         const currentCatId = computed(() => {
             return route.params.cat || 'wonders_of_the_world'
@@ -323,6 +378,19 @@ export default defineComponent({
             }
             showClear.value = false
         }
+        const selectCat = (cat: AchievementCategory) => {
+            cat.achievements.forEach((i) => {
+                if (!achievementFin.value[i.id]) {
+                    const finishedData = {
+                        id: i.id,
+                        status: '全选添加',
+                        categoryId: cat.originalId || 0,
+                        date: dayjs().format('YYYY/MM/DD'),
+                    } as IAchievementStore
+                    store.value.achievements.push(finishedData)
+                }
+            })
+        }
         const scannerFrame = ref<HTMLIFrameElement | null>(null)
         const scannerResult = ref({ show: false, faildImages: [] as string[] })
         useScannerFrame({
@@ -350,11 +418,12 @@ export default defineComponent({
             currentCatId,
             currentCat,
             achievementFin,
-            achievementFinCount,
+            achievementFinStat,
             currentAch,
             updateFinished,
             doClear,
             showClear,
+            selectCat,
             scannerFrame,
             scannerResult,
             CustomElScrollVue,
@@ -363,6 +432,7 @@ export default defineComponent({
             sortByStatus,
             totalCount,
             totalFin,
+            totalReward,
         }
     },
 })
@@ -372,6 +442,25 @@ export default defineComponent({
     color: #999;
     font-size: 14px;
     padding-left: 5px;
+    display: inline-block;
+    line-height: 15px;
+    vertical-align: middle;
+    margin-top: -4px;
+    :global {
+        .reward {
+            background: #409eff;
+            color: #fff;
+            padding: 2px 5px;
+            font-size: 12px;
+            border-radius: 2px;
+            img {
+                width: 15px;
+                height: 15px;
+                float: left;
+                padding-right: 3px;
+            }
+        }
+    }
 }
 .import-dialog {
     width: 500px !important;
@@ -447,6 +536,12 @@ export default defineComponent({
                 }
             }
             .page-after {
+                .select-this-page {
+                    margin: 0 auto;
+                    margin-top: 10px;
+                    margin-bottom: -10px;
+                    text-align: center;
+                }
                 .el-divider {
                     border-color: #ccc;
                     margin: 40px 0;
@@ -478,7 +573,7 @@ export default defineComponent({
         }
 
         article {
-            top: 55px;
+            top: 65px;
             left: 0;
         }
 

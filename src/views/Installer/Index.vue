@@ -5,87 +5,122 @@
         </template>
         <template #actions></template>
         <div v-elloading="loading" :class="$style.page">
-            <el-scrollbar v-if="!loading">
-                <el-card class="title-card" :header="`最新版本：${result.game.latest.version}`">
-                    <a class="d-link" :href="result.game.latest.path" target="_blank" rel="noreferrer">
-                        <div class="icon">
-                            <fa-icon icon="box-open"></fa-icon>
-                        </div>
-                        <div class="center">
-                            <div class="name">{{ basename(result.game.latest.path) }}</div>
-                            <div class="meta">
-                                <span> <fa-icon icon="database" /> {{ formatSize(result.game.latest.size) }}</span>
-                                <span> <fa-icon icon="hashtag" /> {{ result.game.latest.md5 }} </span>
+            <el-scrollbar>
+                <el-tabs
+                    :model-value="($route.query.type || 'pc-cn').toString()"
+                    @update:model-value="$router.replace({ query: { type: $event === 'pc-cn' ? undefined : $event } })"
+                >
+                    <el-tab-pane v-for="(i, a) in urls" :key="a" :name="a" :label="i.name"></el-tab-pane>
+                </el-tabs>
+                <div v-if="!loading">
+                    <el-card v-if="result.sdk" class="title-card" header="SDK(渠道服专用)">
+                        <a class="d-link" :href="result.sdk.path" target="_blank" rel="noreferrer">
+                            <div class="icon">
+                                <fa-icon icon="house-laptop"></fa-icon>
                             </div>
-                        </div>
-                        <div class="right">
-                            <fa-icon icon="angle-right"></fa-icon>
-                        </div>
-                    </a>
-                    <el-divider>语音包</el-divider>
-                    <a
-                        v-for="i in result.game.latest.voice_packs"
-                        :key="i.path"
-                        class="d-link list-link"
-                        :href="i.path"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <div class="icon">
-                            <fa-icon icon="file-audio"></fa-icon>
-                        </div>
-                        <div class="center">
-                            <div class="name">{{ basename(i.path) }}</div>
-                            <div class="meta">
-                                <span> <fa-icon icon="database" /> {{ formatSize(i.size) }}</span>
-                                <span> <fa-icon icon="hashtag" /> {{ i.md5 }} </span>
+                            <div class="center">
+                                <div class="name">{{ result.sdk.desc }}.zip</div>
+                                <div class="meta">
+                                    <span> <fa-icon icon="database" /> {{ formatSize(result.sdk.size) }}</span>
+                                    <span> <fa-icon icon="hashtag" /> {{ result.sdk.md5 }} </span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="right">
-                            <fa-icon icon="angle-right"></fa-icon>
-                        </div>
-                    </a>
-                </el-card>
-                <el-card v-for="z in result.game.diffs" :key="z.name" class="title-card" header="增量包">
-                    <a class="d-link" :href="z.path" target="_blank" rel="noreferrer">
-                        <div class="icon">
-                            <fa-icon icon="calendar-plus"></fa-icon>
-                        </div>
-                        <div class="center">
-                            <div class="name">{{ basename(z.path) }}</div>
-                            <div class="meta">
-                                <span> <fa-icon icon="database" /> {{ formatSize(z.size) }}</span>
-                                <span> <fa-icon icon="hashtag" /> {{ z.md5 }} </span>
+                            <div class="right">
+                                <fa-icon icon="angle-right"></fa-icon>
                             </div>
+                        </a>
+                    </el-card>
+                    <template v-for="m in ['pre_download_game', 'game']">
+                        <div v-if="result[m]" :key="m">
+                            <el-card
+                                class="title-card"
+                                :header="`${m === 'game' ? '最新版本' : '预下载'}：${result[m].latest.version}`"
+                            >
+                                <a class="d-link" :href="result[m].latest.path" target="_blank" rel="noreferrer">
+                                    <div class="icon">
+                                        <fa-icon icon="box-open"></fa-icon>
+                                    </div>
+                                    <div class="center">
+                                        <div class="name">{{ basename(result[m].latest.path) }}</div>
+                                        <div class="meta">
+                                            <span>
+                                                <fa-icon icon="database" />
+                                                {{ formatSize(result[m].latest.size) }}</span
+                                            >
+                                            <span> <fa-icon icon="hashtag" /> {{ result[m].latest.md5 }} </span>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <fa-icon icon="angle-right"></fa-icon>
+                                    </div>
+                                </a>
+                                <el-divider>语音包</el-divider>
+                                <a
+                                    v-for="i in result[m].latest.voice_packs"
+                                    :key="i.path"
+                                    class="d-link list-link"
+                                    :href="i.path"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <div class="icon">
+                                        <fa-icon icon="file-audio"></fa-icon>
+                                    </div>
+                                    <div class="center">
+                                        <div class="name">{{ basename(i.path) }}</div>
+                                        <div class="meta">
+                                            <span> <fa-icon icon="database" /> {{ formatSize(i.size) }}</span>
+                                            <span> <fa-icon icon="hashtag" /> {{ i.md5 }} </span>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <fa-icon icon="angle-right"></fa-icon>
+                                    </div>
+                                </a>
+                            </el-card>
+                            <el-card v-for="z in result[m].diffs" :key="z.name" class="title-card" header="增量包">
+                                <a class="d-link" :href="z.path" target="_blank" rel="noreferrer">
+                                    <div class="icon">
+                                        <fa-icon icon="calendar-plus"></fa-icon>
+                                    </div>
+                                    <div class="center">
+                                        <div class="name">{{ basename(z.path) }}</div>
+                                        <div class="meta">
+                                            <span> <fa-icon icon="database" /> {{ formatSize(z.size) }}</span>
+                                            <span> <fa-icon icon="hashtag" /> {{ z.md5 }} </span>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <fa-icon icon="angle-right"></fa-icon>
+                                    </div>
+                                </a>
+                                <el-divider>语音包</el-divider>
+                                <a
+                                    v-for="i in z.voice_packs"
+                                    :key="i.path"
+                                    class="d-link list-link"
+                                    :href="i.path"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
+                                    <div class="icon">
+                                        <fa-icon icon="file-audio"></fa-icon>
+                                    </div>
+                                    <div class="center">
+                                        <div class="name">{{ basename(i.path) }}</div>
+                                        <div class="meta">
+                                            <span> <fa-icon icon="database" /> {{ formatSize(i.size) }}</span>
+                                            <span> <fa-icon icon="hashtag" /> {{ i.md5 }} </span>
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <fa-icon icon="angle-right"></fa-icon>
+                                    </div>
+                                </a>
+                            </el-card>
                         </div>
-                        <div class="right">
-                            <fa-icon icon="angle-right"></fa-icon>
-                        </div>
-                    </a>
-                    <el-divider>语音包</el-divider>
-                    <a
-                        v-for="i in z.voice_packs"
-                        :key="i.path"
-                        class="d-link list-link"
-                        :href="i.path"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
-                        <div class="icon">
-                            <fa-icon icon="file-audio"></fa-icon>
-                        </div>
-                        <div class="center">
-                            <div class="name">{{ basename(i.path) }}</div>
-                            <div class="meta">
-                                <span> <fa-icon icon="database" /> {{ formatSize(i.size) }}</span>
-                                <span> <fa-icon icon="hashtag" /> {{ i.md5 }} </span>
-                            </div>
-                        </div>
-                        <div class="right">
-                            <fa-icon icon="angle-right"></fa-icon>
-                        </div>
-                    </a>
-                </el-card>
+                    </template>
+                </div>
             </el-scrollbar>
         </div>
     </Layout>
@@ -93,7 +128,7 @@
 
 <script lang="ts">
 import '@/styles/actions.scss'
-import { ref, defineComponent } from 'vue'
+import { ref, onMounted, defineComponent, watch } from 'vue'
 import {
     faBoxOpen,
     faFileAudio,
@@ -101,13 +136,16 @@ import {
     faHashtag,
     faDatabase,
     faCalendarPlus,
+    faHouseLaptop,
 } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { ElNotification } from 'element-plus'
-library.add(faBoxOpen, faAngleRight, faFileAudio, faHashtag, faDatabase, faCalendarPlus)
+library.add(faBoxOpen, faAngleRight, faFileAudio, faHashtag, faDatabase, faCalendarPlus, faHouseLaptop)
 import { vLoading } from 'element-plus/es/components/loading/src/directive'
 import 'element-plus/theme-chalk/el-loading.css'
 import 'element-plus/theme-chalk/el-notification.css'
+import { urls } from './urls'
+import { useRoute } from 'vue-router'
 export default defineComponent({
     name: 'InstallerIndex',
     directives: {
@@ -117,20 +155,34 @@ export default defineComponent({
         const loading = ref(true)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result = ref<any>({})
-        fetch(process.env.VUE_APP_APIBASE + '/v1/utils/client')
-            .then((res) => {
-                return res.json()
-            })
-            .then((res) => {
-                result.value = res.data
-                loading.value = false
-            })
-            .catch((err) => {
-                ElNotification.error({
-                    title: '出错了',
-                    message: err.message,
+        const route = useRoute()
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cachedResult = {} as Record<string, any>
+        const load = () => {
+            const url = urls[(route.query.type || 'pc-cn').toString()].url
+            if (cachedResult[url]) {
+                result.value = cachedResult[url]
+                return
+            }
+            loading.value = true
+            return fetch(url)
+                .then((res) => {
+                    return res.json()
                 })
-            })
+                .then((res) => {
+                    result.value = res.data
+                    loading.value = false
+                    cachedResult[url] = res.data
+                })
+                .catch((err) => {
+                    ElNotification.error({
+                        title: '出错了',
+                        message: err.message,
+                    })
+                })
+        }
+        onMounted(load)
+        watch(route, load)
         const basename = (path: string) => {
             const pathArr = path.split('/')
             return pathArr[pathArr.length - 1]
@@ -151,6 +203,7 @@ export default defineComponent({
             result,
             basename,
             formatSize,
+            urls,
         }
     },
 })
@@ -160,6 +213,9 @@ export default defineComponent({
     height: 100%;
     background: #eee;
     :global {
+        .el-tabs__nav-scroll {
+            padding: 0 20px;
+        }
         .title-card {
             margin: 20px;
         }
@@ -211,6 +267,19 @@ export default defineComponent({
             }
             &.list-link {
                 margin-bottom: 15px;
+            }
+        }
+    }
+}
+:global(.m) .page {
+    :global {
+        .title-card {
+            margin: 20px 0;
+            .name {
+                max-width: 60vw;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
         }
     }

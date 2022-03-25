@@ -32,6 +32,17 @@
                             </div>
                             <div class="text">扫描成就并导出<br />到Seelie.me</div>
                         </router-link>
+                        <router-link :class="$style.extraOne" style="color: #0079cc" :to="{ name: 'installer.index' }">
+                            <div class="circle">
+                                <div class="img" style="border-color: #0079cc">
+                                    <fa-icon icon="box-open" />
+                                </div>
+                                <div class="svg-w" style="background: #0079cc">
+                                    <icon-cocogoat style="fill: #fff" />
+                                </div>
+                            </div>
+                            <div class="text">PC端<br />更新包列表</div>
+                        </router-link>
                         <router-link :class="$style.extraOne" style="color: #1e1e1e" :to="{ name: 'extra.playground' }">
                             <div class="circle">
                                 <div class="img" style="border-color: #1e1e1e">
@@ -68,7 +79,7 @@
                     <div>无论功能反馈还是聊天吹水，都可以加入反馈群( 933468075 )</div>
                 </a>
             </div>
-            <div :class="$style.copyright">&copy;2022 YuehaiTeam <build-info /></div>
+            <div :class="$style.copyright">&copy;2022 YuehaiTeam cocogoat.work <build-info /></div>
         </div>
     </Layout>
 </template>
@@ -76,9 +87,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faInfinity, faFolderTree, faTerminal } from '@fortawesome/free-solid-svg-icons'
+import { faInfinity, faFolderTree, faTerminal, faBoxOpen } from '@fortawesome/free-solid-svg-icons'
 import { faGithubAlt, faQq } from '@fortawesome/free-brands-svg-icons'
-library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal)
+library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen)
 
 import IconAchievement from '@/components/Icons/achievement.vue'
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
@@ -236,12 +247,10 @@ a.card {
                     align-content: center;
                     justify-content: center;
                     align-items: center;
-                    padding-bottom: 5px;
-                    padding-right: 5px;
                     box-sizing: border-box;
                 }
                 .svg-inline--fa {
-                    width: 60px;
+                    width: 40px;
                 }
             }
 

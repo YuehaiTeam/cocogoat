@@ -40,6 +40,17 @@ const routes: Array<RouteRecordRaw> = [
         ],
     },
     {
+        path: '/extra/installer',
+        component: () => import('@/views/Layout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'installer.index',
+                component: () => import('@/views/Installer/Index.vue'),
+            },
+        ],
+    },
+    {
         path: '/options',
         component: () => import('@/views/Layout.vue'),
         children: [

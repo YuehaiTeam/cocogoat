@@ -3,12 +3,12 @@
         <template #title>
             <div class="teleport-title">
                 <span style="font-family: genshin">
-                    椰羊 · 成就
+                    成就
                     <small :class="$style.totalPercent">
                         <div class="count">{{ totalFin.count }} / {{ totalCount }}</div>
                         <div class="reward">
-                            <img src="@/assets/images/yuanshi.png" alt="原石" />
                             {{ totalFin.reward }} / {{ totalReward }}
+                            <img src="@/assets/images/yuanshi.png" alt="原石" />
                         </div>
                     </small>
                 </span>
@@ -128,6 +128,7 @@
                                 :i="i"
                                 :fin="achievementFin[i.id]"
                                 :preFin="achievementFin[i.preStage]"
+                                :contributed="contributed"
                                 @check="updateFinished(i.id)"
                                 @input-date="achievementFin[i.id].date = $event"
                                 @input-status="achievementFin[i.id].status = $event"
@@ -188,6 +189,7 @@ import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller/src/i
 
 import { useScannerFrame } from './scannerFrame'
 import { useExportAchievements } from './useExport'
+import { useContributedAchievements } from './useContributedAchievements'
 
 import AchievementItem from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
@@ -408,6 +410,7 @@ export default defineComponent({
                 store.value.achievements = dedupedResult
             }
         })
+        const contributed = useContributedAchievements()
         return {
             store,
             search,
@@ -433,6 +436,7 @@ export default defineComponent({
             totalCount,
             totalFin,
             totalReward,
+            contributed,
         }
     },
 })
@@ -447,12 +451,28 @@ export default defineComponent({
     vertical-align: middle;
     margin-top: -4px;
     :global {
+        div {
+            display: inline-block;
+            height: 19px;
+            box-sizing: border-box;
+            vertical-align: middle;
+            border-radius: 2px;
+        }
+
+        .count {
+            border: 1px solid #409eff;
+            color: #409eff;
+            background: #fff;
+            margin-right: -3px;
+            padding: 0 5px;
+            padding-right: 7px;
+            padding-top: 1px;
+        }
         .reward {
             background: #409eff;
             color: #fff;
             padding: 2px 5px;
             font-size: 12px;
-            border-radius: 2px;
             img {
                 width: 15px;
                 height: 15px;
@@ -461,6 +481,11 @@ export default defineComponent({
             }
         }
     }
+}
+:global(.m) .total-percent {
+    position: absolute;
+    top: 20px;
+    right: 55px;
 }
 .import-dialog {
     width: 500px !important;

@@ -1,6 +1,6 @@
 <template>
     <section :class="{ sub: i.preStage, [$style.achievementItem]: 1 }">
-        <div class="single">
+        <div class="single" :class="{ 'no-contrib': !contributed[i.id] }">
             <div class="check">
                 <a v-if="i.preStage && !preFin" class="check-disabled" title="上一阶段未达成"></a>
                 <div class="check-circle" :class="{ checked: fin }" @click="$emit('check')">
@@ -19,6 +19,16 @@
                     </div>
                 </div>
                 <small>
+                    <a
+                        v-if="contributed[i.id]"
+                        :href="contributed[i.id]"
+                        target="_blank"
+                        class="contributed"
+                        rel="noopener nofollow"
+                    >
+                        <fa-icon icon="arrow-up-right-from-square" />
+                        攻略
+                    </a>
                     {{ i.desc }}
                 </small>
             </div>
@@ -37,6 +47,9 @@
 <script lang="ts">
 import { PropType } from '@vue/runtime-core'
 import { Achievement, IAchievementStore } from '@/typings/Achievement'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
+library.add(faArrowUpRightFromSquare)
 export default {
     props: {
         i: {
@@ -47,6 +60,9 @@ export default {
         },
         preFin: {
             type: [Object, undefined] as PropType<IAchievementStore | undefined>,
+        },
+        contributed: {
+            type: Object as PropType<Record<string, string>>,
         },
     },
     emits: ['input-date', 'input-status', 'check'],
@@ -76,16 +92,36 @@ export default {
             .ntxt {
                 display: inline-block;
                 white-space: nowrap;
-                max-width: calc(100% - 200px);
+                max-width: calc(100% - 140px);
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
             small {
-                max-width: calc(100% - 145px);
+                max-width: calc(100% - 80px);
                 overflow: hidden;
                 white-space: nowrap;
                 display: inline-block;
                 text-overflow: ellipsis;
+
+                a {
+                    text-decoration: none;
+                    color: #409eff;
+                    display: inline-block;
+                    vertical-align: top;
+                    border-bottom: 1px solid transparent;
+                    box-sizing: border-box;
+                    transition: all 0.3s;
+                    font-size: 12px;
+                    width: 55px;
+                    text-align: center;
+                    margin-right: 5px;
+                    position: relative;
+                    top: 2px;
+                    &:hover {
+                        border-color: #409eff;
+                        opacity: 0.8;
+                    }
+                }
             }
             .award {
                 user-select: none;
@@ -214,6 +250,10 @@ export default {
             small {
                 max-width: calc(100% - 60px);
                 font-size: 12px;
+                a {
+                    width: 45px;
+                    margin-right: 1px;
+                }
             }
         }
         .check {

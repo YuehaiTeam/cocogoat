@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Ref } from 'vue'
 import dayjs from 'dayjs'
 import { i18n } from '@/i18n'
@@ -5,7 +6,6 @@ import { store } from '@/store'
 import { sandboxedEval } from '@/utils/sandbox'
 import { IAchievementStore } from '@/typings/Achievement'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function hasCocogoatAchievementJson(j: Record<string, any[]>) {
     return (
         Array.isArray(j.achievements) &&
@@ -16,6 +16,40 @@ function hasCocogoatAchievementJson(j: Record<string, any[]>) {
         typeof j.achievements[0].date === 'string'
     )
 }
+function hasPaimonMoeJson(j: Record<string, any>) {
+    let r = j
+    // array mode
+    if (Array.isArray(j.achievement) && j.achievement.length > 0 && j.achievement.find((e) => e !== null)) {
+        r = { achievement: {} }
+        j.achievement.forEach((e, index) => {
+            if (e === null) return
+            r.achievement[index] = e
+        })
+    }
+    // oject mode
+    if (typeof r.achievement === 'object' && Object.keys(r.achievement).length > 0) {
+        const firstObj = r.achievement[Object.keys(r.achievement)[0]]
+        const firstOne = firstObj[Object.keys(firstObj)[0]]
+        if (typeof firstOne === 'boolean') return convertPaimonMoeJson(r)
+    }
+    return false
+}
+function convertPaimonMoeJson(j: Record<string, any>) {
+    const achList = [] as IAchievementStore[]
+    Object.keys(j.achievement).forEach((index: string) => {
+        const ach = j.achievement[index] as Record<number, true>
+        Object.keys(ach).forEach((key) => {
+            achList.push({
+                id: Number(key),
+                status: '导入',
+                categoryId: Number(index),
+                date: dayjs().format('YYYY/MM/DD'),
+                images: {},
+            })
+        })
+    })
+    return achList
+}
 // eslint-disable-next-line max-params
 export function useImport(
     content: Ref<string>,
@@ -25,6 +59,7 @@ export function useImport(
     importData: Ref<any>,
     importType: Ref<string>,
 ) {
+    // eslint-disable-next-line complexity
     const checkContent = async () => {
         if (!content.value.trim() || !content.value.includes('[')) {
             importText.value = '未识别到可导入的内容'
@@ -43,11 +78,16 @@ export function useImport(
                 allowed.value = true
                 importType.value = 'cocogoat'
                 importData.value = j.value.achievements
+            } else if (j.achievement && (importData.value = hasPaimonMoeJson(j))) {
+                importText.value = '导入Paimon.moe备份 (' + importData.value.length + '个)'
+                allowed.value = true
+                importType.value = 'cocogoat'
             } else {
                 importText.value = '未识别到可导入的内容'
                 allowed.value = false
             }
         } catch (e) {
+            console.log(e)
             // check script-style importer
             const sandboxScript = `
             class mockedLocalStorage {
@@ -114,23 +154,10 @@ export function useImport(
                 }
                 if (typeof result.achievement === 'object') {
                     // maybe paimon.moe js
-                    const achList = [] as IAchievementStore[]
-                    Object.keys(result.achievement).forEach((index: string) => {
-                        const ach = result.achievement[index] as Record<number, true>
-                        Object.keys(ach).forEach((key) => {
-                            achList.push({
-                                id: Number(key),
-                                status: '导入',
-                                categoryId: Number(index),
-                                date: dayjs().format('YYYY/MM/DD'),
-                                images: {},
-                            })
-                        })
-                    })
-                    importText.value = '导入Paimon.moe代码 (' + achList.length + '个)'
+                    importData.value = convertPaimonMoeJson(result)
+                    importText.value = '导入Paimon.moe代码 (' + importData.value.length + '个)'
                     allowed.value = true
                     importType.value = 'cocogoat'
-                    importData.value = achList
                     return
                 }
                 if (typeof result.account === 'string' || typeof result['main-achievements'] === 'string') {

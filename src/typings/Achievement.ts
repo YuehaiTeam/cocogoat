@@ -12,6 +12,7 @@ export interface AchievementCategory {
     order: number
     achievements: Achievement[]
     finished?: number
+    totalReward: number
 }
 export interface IAchievementStore {
     id: number

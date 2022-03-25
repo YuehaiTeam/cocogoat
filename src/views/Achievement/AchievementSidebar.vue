@@ -18,9 +18,17 @@
                         {{ i.name }}
                     </div>
                     <small>
-                        {{ achievementFinCount[i.originalId || 0] || 0 }}/{{ i.achievements.length }} ({{
-                            Math.round(((achievementFinCount[i.originalId || 0] || 0) / i.achievements.length) * 100)
-                        }}%)
+                        <b>
+                            <img src="@/assets/images/yuanshi.png" alt="原石" />
+                            {{ achievementFinStat[i.originalId || 0]?.reward || 0 }}/{{ i.totalReward }}
+                        </b>
+                        <span>
+                            {{ achievementFinStat[i.originalId || 0]?.count || 0 }}/{{ i.achievements.length }} ({{
+                                Math.round(
+                                    ((achievementFinStat[i.originalId || 0]?.count || 0) / i.achievements.length) * 100,
+                                )
+                            }}%)
+                        </span>
                     </small>
                 </router-link>
             </div>
@@ -45,7 +53,7 @@ import { ref } from '@vue/reactivity'
 import { defineComponent } from '@vue/runtime-core'
 import { ElScrollbar } from 'element-plus/lib/components'
 export default defineComponent({
-    props: ['achievementCat', 'achievementFinCount'],
+    props: ['achievementCat', 'achievementFinStat'],
     setup() {
         const scrollbarRef = ref<InstanceType<typeof ElScrollbar> | null>(null)
         const move = (dir: number) => {
@@ -91,6 +99,22 @@ export default defineComponent({
             border-right: 2px solid #eee;
             font-size: 14px;
             transition: all 0.2s;
+
+            small {
+                font-weight: bold;
+                b {
+                    padding: 0 3px;
+                    border-radius: 4px;
+                    display: inline-block;
+                    font-weight: normal;
+                    margin-right: 2px;
+                    img {
+                        width: 15px;
+                        height: 15px;
+                        float: left;
+                    }
+                }
+            }
             &.router-link-active {
                 color: #409eff;
                 border-color: #409eff;
@@ -103,7 +127,7 @@ export default defineComponent({
     top: 0;
     left: 0;
     right: 0;
-    height: 60px;
+    height: 70px;
     background: #fff;
     z-index: 990;
     box-shadow: 0 2px 16px -8px rgb(0 0 0 / 10%);
@@ -120,7 +144,7 @@ export default defineComponent({
             width: auto;
         }
         a {
-            height: 60px;
+            height: 70px;
             border-bottom: 2px solid #fff;
             display: inline-flex;
             box-sizing: border-box;
@@ -137,13 +161,27 @@ export default defineComponent({
             justify-content: center;
             align-items: center;
             padding: 0 20px;
-            padding-bottom: 15px;
+            padding-bottom: 30px;
             small {
                 position: absolute;
                 bottom: 5px;
                 left: 0;
                 right: 0;
                 display: block;
+                font-weight: bold;
+                b {
+                    padding: 0 3px;
+                    border-radius: 4px;
+                    display: inline-block;
+                    font-weight: normal;
+                    margin-right: 2px;
+                    display: block;
+                    img {
+                        width: 14px;
+                        height: 14px;
+                        vertical-align: bottom;
+                    }
+                }
             }
             &.router-link-active {
                 color: #409eff;

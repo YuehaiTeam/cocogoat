@@ -35,4 +35,7 @@ body {
 .el-message-box {
     max-width: 90%;
 }
+.feedback-notification .el-notification__content {
+    font-size: 12px;
+}
 </style>

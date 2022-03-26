@@ -1,7 +1,9 @@
-import * as Sentry from '@sentry/vue'
-import { BrowserTracing } from '@sentry/tracing'
 import { App } from 'vue'
 import { Router } from 'vue-router'
+import * as Sentry from '@sentry/vue'
+import { BrowserTracing } from '@sentry/tracing'
+import { ElMessageBox, ElNotification } from 'element-plus'
+import 'element-plus/theme-chalk/el-notification.css'
 
 import { eventToSentryRequest, sessionToSentryRequest } from '@sentry/core'
 import { Event, Response, SentryRequest, Session, TransportOptions } from '@sentry/types'
@@ -9,7 +11,10 @@ import { SentryError, supportsReferrerPolicy, SyncPromise } from '@sentry/utils'
 import { BaseTransport } from '@sentry/browser/esm/transports/base'
 import { FetchImpl, getNativeFetchImplementation } from '@sentry/browser/esm/transports/utils'
 
+export let sentryLastEventId = ''
+
 export function init(app: App, router: Router) {
+    if (process.env.NODE_ENV !== 'production') return
     require('@/plugins/tongji')
     Sentry.init({
         app,
@@ -24,7 +29,66 @@ export function init(app: App, router: Router) {
         release: process.env.VUE_APP_GIT_SHA,
         environment: process.env.VUE_APP_SINGLEFILE === 'true' ? 'singlefile' : process.env.NODE_ENV,
         transport: SimpleFetchTransport,
+        beforeSend(event) {
+            if (event.exception) {
+                sentryLastEventId = event.event_id || ''
+            }
+            return event
+        },
     })
+}
+
+export async function report() {
+    let input
+    try {
+        input = await ElMessageBox.prompt('请在下方输入您的问题。程序日志将被同时提交。', '反馈', {
+            inputType: 'textarea',
+            inputPlaceholder: '遇到什么困难了吗？',
+        })
+    } catch (e) {
+        return
+    }
+    if (!input.value) return
+    const comments = input.value
+    const evid = sentryLastEventId || Sentry.captureMessage('用户反馈：\n' + comments)
+    const u = new URL(process.env.VUE_APP_SENTRY || '')
+    u.username = ''
+    u.password = ''
+    u.pathname = u.pathname.split('/').slice(0, -1).join('/') + '/api/embed/error-page/'
+    u.searchParams.set('eventId', evid)
+    console.log(comments)
+
+    const reportData = {
+        name: 'anonymous-report',
+        email: `anonymous-report@cocogoat.work`,
+        comments,
+    }
+    try {
+        const res = await fetch(u.toString(), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(reportData).toString(),
+        })
+        if (res.ok) {
+            ElNotification({
+                title: '反馈提交成功',
+                message: 'ID: ' + evid,
+                type: 'success',
+                customClass: 'feedback-notification',
+                duration: 0,
+            })
+        } else {
+            throw new Error('Got a non-200 response')
+        }
+    } catch (e) {
+        ElNotification({
+            title: '反馈提交失败',
+            message: (e as Error).message,
+            type: 'error',
+        })
+    }
 }
 
 /* Sentry Transport */

@@ -17,6 +17,7 @@
                         <el-switch v-model="options.reporting"></el-switch>
                     </div>
                     <div class="desc">关闭后刷新页面生效。</div>
+                    <el-button v-if="options.reporting" @click="report">问题反馈</el-button>
                 </div>
             </el-form-item>
         </el-form>
@@ -28,9 +29,14 @@ import { langNames } from '@/i18n'
 import { options } from '@/store'
 export default {
     setup() {
+        const report = async () => {
+            const reporting = await import('@/utils/reporting')
+            reporting.report()
+        }
         return {
             langNames,
             options,
+            report,
         }
     },
 }

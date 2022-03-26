@@ -61,7 +61,7 @@ export function useImport(
 ) {
     // eslint-disable-next-line complexity
     const checkContent = async () => {
-        if (!content.value.trim() || !content.value.includes('[')) {
+        if (!content.value.trim() || (!content.value.includes('[') && !content.value.includes('{'))) {
             importText.value = '未识别到可导入的内容'
             allowed.value = false
             return

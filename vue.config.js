@@ -2,6 +2,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
 const InlineChunkHtmlPlugin = require('./scripts/InlineChunkHtmlPlugin')
+const DeleteSourceMapPlugin = require('./scripts/deleteSourceMapPlugin')
 const InlineFaviconHtmlPlugin = require('./scripts/InlineFaviconHtmlPlugin')
 const { defineConfig } = require('@vue/cli-service')
 const AutoImport = require('unplugin-auto-import/webpack')
@@ -11,7 +12,6 @@ const gitInfo = require('git-repo-info')()
 const singleFileDLL = process.argv.includes('--singlefile-dll')
 const singleFile = process.argv.includes('--singlefile') || singleFileDLL
 const SentryPlugin = require('@sentry/webpack-plugin')
-const DeleteSourceMapPlugin = require('@zimmc0/delete-sourcemaps-webpack-plugin')
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
 process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
@@ -152,7 +152,7 @@ module.exports = defineConfig({
                     worker: ['Worker from @/utils/corsWorker', '...'],
                 },
             })
-            if (process.env.NODE_ENV === 'production' && process.env.SENTRY_KEY && !singleFile) {
+            if (process.env.NODE_ENV === 'production' && process.env.SENTRY_KEY) {
                 config.plugin('sentry').use(SentryPlugin, [
                     {
                         url: process.env.SENTRY_URL,

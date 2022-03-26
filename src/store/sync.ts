@@ -33,6 +33,7 @@ export const syncProviders = ref([] as IProviderItem[])
 export class SyncError<T> extends Error {
     code: SYNCERR
     data: T
+    provider?: string
     constructor(public readonly err: SYNCERR, public readonly errmsg: string, data: T) {
         super(errmsg)
         this.code = err
@@ -102,20 +103,38 @@ export const getAll = async () => {
     const promises = syncProviders.value.map((provider) => {
         return provider.provider.loadAll()
     })
-    const result = await Promise.allSettled(promises)
+    const result = (await Promise.allSettled(promises)).map((e, i) => {
+        return {
+            provider: syncProviders.value[i].id,
+            result: e,
+        }
+    })
     const failed = result
-        .filter((r) => r.status === 'rejected')
-        .map((r) => (r as PromiseRejectedResult).reason) as SyncError<unknown>[]
-    const success = result.filter((r) => r.status === 'fulfilled') as PromiseFulfilledResult<
-        Record<
-            string,
-            {
-                value: unknown
-                lastModified: Date
+        .filter((r) => r.result.status === 'rejected')
+        .map((r) => {
+            const err = (r.result as PromiseRejectedResult).reason as SyncError<unknown>
+            err.provider = r.provider
+            return err
+        })
+    const success = result
+        .filter((r) => r.result.status === 'fulfilled')
+        .map((e) => {
+            const result = e.result as PromiseFulfilledResult<
+                Record<
+                    string,
+                    {
+                        value: unknown
+                        lastModified: Date
+                        provider: string
+                    }
+                >
+            >
+            for (const value of Object.values(result.value)) {
+                value.provider = e.provider
             }
-        >
-    >[]
-    const storgeKeys = {} as Record<string, { value: unknown; lastModified: Date }[]>
+            return result
+        })
+    const storgeKeys = {} as Record<string, { value: unknown; lastModified: Date; provider: string }[]>
     success.forEach((r) => {
         const { value } = r
         Object.keys(value).forEach((key) => {
@@ -132,19 +151,23 @@ export const getAll = async () => {
         const localt = Math.floor(localItemLast.getTime() / 1000)
         const latestt = Math.floor(latestItem.lastModified.getTime() / 1000)
         if (localt > latestt) {
-            failed.push(
-                new SyncError(SYNCERR.CONFLICT, 'conflict', {
-                    localNow: new Date(0),
-                    localLast: localItemLast,
-                    remoteLast: latestItem.lastModified,
-                }),
-            )
+            const err = new SyncError(SYNCERR.CONFLICT, 'conflict when getting [' + key + ']', {
+                localNow: new Date(0),
+                localLast: localItemLast,
+                remoteLast: latestItem.lastModified,
+            })
+            err.provider = latestItem.provider
+            failed.push(err)
         } else {
             localStorageImpl.set(key, latestItem.value, latestItem.lastModified)
         }
     })
     if (failed.length > 0) {
         syncStatus.value.status = SYNCSTAT.PARTIALLY
+        console.error('-> SYNC Faild with errors :')
+        failed.forEach((err) => {
+            console.error(err)
+        })
     } else {
         syncStatus.value.status = SYNCSTAT.SYNCED
     }
@@ -159,7 +182,6 @@ export const getAll = async () => {
     await nextTick()
     disableAutoSave.value = false
     syncStatus.value.errors = failed
-    console.log(failed)
     return {
         failed,
         count: promises.length,
@@ -219,7 +241,7 @@ export const debouncedSingleSync = (arg: { user: string; data: unknown; now: Dat
     debouncedSyncValues[arg.user] = arg
     return _debouncedSingleSync()
 }
-export const forceSyncAll = async () => {
+export const forceSyncAll = async (force = true) => {
     const keys = localStorageImpl.list().concat(['options', 'currentUser'])
     keys.forEach((key) => {
         const last = localStorageImpl.last(key)
@@ -229,7 +251,7 @@ export const forceSyncAll = async () => {
             data: val,
             now: last,
             last,
-            force: true,
+            force: force ? true : undefined,
         })
     })
 }

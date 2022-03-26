@@ -80,7 +80,7 @@ class OneDriveSyncProvider implements SyncProvider {
                 const remoteFile = await remoteFileRes.json()
                 const lastModified = new Date(remoteFile.lastModifiedDateTime)
                 if (lastModified > localLast) {
-                    throw new SyncError(SYNCERR.CONFLICT, 'Remote file is newer', {
+                    throw new SyncError(SYNCERR.CONFLICT, 'conflict when saving [' + key + ']', {
                         remoteLast: lastModified,
                         localLast,
                         localNow,

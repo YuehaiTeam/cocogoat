@@ -15,7 +15,12 @@ export let sentryLastEventId = ''
 
 export function init(app: App, router: Router) {
     if (process.env.NODE_ENV !== 'production') return
-    require('@/plugins/tongji')
+    checkHm()
+        .then(() => import(/* webpackMode: "eager" */ '@/plugins/tongji'))
+        .catch(() => {
+            // ignore hm failure
+        })
+
     Sentry.init({
         app,
         dsn: process.env.VUE_APP_SENTRY,
@@ -91,8 +96,16 @@ export async function report() {
     }
 }
 
-/* Sentry Transport */
+/* Check HM */
+const checkHm = () =>
+    new Promise((resolve, reject) => {
+        const t = new Image()
+        t.onload = resolve
+        t.onerror = reject
+        t.src = 'https://hm.baidu.com/hm.gif'
+    })
 
+/* Sentry Transport */
 export class SimpleFetchTransport extends BaseTransport {
     /**
      * Fetch API reference which always points to native browser implementation.

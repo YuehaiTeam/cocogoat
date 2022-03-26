@@ -1,9 +1,9 @@
+import { apibase } from '@/utils/apibase'
 import { markRaw } from 'vue'
 import { decode } from 'js-base64'
 import Manage from './Manage.vue'
 import { SyncProvider } from '../typing'
 import { SYNCERR, SyncError } from '@/store/sync'
-const api = process.env.VUE_APP_APIBASE + '/oauth/v1/microsoft'
 interface IMsToken {
     access_token: string
     expires_in: number
@@ -29,7 +29,7 @@ class OneDriveSyncProvider implements SyncProvider {
         if (Date.now() - this.data.last_updated < this.data.expires_in * 1000) {
             return
         }
-        const res = await fetch(api, {
+        const res = await fetch(await apibase('/oauth/v1/microsoft'), {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

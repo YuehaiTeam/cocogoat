@@ -10,7 +10,6 @@ import { BaseTransport } from '@sentry/browser/esm/transports/base'
 import { FetchImpl, getNativeFetchImplementation } from '@sentry/browser/esm/transports/utils'
 
 export function init(app: App, router: Router) {
-    if (process.env.NODE_ENV === 'development') return
     require('@/plugins/tongji')
     Sentry.init({
         app,
@@ -18,7 +17,7 @@ export function init(app: App, router: Router) {
         integrations: [
             new BrowserTracing({
                 routingInstrumentation: Sentry.vueRouterInstrumentation(router),
-                tracingOrigins: ['77.cocogoat.work', 'api.xyget.cn', /^\//],
+                tracingOrigins: ['77.cocogoat.work', 'cocogoat-1251105598.file.myqcloud.com/77', /^\//],
             }),
         ],
         tracesSampleRate: 1.0,

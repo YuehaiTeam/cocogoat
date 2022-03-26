@@ -47,6 +47,7 @@
 
 <script lang="ts">
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
+import { apibase } from '@/utils/apibase'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
     faAngleRight,
@@ -59,7 +60,6 @@ import { ElMessageBox } from 'element-plus'
 import { computed, defineComponent, ref } from 'vue'
 library.add(faAngleRight, faEnvelopeOpenText, faCheckCircle, faCircleNotch, faBomb)
 export const name = '椰羊云同步'
-const api = process.env.VUE_APP_APIBASE + '/qingxin/u'
 export default defineComponent({
     components: {
         IconCocogoat,
@@ -80,7 +80,7 @@ export default defineComponent({
         const submitMail = async () => {
             if (!isMail.value) return
             step.value = 2
-            const res = await fetch(api, {
+            const res = await fetch(await apibase('/qingxin/u'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ export default defineComponent({
             setTimeout(checkLoginStatus, 3000)
         }
         const checkLoginStatus = async () => {
-            const res = await fetch(api + '/' + dtoken, {
+            const res = await fetch(await apibase('/' + dtoken), {
                 method: 'GET',
             })
             if (res.status === 404) {

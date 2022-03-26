@@ -2104,6 +2104,11 @@
   resolved "https://registry.npmmirror.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"
   integrity sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==
 
+"@zimmc0/delete-sourcemaps-webpack-plugin@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmmirror.com/@zimmc0/delete-sourcemaps-webpack-plugin/-/delete-sourcemaps-webpack-plugin-1.0.2.tgz#2f0908a468c742e1d37ea15090a5fd9dfe2b0f19"
+  integrity sha512-B5uzMCINZmlr/qcQpsj9jSt8XmHK4ANVV5YNZ3TC4CqBT2czo/Kcfs8ux1eWaRlAkdfopBDTxO4M20slmmmUOQ==
+
 accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
   version "1.3.7"
   resolved "https://registry.npmmirror.com/accepts/download/accepts-1.3.7.tgz#531bc726517a3b2b41f850021c6cc15eaab507cd"

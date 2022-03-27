@@ -433,7 +433,7 @@ export default defineComponent({
             <div v-if="isTop" :class="$style.list">
                 <div v-for="(i, a) in results" :key="a" class="item">
                     <div v-if="!i.success">
-                        <img :src="i.images.main" />
+                        <img :src="i.images?.main" />
                     </div>
                     <div v-else class="title">{{ i.achievement.name }} {{ i.date || '未完成' }}</div>
                 </div>

@@ -34,6 +34,9 @@ export interface IArScannerRawData {
     success: boolean
 }
 export let cachedBag = {} as Record<string, Rect>
+export async function setCachedBag(bag: Record<string, Rect>) {
+    cachedBag = bag
+}
 export async function onScreenShot(img: ICVMat | Mat) {
     const cv = await getCV()
     let mat: Mat
@@ -216,38 +219,13 @@ export async function rawRecognizeArtifact(img: ICVMat | Mat) {
     if (isIMat(img)) src.delete()
     return results
 }
-export async function splitBottom(src: Mat) {
+export async function splitUser(
+    maybeUser: { mid: number; rect: Rect; type: string; roi: Mat | null },
+    { src, dst, hierarchy, M7 }: Record<string, Mat>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    contours: any,
+) {
     const cv = await getCV()
-    const dst = src.clone()
-    cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0)
-    cv.threshold(dst, dst, 200, 255, cv.THRESH_BINARY)
-    const contours = new cv.MatVector()
-    const hierarchy = new cv.Mat()
-    const M8 = cv.Mat.ones(1, 12, cv.CV_8U)
-    const M7 = cv.Mat.ones(3, 8, cv.CV_8U)
-    cv.erode(dst, dst, M8)
-    cv.findContours(dst, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
-    cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0)
-    cv.threshold(dst, dst, 200, 255, cv.THRESH_BINARY)
-    let rects = []
-    let splitLine = 0
-    for (let i = 0; i < contours.size(); ++i) {
-        const rect = cv.boundingRect(contours.get(i))
-        if (rect.width * rect.height < 40) continue
-        if (rect.height > src.rows / 2) {
-            splitLine = rect.y - 5
-            continue
-        }
-        rects.push({
-            mid: rect.y + rect.height / 2,
-            rect,
-            type: '',
-            roi: null as Mat | null,
-        })
-    }
-    rects = rects.filter((e) => e.mid > splitLine).sort((a, b) => a.mid - b.mid)
-    const maybeUser = rects[rects.length - 1]
-    rects = rects.slice(0, 6)
     if (src.rows - maybeUser.rect.y - maybeUser.rect.height < maybeUser.rect.height) {
         maybeUser.type = 'user'
         cv.erode(dst, dst, M7)
@@ -274,9 +252,56 @@ export async function splitBottom(src: Mat) {
             maxR - minL - 6,
             maxB - minT - 4,
         )
-        maybeUser.roi = await normalizeToYas(src.roi(maybeUser.rect), false)
-        rects.push(maybeUser)
+        try {
+            maybeUser.roi = await normalizeToYas(src.roi(maybeUser.rect), false)
+        } catch (e) {
+            throw new Error('Roi for user fielf faild')
+        }
+        return maybeUser
+    } else {
+        return false
     }
+}
+
+export async function splitBottom(src: Mat) {
+    const cv = await getCV()
+    const dst = src.clone()
+    cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0)
+    cv.threshold(dst, dst, 200, 255, cv.THRESH_BINARY)
+    const contours = new cv.MatVector()
+    const hierarchy = new cv.Mat()
+    const M8 = cv.Mat.ones(1, 10, cv.CV_8U)
+    const M7 = cv.Mat.ones(3, 8, cv.CV_8U)
+    cv.erode(dst, dst, M8)
+    cv.findContours(dst, contours, hierarchy, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+    cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0)
+    cv.threshold(dst, dst, 200, 255, cv.THRESH_BINARY)
+    let rects = [] as {
+        mid: number
+        rect: Rect
+        type: string
+        roi: Mat | null
+    }[]
+    let splitLine = 0
+    for (let i = 0; i < contours.size(); ++i) {
+        const rect = cv.boundingRect(contours.get(i))
+        if (rect.width * rect.height < 40) continue
+        if (rect.height > src.rows / 2) {
+            splitLine = rect.y - 5
+            continue
+        }
+        rects.push({
+            mid: rect.y + rect.height / 2,
+            rect,
+            type: '',
+            roi: null,
+        })
+    }
+    rects = rects.filter((e) => e.mid > splitLine).sort((a, b) => a.mid - b.mid)
+    const maybeUser = rects[rects.length - 1]
+    rects = rects.slice(0, 6)
+    const ur = await splitUser(maybeUser, { src, dst, hierarchy, M7 }, contours)
+    ur && rects.push(ur)
     let index = 0
     for (const el of rects) {
         if (index < 2) {
@@ -299,12 +324,16 @@ export async function splitBottom(src: Mat) {
                 }
                 roi.delete()
                 el.rect = new cv.Rect(el.rect.x + minL, el.rect.y + minT, maxR - minL, maxB - minT)
-                el.roi = await normalizeToYas(src.roi(el.rect), false, {
-                    post: (mat) => {
-                        cv.threshold(mat, mat, 155, 255, cv.THRESH_BINARY)
-                        cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0)
-                    },
-                })
+                try {
+                    el.roi = await normalizeToYas(src.roi(el.rect), false, {
+                        post: (mat) => {
+                            cv.threshold(mat, mat, 155, 255, cv.THRESH_BINARY)
+                            cv.cvtColor(mat, mat, cv.COLOR_RGBA2GRAY, 0)
+                        },
+                    })
+                } catch (e) {
+                    throw new Error('Roi for level faild')
+                }
             }
         } else if (!el.type) {
             el.type = 'sub'
@@ -317,7 +346,11 @@ export async function splitBottom(src: Mat) {
                 el.type = ''
             }
         }
-        el.roi = el.roi || src.roi(el.rect)
+        try {
+            el.roi = el.roi || src.roi(el.rect)
+        } catch (e) {
+            throw new Error('Roi for ' + el.type + ' faild')
+        }
         index++
     }
     dst.delete()

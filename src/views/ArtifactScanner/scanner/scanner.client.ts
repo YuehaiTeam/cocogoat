@@ -23,7 +23,7 @@ export function createWorker() {
 export function initScanner() {
     const { worker: workerCV, _worker: w1 } = createWorker()
     const { worker: workerOCR, _worker: w2 } = createWorker()
-    const { onScreenShot } = workerCV
+    const { onScreenShot, diffCached, diffCachedA } = workerCV
     const { onScreenShot: onScreenShot2 } = workerOCR
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let progressHandler = (progress: number) => {
@@ -69,6 +69,8 @@ export function initScanner() {
         workerOCR,
         onProgress,
         IMatFromImageElement,
+        diffCached,
+        diffCachedA,
     }
 }
 let scannerInstance: ReturnType<typeof initScanner>

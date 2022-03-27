@@ -1,4 +1,5 @@
-import { getCV } from '@/utils/cv'
+import { isIMat } from '@/utils/IMat'
+import { fromIMat, getCV, ICVMat } from '@/utils/cv'
 import { Mat, Rect } from '@/utils/opencv'
 import { mean, meanBy } from 'lodash-es'
 export async function normalizeToYas(
@@ -54,8 +55,14 @@ export async function normalizeToYas(
     roi.delete()
     return dst
 }
-export async function analyzeBag(src: Mat) {
+export async function analyzeBag(_src: Mat | ICVMat) {
     const cv = await getCV()
+    let src: Mat
+    if (isIMat(_src)) {
+        src = fromIMat(cv, _src)
+    } else {
+        src = _src
+    }
     const dst = new cv.Mat()
     cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY, 0)
     cv.adaptiveThreshold(dst, dst, 255, cv.ADAPTIVE_THRESH_GUASS_C, cv.THRESH_BINARY, 3, 4)

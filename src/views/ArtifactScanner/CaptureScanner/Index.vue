@@ -7,6 +7,22 @@
             <c-ready v-else-if="step === 3" />
             <c-progress v-else />
             <video ref="video" style="display: none" />
+            <float-window
+                v-if="step > 2 && step < 5"
+                :width="250"
+                :height="100"
+                :class="$style.floatwindow"
+                @exit="step = 5"
+            >
+                <float-content-b
+                    :state="step === 4 ? 1 : 0"
+                    :success="resT.length"
+                    :fail="resF.length"
+                    :scanned="scanned"
+                    :duplicate="duplicates"
+                    :webControlEnabled="windowId > 0 ? 1 : undefined"
+                />
+            </float-window>
         </div>
     </div>
 </template>
@@ -20,6 +36,8 @@ import CIntro from './Intro.vue'
 import CClient from './Client.vue'
 import CReady from './Ready.vue'
 import CProgress from './Progress.vue'
+import FloatWindow from '@/components/FloatWindow2.vue'
+import FloatContentB from './Float.vue'
 export default defineComponent({
     components: {
         Loader,
@@ -27,6 +45,8 @@ export default defineComponent({
         CClient,
         CReady,
         CProgress,
+        FloatWindow,
+        FloatContentB,
     },
     setup() {
         const load = ref(false)
@@ -40,6 +60,12 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" module>
+.floatwindow {
+    opacity: 0;
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
 .scanner-ui {
     text-align: center;
     :global {

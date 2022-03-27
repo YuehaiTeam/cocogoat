@@ -39,6 +39,8 @@ export const IStatTypeWithoutPercent = [IStatType.element]
 export interface IArtifact {
     // UUID
     id: string
+    // UUID
+    hash: string
     //  套装
     set: string
     //  位置

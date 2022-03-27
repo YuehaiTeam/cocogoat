@@ -71,7 +71,6 @@
 <script lang="ts">
 import { ref, watch, defineComponent, computed } from 'vue'
 import Loader from '../Common/Loader.vue'
-import { ocrCompatible } from '@/utils/compatibility'
 import { getScannerInstance } from '../scanner/scanner.client'
 import type { IArScannerData } from '../scanner/scanner'
 
@@ -85,6 +84,7 @@ import { useRoute } from 'vue-router'
 import { IMatFromImageElement, toCanvas } from '@/utils/IMat'
 import FloatContent from '../../AchievementScanner/CaptureScanner/FloatContent.vue'
 import { send } from '../utils'
+import { setArtifactHash } from '@/views/Artifact/artifactUtil'
 
 library.add(faInbox)
 
@@ -100,11 +100,6 @@ export default defineComponent({
         const load = ref(false)
         const loading = ref(false)
         const step = ref(1)
-        if (!ocrCompatible) {
-            return {
-                load,
-            }
-        }
         const { onScreenShot, onScreenShot2 } = getScannerInstance()
         const fileInput = ref(null as HTMLInputElement | null)
         const images = ref([] as HTMLImageElement[])
@@ -143,6 +138,7 @@ export default defineComponent({
             loading.value = false
         }
         const results = ref([] as IArScannerData[])
+        const resultHashes = [] as string[]
         const dup = ref(0)
         const recognized = computed(() => {
             return {
@@ -169,6 +165,16 @@ export default defineComponent({
                 s = onScreenShot2
             }
             const r = await s(image)
+            if (r.success && r.artifact) {
+                // find duplicated
+                const hash = setArtifactHash(r.artifact)
+                if (resultHashes.includes(hash)) {
+                    dup.value++
+                    return
+                } else {
+                    resultHashes.push(hash)
+                }
+            }
             let rimage = ''
             if (!r.success || route.query.withImage) {
                 rimage = toCanvas(r.image).toDataURL()

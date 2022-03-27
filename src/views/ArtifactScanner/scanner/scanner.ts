@@ -71,6 +71,7 @@ export async function recognizeArtifact(img: ICVMat | Mat) {
     const raw = await rawRecognizeArtifact(img)
     const artifact = {
         id: Date.now().toString(16),
+        hash: '',
         set: '',
         slot: ISlotType.plume,
         level: 0,

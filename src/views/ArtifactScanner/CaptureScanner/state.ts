@@ -9,6 +9,7 @@ import { IMatFromImageData, toCanvas } from '@/utils/IMat'
 import type { IArScannerData } from './../scanner/scanner'
 import { getScannerInstance } from '../scanner/scanner.client'
 import fastq from 'fastq'
+import { setArtifactHash } from '@/views/Artifact/artifactUtil'
 const tempCanvas = document.createElement('canvas')
 const tempCtx = tempCanvas.getContext('2d')
 export const useArstore = defineStore('artifact-capture-scanner', {
@@ -40,6 +41,7 @@ export const useArstore = defineStore('artifact-capture-scanner', {
             },
             queue: null as fastq.queue | null,
             results: [] as IArScannerData[],
+            resultHashes: [] as string[],
             scanned: 0,
             duplicates: 0,
         }
@@ -162,10 +164,19 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                 ...res,
                 image: toCanvas(image).toDataURL(),
             } as IArScannerData
-            this.results.push(data)
-            if (data.success) {
-                console.log(`->${sid}got`, data.artifact)
+            if (data.success && data.artifact) {
+                const hash = setArtifactHash(data.artifact)
+                // find duplicated
+                if (this.resultHashes.includes(hash)) {
+                    this.duplicates++
+                    console.log(`->${sid}dup`, data.artifact)
+                } else {
+                    console.log(`->${sid}got`, data.artifact)
+                    this.results.push(data)
+                    this.resultHashes.push(hash)
+                }
             } else {
+                this.results.push(data)
                 console.warn(`->${sid}fail`, data)
                 new Image().src = toCanvas(image).toDataURL()
             }

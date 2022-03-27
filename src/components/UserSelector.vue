@@ -85,7 +85,7 @@ export default defineComponent({
 <template>
     <section :class="$style.userSelector">
         <el-dropdown :show-timeout="0" :hide-timeout="50" @command="onSelect" @visible-change="menuState = $event">
-            <div :class="[$style.userInfo, $style.currentUser, menuState ? 'open' : '']">
+            <div :class="[$style.userInfo, $style.currentUser, syncStatus.status, menuState ? 'open' : '']">
                 <img :src="avatar" />
                 <div :class="[$style.syncIcon, syncStatus.status, 'head-sync-icon']">
                     <fa-icon :icon="syncIcon[syncStatus.status]" />
@@ -133,6 +133,28 @@ export default defineComponent({
 </template>
 
 <style lang="scss" module>
+:global(.m) .current-user {
+    img {
+        border: 1px solid #0079cc;
+        box-sizing: border-box;
+        background: #fff;
+    }
+    &:global(.offline) img {
+        border-color: #888;
+    }
+    &:global(.synced) img {
+        border-color: #0079cc;
+    }
+    &:global(.failed) img {
+        border-color: #c10000;
+    }
+    &:global(.partially) img {
+        border-color: #e36900;
+    }
+    :global(.user-text) {
+        display: none;
+    }
+}
 .userSelector {
     height: 100%;
     width: 100%;

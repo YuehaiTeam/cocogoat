@@ -29,7 +29,13 @@ export function del(user: string) {
 }
 export function list() {
     return Object.keys(localStorage)
-        .filter((key) => key.startsWith('cocogoat.v1.') && !key.endsWith('.options') && !key.endsWith('.currentUser'))
+        .filter(
+            (key) =>
+                key.startsWith('cocogoat.v1.') &&
+                !key.endsWith('.options') &&
+                !key.includes('.playground.') &&
+                !key.endsWith('.currentUser'),
+        )
         .map((key) => key.substring(12))
 }
 export function currentUser(user?: string, now?: Date): [string, Date] {

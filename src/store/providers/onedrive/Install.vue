@@ -29,9 +29,9 @@ import { faMicrosoft } from '@fortawesome/free-brands-svg-icons'
 import { faCheckCircle, faCircleNotch } from '@fortawesome/free-solid-svg-icons'
 import { ElMessageBox } from 'element-plus'
 import { defineComponent, onMounted, ref } from 'vue'
+import { apibase } from '@/utils/apibase'
 library.add(faMicrosoft, faCheckCircle, faCircleNotch)
 export const name = 'OneDrive'
-const api = process.env.VUE_APP_APIBASE + '/oauth/v1/microsoft'
 export default defineComponent({
     emits: ['submit'],
     setup(props, { emit }) {
@@ -58,7 +58,7 @@ export default defineComponent({
                 new Date().getTime()
         }
         const tokenMsft = async () => {
-            const res = await fetch(api, {
+            const res = await fetch(await apibase('/oauth/v1/microsoft'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

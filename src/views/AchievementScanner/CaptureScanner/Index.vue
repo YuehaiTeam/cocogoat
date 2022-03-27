@@ -173,8 +173,12 @@ export default defineComponent({
                     if (!clickPos.x || !clickPos.y) {
                         clickPos = await webControl.toAbsolute(
                             webControlEnabled.value,
-                            rect.x + firstLine.image.rows / 2,
-                            rect.y + firstLine.y + firstLine.image.rows / 2,
+                            rect.x,
+                            rect.y + firstLine.y + (firstLine.image.rows * 2) / 3,
+                            {
+                                dx: tempCanvas.width,
+                                dy: tempCanvas.height,
+                            },
                         )
                     }
                     await webControl.SetCursorPos(clickPos.x, clickPos.y)
@@ -258,7 +262,11 @@ export default defineComponent({
                         )
                         console.log('->changed')
                     }
-                } catch (e) {}
+                } catch (e) {
+                    if (e instanceof Error && e.message === 'ECANCEL') {
+                        state.value = S.Processing
+                    }
+                }
             }
         }
         watch(

@@ -25,6 +25,7 @@ body,
     padding: 0;
     overscroll-behavior: none;
 }
+html,
 body {
     overflow-x: hidden;
 }
@@ -34,5 +35,8 @@ body {
 }
 .el-message-box {
     max-width: 90%;
+}
+.feedback-notification .el-notification__content {
+    font-size: 12px;
 }
 </style>

@@ -20,8 +20,8 @@
                     </div>
                     <div class="content">
                         由于浏览器限制，自动滚动无法在网页完成
-                        <a class="dlink" href="/assets/cocogoat-control-1.0.3.exe" target="_blank">
-                            点击此处下载客户端<br /><small>(v1.0.3 140kB)</small>
+                        <a class="dlink" href="/assets/cocogoat-control-1.0.4.exe" target="_blank">
+                            点击此处下载客户端<br /><small>(v1.0.4 140kB)</small>
                         </a>
                         <button @click="enable">
                             {{ loading ? '检测中' : needUpdate ? '我已更新并重新运行客户端' : '我已下载并运行客户端' }}
@@ -63,7 +63,7 @@ export default defineComponent({
                 loading.value = false
                 needUpdate.value = false
                 return
-            } else if (w.value.version === '1.0.0') {
+            } else if (w.value.version !== '1.0.4') {
                 needUpdate.value = true
                 showModel.value = true
                 loading.value = false

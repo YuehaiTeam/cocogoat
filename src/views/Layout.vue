@@ -4,7 +4,7 @@
             <icon-cocogoat class="v-icon cocogoat" />
         </div>
     </header>
-    <div v-if="!isMobile" :class="$style.userCorner">
+    <div :class="$style.userCorner">
         <user-selector />
     </div>
     <aside :class="$style.menu">
@@ -58,6 +58,8 @@ library.add(faHouse, faGear, faTriangleExclamation, faInternetExplorer)
 
 import UserSelector from '@/components/UserSelector.vue'
 
+import bus from '@/bus'
+
 export default {
     components: {
         IconCocogoat,
@@ -110,7 +112,7 @@ export default {
     created() {
         this.$k = function () {
             this.isMobile = document.body.offsetWidth < 640
-            this.$root.isMobile = this.isMobile
+            bus().isMobile = this.isMobile
             document.body.className = this.isMobile ? 'm' : 'pc'
         }.bind(this)
         window.addEventListener('resize', this.$k)
@@ -134,6 +136,9 @@ $--color-primary: #409eff;
     height: 50px;
     z-index: 1000;
     background: #fff;
+}
+:global(.m) .user-corner {
+    width: 50px;
 }
 .uncompatibleWarning {
     color: #fe6565;

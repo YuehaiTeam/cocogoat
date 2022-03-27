@@ -1,9 +1,9 @@
+import { apibase } from '@/utils/apibase'
 import { markRaw } from 'vue'
 import { decode } from 'js-base64'
 import Manage from './Manage.vue'
 import { SyncProvider } from '../typing'
 import { SYNCERR, SyncError } from '@/store/sync'
-const api = process.env.VUE_APP_APIBASE + '/oauth/v1/microsoft'
 interface IMsToken {
     access_token: string
     expires_in: number
@@ -29,7 +29,7 @@ class OneDriveSyncProvider implements SyncProvider {
         if (Date.now() - this.data.last_updated < this.data.expires_in * 1000) {
             return
         }
-        const res = await fetch(api, {
+        const res = await fetch(await apibase('/oauth/v1/microsoft'), {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,8 +68,8 @@ class OneDriveSyncProvider implements SyncProvider {
         lastModified: Date
     }> {
         await this.refreshToken()
-        const fileUrl = `https://graph.microsoft.com/beta/me/drive/special/approot:/${key}.json:/content`
-        if (!forceOverride) {
+        const fileUrl = `https://graph.microsoft.com/beta/me/drive/special/approot:/${key}.json`
+        if (!forceOverride && localLast.getTime() > 0 && value !== null) {
             const remoteFileRes = await fetch(fileUrl, {
                 method: 'GET',
                 headers: {
@@ -80,7 +80,7 @@ class OneDriveSyncProvider implements SyncProvider {
                 const remoteFile = await remoteFileRes.json()
                 const lastModified = new Date(remoteFile.lastModifiedDateTime)
                 if (lastModified > localLast) {
-                    throw new SyncError(SYNCERR.CONFLICT, 'Remote file is newer', {
+                    throw new SyncError(SYNCERR.CONFLICT, 'conflict when saving [' + key + ']', {
                         remoteLast: lastModified,
                         localLast,
                         localNow,
@@ -93,16 +93,19 @@ class OneDriveSyncProvider implements SyncProvider {
             value: value,
             lastModified: localNow.toISOString(),
         }
-        const res = await fetch(`${fileUrl}?@microsoft.graph.conflictBehavior=replace`, {
-            method: value === null ? 'DELETE' : 'PUT',
-            headers: {
-                Authorization: `Bearer ${this.data.access_token}`,
-                'Content-Type': 'application/json',
+        const res = await fetch(
+            `${fileUrl}${value === null ? '' : ':/content'}?@microsoft.graph.conflictBehavior=replace`,
+            {
+                method: value === null ? 'DELETE' : 'PUT',
+                headers: {
+                    Authorization: `Bearer ${this.data.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: value === null ? undefined : JSON.stringify(fileData, null, 4),
             },
-            body: value === null ? undefined : JSON.stringify(fileData, null, 4),
-        })
+        )
         const t = await res.text()
-        if (res.status === 200 || res.status === 201 || res.status === 404) {
+        if (res.status === 200 || res.status === 201 || res.status === 204 || res.status === 404) {
             return {
                 value,
                 lastModified: localNow,

@@ -64,12 +64,10 @@ const deprecated = {
     81012: 85005,
     81013: 85006,
 }
+const depids = Object.keys(deprecated).map((e) => Number(e))
 function processAchievement(jsondata) {
     jsondata.achievements = jsondata.achievements.filter(
-        (e) =>
-            ![84027, 82011, 82016, 82018, 84517, 84521, ...Object.keys(deprecated).map((e) => Number(e))].includes(
-                e.id,
-            ),
+        (e) => ![84027, 82011, 82016, 82018, 84517, 84521, ...depids].includes(e.id),
     )
     jsondata.totalReward = 0
     jsondata.achievements.forEach((e) => {

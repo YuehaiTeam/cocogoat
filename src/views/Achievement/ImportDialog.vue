@@ -5,7 +5,7 @@
             v-model="content"
             type="textarea"
             :class="$style.textarea"
-            placeholder="支持的导入项目：&#13; - 椰羊JSON&#13; - 在F12页面执行的JS代码(椰羊、Paimon.moe、Seelie.me)"
+            placeholder="支持的导入项目：&#13; - 椰羊JSON&#13; - Paimon.moe JSON&#13; - 在F12页面执行的JS代码(椰羊、Paimon.moe、Seelie.me)"
         ></el-input>
         <el-button :class="$style.importButton" size="large" type="primary" :disabled="!allowed" @click="doImport">
             {{ importText }}

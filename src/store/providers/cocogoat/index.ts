@@ -1,9 +1,9 @@
+import { apibase } from '@/utils/apibase'
 import { SyncProvider } from '../typing'
 import { SyncError, SYNCERR, SYNCSTAT } from '../../sync'
 import Manage from './Manage.vue'
 import { ref, markRaw } from 'vue'
-const apibase = navigator.language === 'zh-CN' ? process.env.VUE_APP_APIBASECN : process.env.VUE_APP_APIBASE
-const api = apibase + '/qingxin/d'
+const pathbase = '/qingxin/d'
 export interface ICocogoatSyncStatus {
     status: SYNCSTAT
     error: SyncError<unknown> | null
@@ -32,7 +32,7 @@ class CocogoatSyncProvider implements SyncProvider {
         }
     }
     async info(): Promise<{ user: string; name: string; avatar: string; storage: number[] }> {
-        const req = await fetch(`${api}/${this.user}`, {
+        const req = await fetch(`${await apibase(pathbase)}/${this.user}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${this.token}`,
@@ -45,19 +45,24 @@ class CocogoatSyncProvider implements SyncProvider {
         value: unknown,
         { localLast, localNow, forceOverride }: { localLast: Date; localNow: Date; forceOverride?: true },
     ) {
-        const req = await fetch(`${api}/${this.user}/${key}${forceOverride ? '?override' : ''}`, {
-            method: value === null ? 'DELETE' : 'PUT',
-            headers: {
-                Authorization: `Bearer ${this.token}`,
-                'Content-Type': 'application/json',
-                'If-Unmodified-Since': localLast.toUTCString(),
-                'X-Last-Modified': localNow.toUTCString(),
+        const req = await fetch(
+            `${await apibase(pathbase)}/${this.user}/${key}${
+                forceOverride || localLast.getTime() === 0 ? '?override' : ''
+            }`,
+            {
+                method: value === null ? 'DELETE' : 'PUT',
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                    'Content-Type': 'application/json',
+                    'If-Unmodified-Since': localLast.toUTCString(),
+                    'X-Last-Modified': localNow.toUTCString(),
+                },
+                body: value === null ? undefined : JSON.stringify(value),
             },
-            body: value === null ? undefined : JSON.stringify(value),
-        })
+        )
         // code 412: conflict
         if (req.status === 412) {
-            const err = new SyncError(SYNCERR.CONFLICT, 'Conflict', {
+            const err = new SyncError(SYNCERR.CONFLICT, 'conflict when saving [' + key + ']', {
                 localLast,
                 remoteLast: new Date(req.headers.get('Last-Modified') || 0),
                 localNow,
@@ -104,7 +109,7 @@ class CocogoatSyncProvider implements SyncProvider {
         }
     }
     async get(key: string) {
-        const req = await fetch(`${api}/${this.user}/${key}`, {
+        const req = await fetch(`${await apibase(pathbase)}/${this.user}/${key}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${this.token}`,
@@ -142,7 +147,7 @@ class CocogoatSyncProvider implements SyncProvider {
         }
     }
     async loadAll() {
-        const req = await fetch(`${api}/${this.user}`, {
+        const req = await fetch(`${await apibase(pathbase)}/${this.user}`, {
             method: 'GET',
             headers: {
                 Authorization: `Bearer ${this.token}`,

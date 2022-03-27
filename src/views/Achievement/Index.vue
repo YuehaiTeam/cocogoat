@@ -16,45 +16,51 @@
         </template>
         <template #actions>
             <div class="actions">
-                <el-popover v-model:visible="showClear" :width="190" placement="bottom">
-                    <div style="text-align: center">真的要清空吗？</div>
-                    <div style="text-align: center; margin: 0; margin-top: 15px">
-                        <el-link style="margin-right: 15px" @click="showClear = false">取消</el-link>
-                        <el-link type="danger" style="margin-right: 15px" @click="doClear(false)">清空当前</el-link>
-                        <el-button size="small" type="danger" plain @click="doClear(true)">清空全部</el-button>
-                    </div>
-                    <template #reference>
-                        <el-button v-show="!showScanner" type="danger" plain @click="showClear = true">
-                            <fa-icon icon="trash-can" />
-                            清空
-                        </el-button>
-                    </template>
-                </el-popover>
-                <el-button v-show="!showScanner" class="import-button" @click="showImport = !showImport">
-                    导入
-                </el-button>
-                <div v-show="!showScanner" class="dropdown">
-                    <el-dropdown class="header-plain-dropdown" split-button @click="doExport('')">
-                        导出
-                        <template #dropdown>
-                            <el-dropdown-menu class="el-dropdown-menu--small">
-                                <el-dropdown-item disabled class="export-title"> Paimon.moe </el-dropdown-item>
-                                <el-dropdown-item @click="doExport('paimon')">代码</el-dropdown-item>
-                                <el-dropdown-item divided disabled class="export-title"> Seelie.me </el-dropdown-item>
-                                <el-dropdown-item @click="doExport('seelie')">代码</el-dropdown-item>
-                            </el-dropdown-menu>
+                <div class="a-line">
+                    <el-popover
+                        v-model:visible="showClear"
+                        :width="190"
+                        :placement="isMobile ? 'left-start' : 'bottom'"
+                    >
+                        <div style="text-align: center">真的要清空吗？</div>
+                        <div style="text-align: center; margin: 0; margin-top: 15px">
+                            <el-link style="margin-right: 15px" @click="showClear = false">取消</el-link>
+                            <el-link type="danger" style="margin-right: 15px" @click="doClear(false)">清空当前</el-link>
+                            <el-button size="small" type="danger" plain @click="doClear(true)">清空全部</el-button>
+                        </div>
+                        <template #reference>
+                            <el-button v-show="!showScanner" type="danger" plain @click="showClear = true">
+                                <fa-icon icon="trash-can" />
+                                清空
+                            </el-button>
                         </template>
-                    </el-dropdown>
+                    </el-popover>
                 </div>
-                <el-button
-                    size="default"
-                    type="primary"
-                    :plain="!showScanner"
-                    style="margin-left: 10px"
-                    @click="showScanner = !showScanner"
-                >
-                    <fa-icon icon="crosshairs" /> {{ showScanner ? '退出' : '' }}识别
-                </el-button>
+                <div class="a-line">
+                    <el-button v-show="!showScanner" class="import-button" @click="showImport = !showImport">
+                        导入
+                    </el-button>
+                    <div v-show="!showScanner" class="dropdown">
+                        <el-dropdown class="header-plain-dropdown" split-button @click="doExport('')">
+                            导出
+                            <template #dropdown>
+                                <el-dropdown-menu class="el-dropdown-menu--small">
+                                    <el-dropdown-item disabled class="export-title"> Paimon.moe </el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('paimon')">代码</el-dropdown-item>
+                                    <el-dropdown-item divided disabled class="export-title">
+                                        Seelie.me
+                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('seelie')">代码</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </div>
+                </div>
+                <div class="a-line">
+                    <el-button size="default" type="primary" :plain="!showScanner" @click="showScanner = !showScanner">
+                        <fa-icon icon="crosshairs" /> {{ showScanner ? '退出' : '' }}识别
+                    </el-button>
+                </div>
             </div>
         </template>
         <div v-if="showScanner" :class="$style.scannerArea">
@@ -164,7 +170,7 @@
 <script lang="ts">
 import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, defineComponent, computed, watch, onMounted } from 'vue'
+import { ref, toRef, defineComponent, computed, watch, onMounted } from 'vue'
 
 import {
     faCrosshairs,
@@ -195,6 +201,7 @@ import AchievementItem from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
 import ImportDialog from './ImportDialog.vue'
 import { uniqBy } from 'lodash'
+import bus from '@/bus'
 const deprecated = {
     81006: 85000,
     81007: 85001,
@@ -437,6 +444,7 @@ export default defineComponent({
             totalFin,
             totalReward,
             contributed,
+            isMobile: toRef(bus(), 'isMobile'),
         }
     },
 })

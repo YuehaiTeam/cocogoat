@@ -11,7 +11,7 @@
         <el-table ref="datatable" :data="syncProviders" class="account-table">
             <el-table-column prop="id">
                 <template #header>
-                    <el-button @click="forceSyncAll">手动同步</el-button>
+                    <el-button @click="forceSyncAll(true)">手动同步</el-button>
                 </template>
                 <template #default="scope">
                     <component
@@ -59,6 +59,23 @@
             </el-table-column>
         </el-table>
         <br />
+        <div v-if="syncStatus.errors.length > 0" class="failds">
+            <h4>同步状态</h4>
+            <br />
+            <el-table :data="syncStatus.errors" class="error-table">
+                <el-table-column prop="provider" label="同步服务"></el-table-column>
+                <el-table-column prop="provider" label="错误类型">
+                    <template #default="scope">
+                        {{ errtype[scope.row.code] || '其他错误' }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="provider" label="详细信息">
+                    <template #default="scope">
+                        {{ scope.row.message }}
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
         <h4>本地导出</h4>
         <div class="desc">
             导出的本地文件为zip格式，因此只需通过删除其中不想要的文件即可实现部分导入。<br />导入还没做好。
@@ -117,7 +134,7 @@
 <script lang="ts">
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPlus, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
-import { forceSyncAll, initSync, IProviderItem, syncProviders } from '@/store/sync'
+import { forceSyncAll, initSync, IProviderItem, syncProviders, syncStatus } from '@/store/sync'
 import { ref, computed, defineComponent, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { list, get, del } from '@/store/impl'
@@ -166,7 +183,7 @@ export default defineComponent({
                     app: '',
                 },
             })
-            initSync().then(forceSyncAll)
+            initSync().then(() => forceSyncAll(false))
         }
         const exportLoading = ref(false)
         const exportData = async () => {
@@ -204,8 +221,14 @@ export default defineComponent({
             })
             location.reload()
         }
+        const errtype = {
+            conflict: '同步冲突',
+            offline: '网络错误',
+            auth: '登录失效',
+        } as Record<string, string>
         return {
             syncProviders,
+            syncStatus,
             providerInstallerList,
             delprovider,
             addType,
@@ -215,6 +238,7 @@ export default defineComponent({
             clearData,
             exportData,
             exportLoading,
+            errtype,
         }
     },
 })

@@ -47,6 +47,7 @@
 
 <script lang="ts">
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
+import { apibase } from '@/utils/apibase'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
     faAngleRight,
@@ -59,7 +60,6 @@ import { ElMessageBox } from 'element-plus'
 import { computed, defineComponent, ref } from 'vue'
 library.add(faAngleRight, faEnvelopeOpenText, faCheckCircle, faCircleNotch, faBomb)
 export const name = '椰羊云同步'
-const api = process.env.VUE_APP_APIBASE + '/qingxin/u'
 export default defineComponent({
     components: {
         IconCocogoat,
@@ -80,7 +80,7 @@ export default defineComponent({
         const submitMail = async () => {
             if (!isMail.value) return
             step.value = 2
-            const res = await fetch(api, {
+            const res = await fetch(await apibase('/qingxin/u'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -117,27 +117,31 @@ export default defineComponent({
             setTimeout(checkLoginStatus, 3000)
         }
         const checkLoginStatus = async () => {
-            const res = await fetch(api + '/' + dtoken, {
-                method: 'GET',
-            })
-            if (res.status === 404) {
-                setTimeout(checkLoginStatus, 2000)
-            } else if (res.status === 200) {
-                const data = (await res.json()) as {
-                    token: string
-                    lastModified: number
+            try {
+                const res = await fetch(await apibase('/qingxin/u/' + dtoken), {
+                    method: 'GET',
+                })
+                if (res.status === 404) {
+                    setTimeout(checkLoginStatus, 2000)
+                } else if (res.status === 200) {
+                    const data = (await res.json()) as {
+                        token: string
+                        lastModified: number
+                    }
+                    data.lastModified = Date.now()
+                    const key = mail.value.replace(/\./g, '_').replace(/@/g, '_').replace(/-/g, '_')
+                    emit('submit', { key, data })
+                } else {
+                    step.value = 1
+                    let errorText = await res.text()
+                    try {
+                        const data = JSON.parse(errorText)
+                        errorText = data.error || data.msg
+                    } catch (e) {}
+                    ElMessageBox.alert(errorText, '出错了！')
                 }
-                data.lastModified = Date.now()
-                const key = mail.value.replace(/\./g, '_').replace(/@/g, '_').replace(/-/g, '_')
-                emit('submit', { key, data })
-            } else {
-                step.value = 1
-                let errorText = await res.text()
-                try {
-                    const data = JSON.parse(errorText)
-                    errorText = data.error || data.msg
-                } catch (e) {}
-                ElMessageBox.alert(errorText, '出错了！')
+            } catch (e) {
+                setTimeout(checkLoginStatus, 2000)
             }
         }
         return {

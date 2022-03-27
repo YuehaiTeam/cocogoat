@@ -68,8 +68,8 @@ class OneDriveSyncProvider implements SyncProvider {
         lastModified: Date
     }> {
         await this.refreshToken()
-        const fileUrl = `https://graph.microsoft.com/beta/me/drive/special/approot:/${key}.json:/content`
-        if (!forceOverride) {
+        const fileUrl = `https://graph.microsoft.com/beta/me/drive/special/approot:/${key}.json`
+        if (!forceOverride && localLast.getTime() > 0 && value !== null) {
             const remoteFileRes = await fetch(fileUrl, {
                 method: 'GET',
                 headers: {
@@ -93,16 +93,19 @@ class OneDriveSyncProvider implements SyncProvider {
             value: value,
             lastModified: localNow.toISOString(),
         }
-        const res = await fetch(`${fileUrl}?@microsoft.graph.conflictBehavior=replace`, {
-            method: value === null ? 'DELETE' : 'PUT',
-            headers: {
-                Authorization: `Bearer ${this.data.access_token}`,
-                'Content-Type': 'application/json',
+        const res = await fetch(
+            `${fileUrl}${value === null ? '' : ':/content'}?@microsoft.graph.conflictBehavior=replace`,
+            {
+                method: value === null ? 'DELETE' : 'PUT',
+                headers: {
+                    Authorization: `Bearer ${this.data.access_token}`,
+                    'Content-Type': 'application/json',
+                },
+                body: value === null ? undefined : JSON.stringify(fileData, null, 4),
             },
-            body: value === null ? undefined : JSON.stringify(fileData, null, 4),
-        })
+        )
         const t = await res.text()
-        if (res.status === 200 || res.status === 201 || res.status === 404) {
+        if (res.status === 200 || res.status === 201 || res.status === 204 || res.status === 404) {
             return {
                 value,
                 lastModified: localNow,

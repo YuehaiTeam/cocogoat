@@ -203,10 +203,18 @@ export const singleSync = async ({
     const promises = syncProviders.value.map((provider) => {
         return provider.provider.set(user, data, { localLast: last, localNow: now, forceOverride: force || undefined })
     })
-    const result = await Promise.allSettled(promises)
+    const result = (await Promise.allSettled(promises)).map((e, i) => {
+        return {
+            provider: syncProviders.value[i].id,
+            result: e,
+        }
+    })
     const failed = result
-        .filter((r) => r.status === 'rejected')
-        .map((r) => (r as PromiseRejectedResult).reason) as SyncError<unknown>[]
+        .filter((r) => r.result.status === 'rejected')
+        .map((r) => {
+            ;(r.result as PromiseRejectedResult).reason.provider = r.provider
+            return (r.result as PromiseRejectedResult).reason
+        }) as SyncError<unknown>[]
     return {
         failed,
         count: promises.length,
@@ -231,7 +239,12 @@ export const singleSyncCached = async () => {
     } else {
         syncStatus.value.status = SYNCSTAT.SYNCED
     }
-    console.log(failed)
+    if (failed.length > 0) {
+        console.error('-> SYNC Faild with errors :')
+        failed.forEach((err) => {
+            console.error(err)
+        })
+    }
     syncStatus.value.errors = failed
 }
 const _debouncedSingleSync = debounce(singleSyncCached, 1 * 1e3)

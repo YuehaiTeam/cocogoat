@@ -45,16 +45,21 @@ class CocogoatSyncProvider implements SyncProvider {
         value: unknown,
         { localLast, localNow, forceOverride }: { localLast: Date; localNow: Date; forceOverride?: true },
     ) {
-        const req = await fetch(`${await apibase(pathbase)}/${this.user}/${key}${forceOverride ? '?override' : ''}`, {
-            method: value === null ? 'DELETE' : 'PUT',
-            headers: {
-                Authorization: `Bearer ${this.token}`,
-                'Content-Type': 'application/json',
-                'If-Unmodified-Since': localLast.toUTCString(),
-                'X-Last-Modified': localNow.toUTCString(),
+        const req = await fetch(
+            `${await apibase(pathbase)}/${this.user}/${key}${
+                forceOverride || localLast.getTime() === 0 ? '?override' : ''
+            }`,
+            {
+                method: value === null ? 'DELETE' : 'PUT',
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                    'Content-Type': 'application/json',
+                    'If-Unmodified-Since': localLast.toUTCString(),
+                    'X-Last-Modified': localNow.toUTCString(),
+                },
+                body: value === null ? undefined : JSON.stringify(value),
             },
-            body: value === null ? undefined : JSON.stringify(value),
-        })
+        )
         // code 412: conflict
         if (req.status === 412) {
             const err = new SyncError(SYNCERR.CONFLICT, 'conflict when saving [' + key + ']', {

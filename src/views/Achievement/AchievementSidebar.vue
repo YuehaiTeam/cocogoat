@@ -33,7 +33,7 @@
                 </router-link>
             </div>
         </el-scrollbar>
-        <div v-if="$root.isMobile" class="lr">
+        <div v-if="isMobile" class="lr">
             <div class="l" @click="move(-1)">
                 <fa-icon icon="angle-left" />
             </div>
@@ -49,7 +49,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 library.add(faAngleLeft, faAngleRight)
 
-import { ref } from '@vue/reactivity'
+import bus from '@/bus'
+import { ref, toRef } from 'vue'
 import { defineComponent } from '@vue/runtime-core'
 import { ElScrollbar } from 'element-plus/lib/components'
 export default defineComponent({
@@ -68,6 +69,7 @@ export default defineComponent({
         return {
             move,
             scrollbarRef,
+            isMobile: toRef(bus(), 'isMobile'),
         }
     },
 })

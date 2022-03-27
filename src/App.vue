@@ -25,6 +25,7 @@ body,
     padding: 0;
     overscroll-behavior: none;
 }
+html,
 body {
     overflow-x: hidden;
 }

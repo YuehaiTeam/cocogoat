@@ -7,32 +7,40 @@
         </template>
         <template #actions>
             <div class="actions">
-                <el-button class="import-button" size="default" plain @click="openImport">
-                    <fa-icon icon="arrow-up-from-bracket" /> 导入
-                </el-button>
-                <div class="dropdown">
-                    <el-dropdown class="header-plain-dropdown" split-button @click="doExport">
-                        {{ selectedIds.length > 0 ? '导出选中' : '导出' }}
-                        <template #dropdown>
-                            <el-dropdown-menu class="el-dropdown-menu--small">
-                                <el-dropdown-item disabled class="export-title"> 莫娜占卜铺 </el-dropdown-item>
-                                <el-dropdown-item @click="doExport('Mona')">复制</el-dropdown-item>
-                                <el-dropdown-item @click="doExportToFile('Mona')">到文件</el-dropdown-item>
-                                <el-dropdown-item divided disabled class="export-title"> Mingyulab </el-dropdown-item>
-                                <el-dropdown-item @click="doExport('Mingyulab')">复制</el-dropdown-item>
-                                <el-dropdown-item @click="doExportToFile('Mingyulab')">到文件</el-dropdown-item>
-                                <el-dropdown-item divided disabled class="export-title">
-                                    Genshin Optimizer
-                                </el-dropdown-item>
-                                <el-dropdown-item @click="doExport('GO')">复制</el-dropdown-item>
-                                <el-dropdown-item @click="doExportToFile('GO')">到文件</el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
+                <div class="a-line">
+                    <el-button class="import-button" size="default" plain @click="openImport">
+                        <fa-icon icon="arrow-up-from-bracket" /> 导入
+                    </el-button>
                 </div>
-                <el-button size="default" type="primary" disabled plain style="margin-left: 10px">
-                    <fa-icon icon="crosshairs" /> 识别
-                </el-button>
+                <div class="a-line">
+                    <div class="dropdown">
+                        <el-dropdown class="header-plain-dropdown" split-button @click="doExport">
+                            {{ selectedIds.length > 0 ? '导出选中' : '导出' }}
+                            <template #dropdown>
+                                <el-dropdown-menu class="el-dropdown-menu--small">
+                                    <el-dropdown-item disabled class="export-title"> 莫娜占卜铺 </el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('Mona')">复制</el-dropdown-item>
+                                    <el-dropdown-item @click="doExportToFile('Mona')">到文件</el-dropdown-item>
+                                    <el-dropdown-item divided disabled class="export-title">
+                                        Mingyulab
+                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('Mingyulab')">复制</el-dropdown-item>
+                                    <el-dropdown-item @click="doExportToFile('Mingyulab')">到文件</el-dropdown-item>
+                                    <el-dropdown-item divided disabled class="export-title">
+                                        Genshin Optimizer
+                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('GO')">复制</el-dropdown-item>
+                                    <el-dropdown-item @click="doExportToFile('GO')">到文件</el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </div>
+                </div>
+                <div class="a-line">
+                    <el-button size="default" type="primary" disabled plain style="margin-left: 10px">
+                        <fa-icon icon="crosshairs" /> 识别
+                    </el-button>
+                </div>
             </div>
         </template>
         <el-empty description="施工中" />

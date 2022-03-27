@@ -8,6 +8,8 @@ import View from '@/views/View.vue'
 import { store, currentUser, options } from './store'
 import { initi18n, i18n } from '@/i18n'
 import { initSync } from './store/sync'
+import { createPinia } from 'pinia'
+const pinia = createPinia()
 
 // 兼容性检查：
 export let notInSameoriginFrame = parent === window
@@ -34,6 +36,7 @@ declare global {
         }
     }
 }
+
 ;(async () => {
     await initi18n()
     const app = createApp(App)
@@ -41,7 +44,7 @@ declare global {
         const { init } = await import('@/utils/reporting')
         init(app, router)
     }
-    app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(router).mount('#toki')
+    app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(pinia).use(router).mount('#toki')
     if (top === window && !location.href.includes('/frames')) {
         // Don't sync in iframes
         initSync()

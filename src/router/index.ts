@@ -106,6 +106,27 @@ const routes: Array<RouteRecordRaw> = [
         ],
     },
     {
+        path: '/frames/artifact-scanner',
+        component: () => import('@/views/ArtifactScanner/Index.vue'),
+        children: [
+            {
+                path: '',
+                name: 'frames.artifact.scan',
+                component: () => import('@/views/ArtifactScanner/Entrance.vue'),
+            },
+            {
+                path: 'capture',
+                name: 'frames.artifact.scan.capture-scanner',
+                component: () => import('@/views/ArtifactScanner/CaptureScanner/Index.vue'),
+            },
+            {
+                path: 'screenshot',
+                name: 'frames.artifact.scan.screenshot-scanner',
+                component: () => import('@/views/ArtifactScanner/ScreenshotScanner/Index.vue'),
+            },
+        ],
+    },
+    {
         path: '/frames/playground',
         name: 'frames.playground',
         component: () => import('@/views/Playground/Index.vue'),

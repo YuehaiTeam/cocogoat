@@ -8,7 +8,22 @@ export interface ICVMat {
     type: number
     data: Uint8Array
 }
-export function toIMat(cv: OpenCV, mat: InstanceType<OpenCV['Mat']>): ICVMat {
+export function toIMat(cv: OpenCV, mat: InstanceType<OpenCV['Mat']>, convert = false): ICVMat {
+    if (convert) {
+        const img = new cv.Mat()
+        const depth = mat.type() % 8
+        const scale = depth <= cv.CV_8S ? 1 : depth <= cv.CV_32S ? 1 / 256 : 255
+        const shift = depth === cv.CV_8S || depth === cv.CV_16S ? 128 : 0
+        mat.convertTo(img, cv.CV_8U, scale, shift)
+        const res = {
+            rows: img.rows,
+            cols: img.cols,
+            type: img.type(),
+            data: new Uint8Array(img.data),
+        }
+        img.delete()
+        return res
+    }
     return {
         rows: mat.rows,
         cols: mat.cols,

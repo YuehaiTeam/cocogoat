@@ -1,11 +1,13 @@
 import characterImages from '@/assets/characters'
 import { options } from '@/store'
 import { ICharacter } from '@/typings/Character'
+import { IArtifactDesc } from '@/typings/Artifact'
 import { watch } from 'vue'
 import { defineStore } from 'pinia'
 
 const createEmptyI18n = () => ({
     characters: [] as ICharacter[],
+    artifacts: [] as IArtifactDesc[],
     atifactParams: {} as Record<string, string>,
     characterAvatar: {} as Record<string, string>,
     amos: [] as string[],

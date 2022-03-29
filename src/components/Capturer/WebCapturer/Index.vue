@@ -1,5 +1,5 @@
 <template>
-    <section class="web-capturer">
+    <section :class="$style.webCapturer">
         <c-intro v-if="step === 1" @request-capture="requestCapture" />
         <c-client v-else-if="step === 2" :control="control" @done="afterClient" />
         <video ref="video" style="display: none" />
@@ -133,7 +133,7 @@ export default defineComponent({
     top: -9999px;
     left: -9999px;
 }
-.scanner-ui {
+.web-capturer {
     text-align: center;
     :global {
         .start-btn {

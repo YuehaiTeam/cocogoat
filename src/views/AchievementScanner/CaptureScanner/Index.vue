@@ -1,6 +1,5 @@
 <script lang="ts">
 import { CocogoatWebControl } from '@/modules/webcontrol'
-const webControl = new CocogoatWebControl()
 import { IMatFromImageData, toCanvas } from '@/utils/IMat'
 import { getScannerInstance } from '../scanner/scanner.worker'
 const { scannerOnLine, scannerOnLine2, scannerOnImage, initPromise, workerCV, workerOCR } = getScannerInstance()
@@ -14,11 +13,9 @@ enum S {
     Processing = 5,
     Finish = 6,
 }
-import { computed, defineComponent, onBeforeUnmount, ref, watch } from 'vue-demi'
-import FloatWindow from '@/components/FloatWindow2.vue'
+import { computed, defineComponent, onBeforeUnmount, ref, watch } from 'vue'
 import FloatContent from './FloatContent.vue'
 import FloatContentB from './FloatContent2.vue'
-import WebcontrolSwitch from './WebcontrolSwitch.vue'
 import { send } from '../utils'
 import delay from 'delay'
 import FastQ from 'fastq'
@@ -30,22 +27,20 @@ import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 library.add(faTriangleExclamation, faInternetExplorer)
 import Loader from '../Common/Loader.vue'
-import Footer from '../Common/Footer.vue'
 import type { ICVMat } from '@/utils/cv'
 import { measureLatency, tillChanged } from '@/utils/cv/measurement'
+import WebCapturer from '@/components/Capturer/WebCapturer/Index.vue'
+import { ICapturer } from '@/components/Capturer/typing'
 export default defineComponent({
     name: 'AchievementScanner',
     components: {
-        FloatWindow,
         FloatContent,
         FloatContentB,
-        WebcontrolSwitch,
-        FooterComponent: Footer,
         Loader,
+        WebCapturer,
     },
     setup() {
         const route = useRoute()
-        const webControlEnabled = ref(0)
         const isTop = window === parent
         const capture = ref(false)
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
@@ -138,29 +133,22 @@ export default defineComponent({
             }
         }
         const cvQueue = FastQ.promise(cvWorker, 1)
-        const video = ref(null as unknown as HTMLVideoElement)
         const state = ref(S.Init)
         initPromise.then(() => {
             state.value = S.Ready
         })
-        let captureStream: MediaStream | null = null
-        const requestCapture = async () => {
-            try {
-                captureStream = await navigator.mediaDevices.getDisplayMedia({
-                    video: true,
-                    audio: false,
-                })
-                video.value.srcObject = captureStream
-                video.value.play()
-                state.value = S.Wait
-            } catch (err) {
-                console.error('Error: ' + err)
-                state.value = S.Fail
-            }
-        }
+        const cap = ref(null as ICapturer | null)
+        const capKey = ref(Date.now())
+        const webControlEnabled = computed(() => (cap.value ? cap.value.windowId : -1))
+        let webControl = new CocogoatWebControl()
+        watch(cap, (c) => {
+            c && (webControl = c.control)
+        })
+        let controller = new AbortController()
         const scannerLoop = async () => {
-            tempCanvas.width = video.value.videoWidth
-            tempCanvas.height = video.value.videoHeight
+            if (!cap.value) return
+            tempCanvas.width = cap.value.video.videoWidth
+            tempCanvas.height = cap.value.video.videoHeight
             let rect: Rect | null = null
             let clickPos = { x: 0, y: 0 }
 
@@ -199,18 +187,8 @@ export default defineComponent({
                 console.log('->latency measurement start')
                 const res = await measureLatency(
                     workerCV.diffCached,
-                    () => {
-                        let imageData = null as ImageData | null
-                        while (!imageData) {
-                            console.info('-> capture')
-                            tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
-                            imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
-                            if (!imageData) {
-                                console.warn('->capture FAILD')
-                            }
-                        }
-                        return IMatFromImageData(imageData)
-                    },
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    () => cap.value!.capture({ x: 0, y: 0, w: 0, h: 0 }),
                     () => {
                         return doWebControl(false)
                     },
@@ -223,7 +201,7 @@ export default defineComponent({
                 try {
                     let imageData = null as ImageData | null
                     while (!imageData) {
-                        tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
+                        tempCtx && tempCtx.drawImage(cap.value.video, 0, 0, tempCanvas.width, tempCanvas.height)
                         imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
                         if (!imageData) {
                             console.warn('->capture FAILD')
@@ -243,21 +221,11 @@ export default defineComponent({
                     } else {
                         await tillChanged(
                             workerCV.diffCached,
-                            () => {
-                                let imageData = null as ImageData | null
-                                while (!imageData) {
-                                    console.info('-> wait for change')
-                                    tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
-                                    imageData =
-                                        tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
-                                    if (!imageData) {
-                                        console.warn('->capture FAILD')
-                                    }
-                                }
-                                return IMatFromImageData(imageData)
-                            },
+                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                            () => cap.value!.capture({ x: 0, y: 0, w: 0, h: 0 }),
                             {
                                 interval: 150,
+                                signal: controller.signal,
                             },
                         )
                         console.log('->changed')
@@ -284,13 +252,15 @@ export default defineComponent({
                     console.log('capture')
                     scannerLoop()
                 }
+                if (!cap.value) return
                 if (state.value === S.Processing) {
-                    tempCtx && tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
+                    controller.abort()
+                    tempCtx && tempCtx.drawImage(cap.value.video, 0, 0, tempCanvas.width, tempCanvas.height)
                     const imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
                     if (imageData) {
                         cvQueue.push({ imageData, keepLastLine: true })
                     }
-                    captureStream && captureStream.getTracks().forEach((track) => track.stop())
+                    cap.value.stop()
                     console.log('processing')
                     send('state', 'processing')
                     ocrQueue.resume()
@@ -316,6 +286,8 @@ export default defineComponent({
             state.value = S.Ready
             firstLine = null
             zeroTimes = 0
+            controller = new AbortController()
+            capKey.value = Date.now()
         }
         const msgHandler = (ev: MessageEvent) => {
             const { event } = ev.data
@@ -324,7 +296,7 @@ export default defineComponent({
                     reset()
                     break
                 case 'start':
-                    requestCapture()
+                    cap.value && cap.value.requestCapture()
                     break
             }
         }
@@ -344,8 +316,6 @@ export default defineComponent({
         return {
             S,
             state,
-            video,
-            requestCapture,
             results,
             scanned,
             recognized,
@@ -355,6 +325,8 @@ export default defineComponent({
             reset,
             webControl,
             webControlEnabled,
+            cap,
+            capKey,
         }
     },
 })
@@ -365,21 +337,12 @@ export default defineComponent({
             <Loader @done="state++" />
         </section>
         <section v-else>
-            <video ref="video" style="display: none"></video>
-            <div v-if="state < S.Wait" :class="$style.startPage">
-                <h1 v-if="isTop">椰羊·成就扫描</h1>
-                <button class="start" @click="requestCapture">开始</button>
-                <webcontrol-switch v-model="webControlEnabled" :w="webControl" />
-                <div class="desc">点击开始后，请按下图指示选择原神窗口以识别</div>
-                <img src="@/assets/openscreenshare.png" alt="请参照图片开始抓屏" />
-                <FooterComponent />
-            </div>
-            <float-window
-                v-if="state === S.Wait || state === S.Capture"
-                :width="250"
-                :height="100"
-                :class="$style.floatwindow"
+            <web-capturer
+                ref="cap"
+                :key="capKey"
+                :popup="state === S.Wait || state === S.Capture"
                 @exit="state = S.Processing"
+                @ready="state = S.Wait"
             >
                 <float-content-b
                     :capture="capture"
@@ -390,7 +353,7 @@ export default defineComponent({
                     :duplicate="dup"
                     :webControlEnabled="webControlEnabled"
                 />
-            </float-window>
+            </web-capturer>
             <div v-if="state > S.Wait" :class="$style.statusInner">
                 <div class="inline-status">
                     <float-content

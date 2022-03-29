@@ -1,3 +1,4 @@
+import { Ref } from 'vue'
 import type { ICVMat } from '@/utils/cv'
 import { CocogoatWebControl } from '@/modules/webcontrol'
 export interface ICapturer {
@@ -6,4 +7,6 @@ export interface ICapturer {
     control: CocogoatWebControl
     stop: () => void
     reset: () => void
+    requestCapture: () => void
+    video: Ref<HTMLVideoElement>
 }

@@ -1,19 +1,23 @@
 import characterImages from '@/assets/characters'
 import { options } from '@/store'
-import { AchievementCategory } from '@/typings/Achievement'
 import { ICharacter } from '@/typings/Character'
 import { IArtifactDesc } from '@/typings/Artifact'
-import { ref, watch } from 'vue'
-function createEmptyI18n() {
-    return {
-        achievements: [] as AchievementCategory[],
-        characters: [] as ICharacter[],
-        artifacts: [] as IArtifactDesc[],
-        atifactParams: {} as Record<string, string>,
-        characterAvatar: {} as Record<string, string>,
-    }
-}
-export const i18n = ref(createEmptyI18n())
+import { watch } from 'vue'
+import { defineStore } from 'pinia'
+
+const createEmptyI18n = () => ({
+    characters: [] as ICharacter[],
+    artifacts: [] as IArtifactDesc[],
+    atifactParams: {} as Record<string, string>,
+    characterAvatar: {} as Record<string, string>,
+    amos: [] as string[],
+})
+export const usei18n = defineStore('i18n', {
+    state: createEmptyI18n,
+    getters: {},
+})
+export const i18n = usei18n()
+
 const langEntrance = require.context('./', true, /\.\/(.*?)\/index\.ts$/, 'lazy')
 const langLoader = {} as Record<string, () => Promise<ReturnType<typeof createEmptyI18n>>>
 langEntrance.keys().forEach((key) => {
@@ -33,7 +37,11 @@ export async function loadi18n() {
     if (langModule) {
         const langmodule = await langModule()
         langmodule.characterAvatar = characterImages
-        i18n.value = langmodule
+        for (const key of Object.keys(langmodule)) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            i18n[key] = langmodule[key]
+        }
     }
 }
 export async function initi18n() {

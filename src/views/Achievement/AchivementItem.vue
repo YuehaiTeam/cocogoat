@@ -15,7 +15,7 @@
                         <span class="number">{{ i.reward }}</span>
                     </div>
                     <div class="ntxt">
-                        {{ i.name }}
+                        {{ amos[i.name] }}
                     </div>
                 </div>
                 <small>
@@ -29,7 +29,7 @@
                         <fa-icon icon="arrow-up-right-from-square" />
                         攻略
                     </a>
-                    {{ i.desc }}
+                    {{ amos[i.desc] }}
                 </small>
             </div>
             <div v-if="fin" class="right">
@@ -45,7 +45,8 @@
 </template>
 
 <script lang="ts">
-import { PropType } from '@vue/runtime-core'
+import { i18n } from '@/i18n'
+import { toRef, PropType } from 'vue'
 import { Achievement, IAchievementStore } from '@/typings/Achievement'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
@@ -67,7 +68,9 @@ export default {
     },
     emits: ['input-date', 'input-status', 'check'],
     setup() {
-        return {}
+        return {
+            amos: toRef(i18n, 'amos'),
+        }
     },
 }
 </script>

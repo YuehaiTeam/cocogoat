@@ -3,7 +3,7 @@ import type { Mat, Rect } from '@/utils/opencv'
 import { cvDiffImage, cvGetRect, cvSplitAchievement, cvSplitImage } from './cvUtils'
 import { recognize, init as getOCR } from '@/modules/ocr'
 import { Achievement } from '@/typings/Achievement'
-import { achievementTitles, achievementEC, achievementSubs } from './achievementsList'
+import { achievementTitles, achievementEC, achievementSubs, amos } from './achievementsList'
 import { textBestmatch } from '@/utils/textMatch'
 
 export let lastImage: Mat | null = null
@@ -182,8 +182,8 @@ export async function recognizeAchievement(line: IAScannerBlocks): Promise<IASca
         if (
             titleObj &&
             titleText.confidence > 85 &&
-            !/.*[0-9]{1,}.*/.test(titleObj.obj.desc) &&
-            !titleObj.obj.desc.includes('次')
+            !/.*[0-9]{1,}.*/.test(amos[titleObj.obj.desc]) &&
+            !amos[titleObj.obj.desc].includes('次')
         ) {
             res = titleObj.obj
         } else {

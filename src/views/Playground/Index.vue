@@ -157,7 +157,7 @@ src.delete()`)
             window.cvTranslateError = cvTranslateError
             // @ts-ignore
             window._ = _
-            initMap(i18n.value.artifacts, i18n.value.atifactParams, i18n.value.characters)
+            initMap(i18n.artifacts, i18n.atifactParams, i18n.characters)
         })
         watch(
             () => cvsel.value,

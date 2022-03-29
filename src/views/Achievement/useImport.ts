@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Ref } from 'vue'
 import dayjs from 'dayjs'
-import { i18n } from '@/i18n'
 import { store } from '@/store'
 import { sandboxedEval } from '@/utils/sandbox'
 import { IAchievementStore } from '@/typings/Achievement'
+import achevementsAmos from '@/plugins/amos/achievements/index'
 
 function hasCocogoatAchievementJson(j: Record<string, any[]>) {
     return (
@@ -194,9 +194,9 @@ export function useImport(
         if (importType.value === 'no-categoryId') {
             // calculate categoryId Map
             const cMap = {} as Record<number, number>
-            i18n.value.achievements.forEach((cat) => {
+            achevementsAmos.forEach((cat) => {
                 cat.achievements.forEach((ach) => {
-                    cMap[ach.id] = cat.originalId || 0
+                    cMap[ach.id] = cat.id
                 })
             })
             const dv = importData.value as IAchievementStore[]
@@ -204,7 +204,7 @@ export function useImport(
                 if (!ach.id) continue
                 if (store.value.achievements.find((a) => a.id === ach.id)) continue
                 if (ach.categoryId === -1) {
-                    ach.categoryId = cMap[ach.id] || 0
+                    ach.categoryId = cMap[ach.id]
                 }
                 store.value.achievements.push(ach)
             }

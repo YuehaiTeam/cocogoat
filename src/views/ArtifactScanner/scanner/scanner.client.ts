@@ -48,8 +48,8 @@ export function initScanner() {
             await Promise.all([
                 workerCV.setResources(resources),
                 workerOCR.setResources(resources),
-                workerCV.initMap(i18n.value.artifacts, i18n.value.atifactParams, i18n.value.characters),
-                workerOCR.initMap(i18n.value.artifacts, i18n.value.atifactParams, i18n.value.characters),
+                workerCV.initMap(i18n.artifacts, i18n.atifactParams, i18n.characters),
+                workerOCR.initMap(i18n.artifacts, i18n.atifactParams, i18n.characters),
             ])
             progressHandler(100)
         } catch (e) {

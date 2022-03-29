@@ -3,25 +3,23 @@ export let achievementMap = [] as AchievementCategory[]
 export const achievementTitles: { str: string; obj: Achievement }[] = []
 export const achievementEC: { str: string; obj: Achievement }[] = []
 export const achievementSubs: { str: string; obj: Achievement }[] = []
-export function initAchievementMap(map: AchievementCategory[]) {
+export let amos: string[] = []
+export function initAchievementMap(map: AchievementCategory[], _amos: string[]) {
+    amos = _amos
     achievementMap = map
     achievementMap.forEach((c) => {
         c.achievements.forEach((a) => {
-            const x = {
-                ...a,
-                categoryId: c.originalId || 0,
-            }
             achievementTitles.push({
-                str: a.name.replace(/…|「|」/g, ''),
-                obj: x,
+                str: amos[a.name].replace(/…|「|」/g, ''),
+                obj: a,
             })
             achievementSubs.push({
-                str: a.desc.replace(/…|「|」/g, ''),
-                obj: x,
+                str: amos[a.desc].replace(/…|「|」/g, ''),
+                obj: a,
             })
             achievementEC.push({
-                str: `${a.name}-${a.desc}`.replace(/…|「|」/g, ''),
-                obj: x,
+                str: `${amos[a.name]}-${amos[a.desc]}`.replace(/…|「|」/g, ''),
+                obj: a,
             })
         })
     })

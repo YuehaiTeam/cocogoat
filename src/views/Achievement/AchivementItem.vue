@@ -149,7 +149,10 @@ export default defineComponent({
                     margin-top: 3px;
                 }
                 &.WQ:after {
-                    opacity: 0.6;
+                    opacity: 0.7;
+                }
+                &.IQ:after {
+                    border-right-color: #a87bfd;
                 }
             }
 

@@ -42,6 +42,10 @@ jobs:
         with:
           name: cocogoat-web
           path: dist/
+      - name: Remove Models
+        run: | 
+          rm -rf dist/assets/*.wasm
+          rm -rf dist/assets/*.ort
       - name: Push
         uses: s0/git-publish-subdir-action@develop
         env:

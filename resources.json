@@ -35,31 +35,34 @@
     {
         "tag": "resources",
         "test": "opencv-simd.wasm",
-        "prefix": "https://cdn.jsdelivr.net/npm/@yuehaiteam/cocogoat-resources@1.0.4/",
+        "prefix": "https://cdn.jsdelivr.net/npm/@yuehaiteam/cocogoat-resources@1.0.5/",
         "resources": {
             "opencv-simd.wasm": "opencv-simd.wasm",
             "opencv-normal.wasm": "opencv-normal.wasm",
-            "ppocr.ort": "ppocr.ort.as.wasm"
+            "ppocr.ort": "ppocr.ort.as.wasm",
+            "yas.ort": "yas.ort.as.wasm"
         }
     },
     {
         "tag": "resources",
         "test": "opencv-simd.wasm",
-        "prefix": "https://unpkg.zhimg.com/@yuehaiteam/cocogoat-resources@1.0.4/",
+        "prefix": "https://unpkg.zhimg.com/@yuehaiteam/cocogoat-resources@1.0.5/",
         "resources": {
             "opencv-simd.wasm": "opencv-simd.wasm",
             "opencv-normal.wasm": "opencv-normal.wasm",
-            "ppocr.ort": "ppocr.ort.as.wasm"
+            "ppocr.ort": "ppocr.ort.as.wasm",
+            "yas.ort": "yas.ort.as.wasm"
         }
     },
     {
         "tag": "resources",
         "test": "opencv-simd.wasm",
-        "prefix": "https://npm.elemecdn.com/@yuehaiteam/cocogoat-resources@1.0.4/",
+        "prefix": "https://npm.elemecdn.com/@yuehaiteam/cocogoat-resources@1.0.5/",
         "resources": {
             "opencv-simd.wasm": "opencv-simd.wasm",
             "opencv-normal.wasm": "opencv-normal.wasm",
-            "ppocr.ort": "ppocr.ort.as.wasm"
+            "ppocr.ort": "ppocr.ort.as.wasm",
+            "yas.ort": "yas.ort.as.wasm"
         }
     }
 ]

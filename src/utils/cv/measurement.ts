@@ -46,7 +46,7 @@ export async function measureLatency(
 export async function tillChanged(
     client: typeof diffCached,
     capture: () => ICVMat,
-    { timeout = 30 * 1e3, interval = 0, threhold = 10 },
+    { timeout = 30 * 1e3, interval = 0, threhold = 10, signal = new AbortSignal() },
 ) {
     // clear client cache
     await client(false)
@@ -71,7 +71,7 @@ export async function tillChanged(
                     image,
                 })
             } else {
-                runCheck()
+                if (!signal.aborted) runCheck()
             }
         }
         const runCheck = () => {

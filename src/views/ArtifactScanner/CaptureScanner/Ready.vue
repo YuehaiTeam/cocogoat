@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import { useArstore } from './state'
-import { defineComponent, toRef } from 'vue'
+import { defineComponent, toRef, computed } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faToggleOn } from '@fortawesome/free-solid-svg-icons'
 library.add(faToggleOn)
@@ -36,7 +36,7 @@ export default defineComponent({
         const store = useArstore()
         return {
             step: toRef(store, 'step'),
-            windowId: toRef(store, 'windowId'),
+            windowId: computed(() => store.cap?.windowId || -1),
         }
     },
 })

@@ -1,26 +1,25 @@
 import { watch } from 'vue'
 import { defineStore } from 'pinia'
-import { ElMessage } from 'element-plus'
-import 'element-plus/theme-chalk/el-message.css'
 import type { ICVMat } from '@/utils/cv'
 import { tillChanged } from '@/utils/cv/measurement'
-import { CocogoatWebControl } from '@/modules/webcontrol'
-import { IMatFromImageData, toCanvas } from '@/utils/IMat'
+import { toCanvas } from '@/utils/IMat'
 import type { IArScannerData } from './../scanner/scanner'
 import { getScannerInstance } from '../scanner/scanner.client'
 import fastq from 'fastq'
 import { setArtifactHash } from '@/views/Artifact/artifactUtil'
+import { ICapturer } from '@/components/Capturer/typing'
 const tempCanvas = document.createElement('canvas')
 const tempCtx = tempCanvas.getContext('2d')
+let controller = new AbortController()
 export const useArstore = defineStore('artifact-capture-scanner', {
     state: () => {
+        controller.abort()
+        controller = new AbortController()
         return {
             step: 1,
-            video: null as HTMLVideoElement | null,
-            stream: null as MediaStream | null,
-            windowId: -1,
-            control: new CocogoatWebControl(),
+            capKey: Date.now(),
             scanner: null as ReturnType<typeof getScannerInstance> | null,
+            cap: null as ICapturer | null,
             panelRect: {
                 x: 0,
                 y: 0,
@@ -51,77 +50,36 @@ export const useArstore = defineStore('artifact-capture-scanner', {
         resT: (state) => state.results.filter((r) => r.success),
     },
     actions: {
-        async requestCapture() {
-            if (!this.video) return
-            try {
-                this.stream = await navigator.mediaDevices.getDisplayMedia({
-                    video: true,
-                    audio: false,
-                })
-                this.video.srcObject = this.stream
-                this.video.play()
-                this.step++
-            } catch (err) {
-                console.error(err)
-                ElMessage.error({
-                    message: (err as Error).toString(),
-                })
-            }
-        },
         capture() {
-            if (!this.video) throw new Error('No video')
-            if (!tempCtx) throw new Error('No canvas context')
-            let imageData = null as ImageData | null
-            while (!imageData) {
-                tempCtx.drawImage(this.video, 0, 0, tempCanvas.width, tempCanvas.height)
-                imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
-                if (!imageData) {
-                    console.warn('->capture FAILD')
-                }
-            }
-            return IMatFromImageData(imageData)
+            if (!this.cap) throw new Error('No video')
+            return this.cap.capture({ x: 0, y: 0, w: 0, h: 0 })
         },
         capturePanel() {
-            if (!this.video) throw new Error('No video')
-            if (!tempCtx) throw new Error('No canvas context')
-            let imageData = null as ImageData | null
-            while (!imageData) {
-                // crop to panelRect
-                tempCtx.drawImage(
-                    this.video,
-                    this.panelRect.x,
-                    this.panelRect.y,
-                    this.panelRect.width,
-                    this.panelRect.height,
-                    0,
-                    0,
-                    tempCanvas.width,
-                    tempCanvas.height,
-                )
-                imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
-                if (!imageData) {
-                    console.warn('->capture FAILD')
-                }
-            }
-            return IMatFromImageData(imageData)
+            if (!this.cap) throw new Error('No video')
+            return this.cap.capture({
+                x: this.panelRect.x,
+                y: this.panelRect.y,
+                w: this.panelRect.width,
+                h: this.panelRect.height,
+            })
         },
         async switchToNext() {
-            if (!this.windowId) return
+            if (!this.cap) throw new Error('No video')
+            if (!this.cap.windowId) return
         },
         async waitForSwitch() {
             if (!this.scanner) throw new Error('No scanner')
-            const res = await tillChanged(this.scanner.diffCached, this.capturePanel, {
+            const res = await tillChanged(this.scanner.diffCached.bind(this.scanner), this.capturePanel, {
                 interval: 50,
-                threhold: 80,
+                threhold: 8,
+                signal: controller.signal,
             })
             console.log('->changed', res.result)
             return res.image
         },
         async analyzeUI() {
-            if (!this.video) throw new Error('No video')
+            if (!this.cap) throw new Error('No video')
             if (!this.scanner) throw new Error('No scanner')
-            tempCanvas.width = this.video.videoWidth
-            tempCanvas.height = this.video.videoHeight
             const image = this.capture()
             const bag = await this.scanner.workerCV.analyzeBag(image)
             this.panelRect = bag.panelRect
@@ -133,7 +91,7 @@ export const useArstore = defineStore('artifact-capture-scanner', {
             console.log('->analyzeUI', bag)
         },
         async scannerLoop() {
-            if (!this.video) throw new Error('No video')
+            if (!this.cap) throw new Error('No video')
             if (!tempCtx) throw new Error('No canvas context')
             if (this.queue) {
                 this.queue.killAndDrain()
@@ -187,6 +145,9 @@ const store = useArstore()
 watch(
     () => store.step,
     async (step) => {
+        if (step === 1) {
+            store.cap && store.cap.reset()
+        }
         if (step === 4) {
             store.scanner = getScannerInstance()
             store.scannerLoop()
@@ -200,30 +161,12 @@ watch(
             store.step = 6
             return
         }
-        if (step === 6 && store.video) {
+        if (step === 6 && store.cap) {
             // destroy media track
-            store.stream && store.stream.getTracks().forEach((t) => t.stop())
-            store.stream = null
-            store.video.pause()
-            store.video.srcObject = null
+            controller.abort()
+            controller = new AbortController()
+            store.cap.stop()
             return
         }
-    },
-)
-watch(
-    () => store.stream,
-    (stream) => {
-        stream &&
-            stream.getVideoTracks()[0]?.addEventListener('ended', () => {
-                store.stream = null
-                if (!store.video) return
-                store.video.pause()
-                store.video.srcObject = null
-                if (store.step > 3) {
-                    store.step = 5
-                    return
-                }
-                store.$reset()
-            })
     },
 )

@@ -20,7 +20,7 @@
                         点击此处下载辅助插件<small>(v1.0.4 140kB)</small>
                     </a>
                     <div class="absolute-area">
-                        <el-button class="start-btn start-gray" @click="enable">
+                        <el-button class="start-btn start-gray" @click="enable(false)">
                             <div class="l">
                                 <fa-icon icon="check" />
                             </div>
@@ -49,7 +49,7 @@
                         暂未支持云游戏、模拟器等，请使用手动操作或重新检查
                     </div>
                     <div class="absolute-area">
-                        <el-button class="start-btn start-gray" @click="enable">
+                        <el-button class="start-btn start-gray" @click="enable(false)">
                             <div class="l">
                                 <fa-icon icon="check" />
                             </div>
@@ -65,7 +65,7 @@
                 </div>
             </div>
         </div>
-        <el-button class="start-btn" type="info" plain @click="arstore.step++">
+        <el-button class="start-btn" type="info" plain @click="$emit('done', -1)">
             <div class="l">
                 <fa-icon icon="arrow-pointer" />
             </div>
@@ -81,15 +81,21 @@
 </template>
 
 <script lang="ts">
-import { useArstore } from './state'
-import { ref, defineComponent, toRef, onMounted } from 'vue'
+import { ref, defineComponent, toRef, onMounted, PropType } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowPointer, faAngleRight, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { CocogoatWebControl } from '@/modules/webcontrol'
 library.add(faArrowPointer, faAngleRight, faCheck)
 export default defineComponent({
-    setup() {
-        const arstore = useArstore()
-        const w = toRef(arstore, 'control')
+    props: {
+        control: {
+            type: Object as PropType<CocogoatWebControl>,
+            required: true,
+        },
+    },
+    emits: ['done'],
+    setup(props, { emit }) {
+        const w = toRef(props, 'control')
         const loading = ref(true)
         const notFound = ref(false)
         const denied = ref(false)
@@ -129,8 +135,7 @@ export default defineComponent({
                             gameNotFound.value = true
                             return
                         }
-                        arstore.windowId = windows[0].hWnd
-                        arstore.step++
+                        emit('done', windows[0].hWnd)
                     } else {
                         denied.value = true
                     }
@@ -148,7 +153,6 @@ export default defineComponent({
             gameNotFound,
             needUpdate,
             version,
-            arstore,
         }
     },
 })

@@ -1,6 +1,6 @@
 <template>
     <div :class="$style.intro">
-        <el-button class="start-btn start-gray" @click="requestCapture">
+        <el-button class="start-btn start-gray" @click="$emit('request-capture')">
             <div class="l">
                 <fa-icon icon="video" />
             </div>
@@ -18,23 +18,18 @@
 </template>
 
 <script lang="ts">
-import Footer from '../Common/Footer.vue'
+import Footer from './Footer.vue'
 import { defineComponent } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faVideo, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 library.add(faVideo, faAngleRight)
-import { useArstore } from './state'
-import { storeToRefs } from 'pinia'
 export default defineComponent({
     components: {
         FooterComponent: Footer,
     },
+    emits: ['request-capture'],
     setup() {
-        const store = useArstore()
-        return {
-            ...storeToRefs(store),
-            requestCapture: () => store.requestCapture(),
-        }
+        return {}
     },
 })
 </script>

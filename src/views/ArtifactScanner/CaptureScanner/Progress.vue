@@ -28,9 +28,8 @@
 </template>
 
 <script lang="ts">
-import { storeToRefs } from 'pinia'
 import { useArstore } from './state'
-import { defineComponent } from 'vue'
+import { computed, toRef, defineComponent } from 'vue'
 import FloatContent from '@/views/AchievementScanner/CaptureScanner/FloatContent.vue'
 export default defineComponent({
     components: {
@@ -39,7 +38,13 @@ export default defineComponent({
     setup() {
         const arstore = useArstore()
         return {
-            ...storeToRefs(arstore),
+            step: toRef(arstore, 'step'),
+            resT: toRef(arstore, 'resT'),
+            resF: toRef(arstore, 'resF'),
+            scanned: toRef(arstore, 'scanned'),
+            duplicates: toRef(arstore, 'duplicates'),
+            capKey: toRef(arstore, 'capKey'),
+            windowId: computed(() => arstore.cap?.windowId || -1),
             reset: () => arstore.$reset(),
         }
     },

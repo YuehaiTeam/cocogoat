@@ -33,7 +33,7 @@ export interface IArScannerRawData {
     raw: IArScannerLine[]
     success: boolean
 }
-export let cachedBag = {} as Record<string, Rect>
+let cachedBag = {} as Record<string, Rect>
 export async function setCachedBag(bag: Record<string, Rect>) {
     cachedBag = bag
 }

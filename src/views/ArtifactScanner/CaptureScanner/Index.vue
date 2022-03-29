@@ -1,18 +1,15 @@
 <template>
     <div>
-        <Loader v-if="(load = false)" @done="load = true" />
+        <Loader v-if="load === false" @done="load = true" />
         <div v-else :class="$style.scannerUi">
-            <c-intro v-if="step === 1" />
-            <c-client v-else-if="step === 2" />
-            <c-ready v-else-if="step === 3" />
-            <c-progress v-else />
-            <video ref="video" style="display: none" />
-            <float-window
-                v-if="step > 2 && step < 5"
-                :width="250"
-                :height="100"
-                :class="$style.floatwindow"
-                @exit="step = 5"
+            <c-ready v-if="step === 3" />
+            <c-progress v-else-if="step > 3" />
+            <web-capturer
+                :key="capKey"
+                ref="cap"
+                :popup="step > 2 && step < 5"
+                @exit="step > 3 ? (step = 5) : reset()"
+                @ready="step = 3"
             >
                 <float-content-b
                     :state="step === 4 ? 1 : 0"
@@ -22,31 +19,26 @@
                     :duplicate="duplicates"
                     :webControlEnabled="windowId > 0 ? 1 : undefined"
                 />
-            </float-window>
+            </web-capturer>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { storeToRefs } from 'pinia'
-import { ref, defineComponent } from 'vue'
+import { ref, computed, toRef, defineComponent } from 'vue'
 import { useArstore } from './state'
 import Loader from '../Common/Loader.vue'
-import CIntro from './Intro.vue'
-import CClient from './Client.vue'
 import CReady from './Ready.vue'
 import CProgress from './Progress.vue'
-import FloatWindow from '@/components/FloatWindow2.vue'
 import FloatContentB from './Float.vue'
+import WebCapturer from '@/components/Capturer/WebCapturer/Index.vue'
 export default defineComponent({
     components: {
         Loader,
-        CIntro,
-        CClient,
         CReady,
         CProgress,
-        FloatWindow,
         FloatContentB,
+        WebCapturer,
     },
     setup() {
         const load = ref(false)
@@ -54,18 +46,20 @@ export default defineComponent({
         arstore.$reset()
         return {
             load,
-            ...storeToRefs(arstore),
+            step: toRef(arstore, 'step'),
+            resT: toRef(arstore, 'resT'),
+            resF: toRef(arstore, 'resF'),
+            scanned: toRef(arstore, 'scanned'),
+            duplicates: toRef(arstore, 'duplicates'),
+            capKey: toRef(arstore, 'capKey'),
+            cap: toRef(arstore, 'cap'),
+            windowId: computed(() => arstore.cap?.windowId || -1),
+            reset: () => arstore.$reset(),
         }
     },
 })
 </script>
 <style lang="scss" module>
-.floatwindow {
-    opacity: 0;
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-}
 .scanner-ui {
     text-align: center;
     :global {

@@ -1,17 +1,15 @@
-import { i18n } from '@/i18n'
 import { store } from '@/store'
 import { IAchievementStore } from '@/typings/Achievement'
 import delay from 'delay'
 import { ElLoading, ElMessageBox } from 'element-plus'
-import { Ref, watch, computed, onBeforeUnmount } from 'vue'
+import { Ref, watch, onBeforeUnmount } from 'vue'
+import achevementsAmos from '@/plugins/amos/achievements/index'
 import type { IAScannerData } from '../AchievementScanner/scanner/scanner'
 export interface IScannerFrameResult {
     show: boolean
     faildImages: string[]
 }
-const _achievementMap = computed(() => {
-    return i18n.value.achievements
-})
+
 export function useScannerFrame({
     scannerFrame,
     results,
@@ -37,7 +35,7 @@ export function useScannerFrame({
             for (const e of result as IAScannerData[]) {
                 if (!e.success) continue
                 if (e.achievement.preStage && e.achievement.preStage > 0) {
-                    const cat = _achievementMap.value.find((x) => (x.originalId || 0) === e.achievement.categoryId)
+                    const cat = achevementsAmos.find((x) => x.id === e.achievement.categoryId)
                     if (cat) {
                         const preStage = cat.achievements.find((x) => x.id === e.achievement.preStage)
                         if (preStage) {

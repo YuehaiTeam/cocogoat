@@ -99,8 +99,7 @@
                     class="progress-in"
                     :style="{
                         width:
-                            ((achievementFinStat[currentCat.originalId || 0]?.count || 0) /
-                                currentCat.achievements.length) *
+                            ((achievementFinStat[currentCat.id || 0]?.count || 0) / currentCat.achievements.length) *
                                 100 +
                             '%',
                     }"
@@ -146,9 +145,8 @@
                             <div class="select-this-page">
                                 <el-link
                                     v-if="
-                                        !achievementFinStat[currentCat.originalId || 0] ||
-                                        achievementFinStat[currentCat.originalId || 0]?.count <
-                                            currentCat.achievements.length
+                                        !achievementFinStat[currentCat.id] ||
+                                        achievementFinStat[currentCat.id]?.count < currentCat.achievements.length
                                     "
                                     type="primary"
                                     @click="selectCat(currentCat)"
@@ -171,6 +169,7 @@
 import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, toRef, defineComponent, computed, watch, onMounted } from 'vue'
+import achevementsAmos from '@/plugins/amos/achievements/index'
 
 import {
     faCrosshairs,
@@ -202,6 +201,7 @@ import AchievementSidebar from './AchievementSidebar.vue'
 import ImportDialog from './ImportDialog.vue'
 import { uniqBy } from 'lodash'
 import bus from '@/bus'
+
 const deprecated = {
     81006: 85000,
     81007: 85001,
@@ -244,7 +244,7 @@ export default defineComponent({
             reward: number
         })
         const achievementCat = computed(() => {
-            const ach = i18n.value.achievements.concat([]).sort((a, b) => a.order - b.order)
+            const ach = achevementsAmos.concat([]).sort((a, b) => a.order - b.order)
             return ach
         })
         const totalReward = computed(() => {
@@ -279,9 +279,8 @@ export default defineComponent({
                         reward: 0,
                     }
                     const currentReward =
-                        achievementCat.value
-                            .find((k) => (k.originalId || 0) === e.categoryId)
-                            ?.achievements.find((k) => k.id === e.id)?.reward || 0
+                        achievementCat.value.find((k) => k.id === e.categoryId)?.achievements.find((k) => k.id === e.id)
+                            ?.reward || 0
                     newCount[e.categoryId].count++
                     newCount[e.categoryId].reward += currentReward
                     totalFin_.count++
@@ -290,8 +289,7 @@ export default defineComponent({
             })
             achievementFinStat.value = newCount
             achievementFin.value = newFin
-            totalCount.value =
-                totalCount.value || i18n.value.achievements.reduce((a, b) => a + b.achievements.length, 0)
+            totalCount.value = totalCount.value || achevementsAmos.reduce((a, b) => a + b.achievements.length, 0)
             totalFin.value = totalFin_
         }
         watch(store, calcFin, { deep: true, immediate: true })
@@ -300,7 +298,7 @@ export default defineComponent({
             return route.params.cat || 'wonders_of_the_world'
         })
         const currentCat = computed(() => {
-            return achievementCat.value.find((i) => i.id === currentCatId.value) || achievementCat.value[0]
+            return achievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
         })
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
@@ -332,13 +330,13 @@ export default defineComponent({
                 })
             if (search.value.trim()) {
                 data = data.filter((e) => {
-                    const hasThis = e.name.toLowerCase().includes(search.value.toLowerCase())
+                    const hasThis = i18n.amos[e.name].toLowerCase().includes(search.value.toLowerCase())
                     let hasPre = false
                     let k = e
                     while (k.preStage) {
                         const q = currentCat.value.achievements.find((i) => i.id === k.preStage)
                         k = q || k
-                        if (k.name.toLowerCase().includes(search.value.toLowerCase())) {
+                        if (i18n.amos[k.name].toLowerCase().includes(search.value.toLowerCase())) {
                             hasPre = true
                             break
                         }
@@ -348,7 +346,7 @@ export default defineComponent({
                     while (k.postStage) {
                         const q = currentCat.value.achievements.find((i) => i.id === k.postStage)
                         k = q || k
-                        if (k.name.toLowerCase().includes(search.value.toLowerCase())) {
+                        if (i18n.amos[k.name].toLowerCase().includes(search.value.toLowerCase())) {
                             hasPost = true
                             break
                         }
@@ -371,7 +369,7 @@ export default defineComponent({
             const finishedData = {
                 id,
                 status: '手动勾选',
-                categoryId: currentCat.value.originalId || 0,
+                categoryId: currentCat.value.id,
                 date: dayjs().format('YYYY/MM/DD'),
             } as IAchievementStore
             store.value.achievements.push(finishedData)
@@ -381,9 +379,7 @@ export default defineComponent({
             if (all) {
                 store.value.achievements = []
             } else {
-                store.value.achievements = store.value.achievements.filter(
-                    (i) => i.categoryId !== (currentCat.value.originalId || 0),
-                )
+                store.value.achievements = store.value.achievements.filter((i) => i.categoryId !== currentCat.value.id)
             }
             showClear.value = false
         }
@@ -393,7 +389,7 @@ export default defineComponent({
                     const finishedData = {
                         id: i.id,
                         status: '全选添加',
-                        categoryId: cat.originalId || 0,
+                        categoryId: cat.id,
                         date: dayjs().format('YYYY/MM/DD'),
                     } as IAchievementStore
                     store.value.achievements.push(finishedData)

@@ -1,16 +1,11 @@
-import { Achievement as GenshinDataAchievement } from '@/plugins/genshin-data/src'
-export interface Achievement extends GenshinDataAchievement {
-    categoryId: number
-    preStage?: number
-    postStage?: number
+import {
+    AchievementCategory as AmosAchievementCategory,
+    Achievement as AmosAchievement,
+} from '@yuehaiteam/amos/dist/achievement/typing'
+export interface Achievement extends AmosAchievement {
     sub?: Achievement[]
 }
-export interface AchievementCategory {
-    id: string
-    originalId: number
-    name: string
-    order: number
-    achievements: Achievement[]
+export interface AchievementCategory extends AmosAchievementCategory {
     finished?: number
     totalReward: number
 }

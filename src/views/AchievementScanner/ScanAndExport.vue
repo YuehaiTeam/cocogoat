@@ -64,13 +64,11 @@ import { ref, computed, defineComponent, watch } from 'vue'
 import type { IAScannerData, IAScannerFaild } from './scanner/scanner'
 import { useRoute } from 'vue-router'
 import { getUrl } from '@/router'
-import { i18n } from '@/i18n'
+
+import achevementsAmos from '@/plugins/amos/achievements/index'
 
 export default defineComponent({
     setup() {
-        const _achievementMap = computed(() => {
-            return i18n.value.achievements
-        })
         const frameUrl = getUrl('frames.achievement.scan')
         const showFaildImages = ref(false)
         const finished = ref(false)
@@ -99,9 +97,7 @@ export default defineComponent({
                     for (const e of result as IAScannerData[]) {
                         if (!e.success) continue
                         if (e.achievement.preStage && e.achievement.preStage > 0) {
-                            const cat = _achievementMap.value.find(
-                                (x) => (x.originalId || 0) === e.achievement.categoryId,
-                            )
+                            const cat = achevementsAmos.find((x) => x.id === e.achievement.categoryId)
                             if (cat) {
                                 let preStage = cat.achievements.find((x) => x.id === e.achievement.preStage)
                                 if (preStage) {

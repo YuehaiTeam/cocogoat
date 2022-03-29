@@ -6,10 +6,11 @@ import { defaultResources } from './resource-main'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import View from '@/views/View.vue'
 import { store, currentUser, options } from './store'
-import { initi18n, i18n } from '@/i18n'
+import type { i18n } from '@/i18n'
 import { initSync } from './store/sync'
 import { createPinia } from 'pinia'
-const pinia = createPinia()
+const app = createApp(App)
+app.use(createPinia())
 
 // 兼容性检查：
 export let notInSameoriginFrame = parent === window
@@ -38,13 +39,13 @@ declare global {
 }
 
 ;(async () => {
+    const { initi18n, i18n } = await import(/* webpackMode: "eager" */ '@/i18n')
     await initi18n()
-    const app = createApp(App)
     if (options.value.reporting) {
         const { init } = await import('@/utils/reporting')
         init(app, router)
     }
-    app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(pinia).use(router).mount('#toki')
+    app.component('FaIcon', FontAwesomeIcon).component('Layout', View).use(router).mount('#toki')
     if (top === window && !location.href.includes('/frames')) {
         // Don't sync in iframes
         initSync()

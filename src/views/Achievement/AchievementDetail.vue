@@ -9,7 +9,7 @@
             </div>
             <ul v-if="achievement?.trigger.task" class="task-type">
                 <li v-for="i in achievement.trigger.task" :key="i.questId">
-                    <span class="badge">{{ taskType[i.type] || i.type || '主线任务' }}</span>
+                    <span class="badge" :class="i.type">{{ taskType[i.type] || i.type || '主线任务' }}</span>
                     <span class="name">{{ amos[i.name] }}</span>
                 </li>
             </ul>
@@ -34,6 +34,7 @@ export default defineComponent({
         const triggerText = {
             FINISH_QUEST_OR: '完成以下任务之一',
             FINISH_QUEST_AND: '完成以下所有任务',
+            DAILY_TASK_VAR_EQUAL: '每日委托触发特定对话',
         } as Record<string, string>
         const taskType = {
             WQ: '世界任务',
@@ -58,6 +59,9 @@ export default defineComponent({
             padding: 2px 5px;
             margin-right: 5px;
             border-radius: 3px;
+            &.IQ {
+                background: #7236e1;
+            }
         }
 
         .task-type li {

@@ -131,7 +131,7 @@ export default defineComponent({
     right: 0;
     height: 70px;
     background: #fff;
-    z-index: 990;
+    z-index: 50;
     box-shadow: 0 2px 16px -8px rgb(0 0 0 / 10%);
     :global {
         .sidebar-scroll {

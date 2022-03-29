@@ -1,5 +1,12 @@
 <template>
-    <el-dialog :title="achievement ? amos[achievement.name] : ''" :model-value="!!achievement" @close="$emit('close')">
+    <el-dialog
+        :title="achievement ? amos[achievement.name] : ''"
+        :model-value="!!achievement"
+        :z-index="111"
+        :width="500"
+        :custom-class="$style.detailDialog"
+        @close="$emit('close')"
+    >
         <div :class="$style.trigger">
             <div class="trigger-type">
                 <b>触发方式：</b>
@@ -50,6 +57,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" module>
+.detail-dialog {
+    max-width: 95%;
+}
 .trigger {
     :global {
         .badge {

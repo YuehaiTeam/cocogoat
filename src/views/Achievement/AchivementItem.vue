@@ -1,6 +1,9 @@
 <template>
     <section :class="{ sub: i.preStage, [$style.achievementItem]: 1 }">
         <div class="single" :class="{ 'no-contrib': !contributed[i.id] }">
+            <div v-show="questType" class="badge" :class="questType ? questType[1] : ''">
+                <span>{{ questType ? questType[0] : '' }}</span>
+            </div>
             <div class="check">
                 <a v-if="i.preStage && !preFin" class="check-disabled" title="上一阶段未达成"></a>
                 <div class="check-circle" :class="{ checked: fin }" @click="$emit('check')">
@@ -14,7 +17,7 @@
                         <img src="@/assets/images/yuanshi.png" alt="原石" />
                         <span class="number">{{ i.reward }}</span>
                     </div>
-                    <div class="ntxt">
+                    <div class="ntxt" @click="$emit('click-title')">
                         {{ amos[i.name] }}
                     </div>
                 </div>
@@ -34,10 +37,18 @@
             </div>
             <div v-if="fin" class="right">
                 <div class="status">
-                    <input :value="fin.status" type="text" @input="$emit('input-status', $event.target.value)" />
+                    <input
+                        :value="fin.status"
+                        type="text"
+                        @input="$emit('input-status', ($event?.target as HTMLInputElement).value)"
+                    />
                 </div>
                 <div class="date">
-                    <input :value="fin.date" type="text" @input="$emit('input-date', $event.target.value)" />
+                    <input
+                        :value="fin.date"
+                        type="text"
+                        @input="$emit('input-date', ($event?.target as HTMLInputElement).value)"
+                    />
                 </div>
             </div>
         </div>
@@ -46,33 +57,50 @@
 
 <script lang="ts">
 import { i18n } from '@/i18n'
-import { toRef, PropType } from 'vue'
+import { toRef, PropType, defineComponent, computed } from 'vue'
 import { Achievement, IAchievementStore } from '@/typings/Achievement'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 library.add(faArrowUpRightFromSquare)
-export default {
+export default defineComponent({
     props: {
         i: {
             type: Object as PropType<Achievement>,
+            required: true,
         },
         fin: {
-            type: [Object, undefined] as PropType<IAchievementStore | undefined>,
+            type: Object as PropType<IAchievementStore | undefined>,
+            required: false,
         },
         preFin: {
-            type: [Object, undefined] as PropType<IAchievementStore | undefined>,
+            type: Object as PropType<IAchievementStore | undefined>,
+            required: false,
         },
         contributed: {
             type: Object as PropType<Record<string, string>>,
+            required: true,
         },
     },
-    emits: ['input-date', 'input-status', 'check'],
-    setup() {
+    emits: ['input-date', 'input-status', 'check', 'click-title'],
+    setup(props) {
+        const badgeMap = {
+            WQ: '任务',
+            IQ: '委托',
+        } as Record<string, string>
         return {
             amos: toRef(i18n, 'amos'),
+            questType: computed(() => {
+                if (props.i.trigger && props.i.trigger.task && props.i.trigger.task.length > 0) {
+                    return badgeMap[props.i.trigger.task[0].type]
+                        ? [badgeMap[props.i.trigger.task[0].type], props.i.trigger.task[0].type]
+                        : false
+                } else {
+                    return false
+                }
+            }),
         }
     },
-}
+})
 </script>
 
 <style lang="scss" module>
@@ -92,12 +120,50 @@ export default {
             color: #555;
             position: relative;
             padding: 15px;
+            .badge {
+                position: absolute;
+                top: 0;
+                right: 0;
+                font-size: 12px;
+                width: 35px;
+                height: 35px;
+                pointer-events: none;
+                &:after {
+                    border-right: 40px solid #409eff;
+                    border-bottom: 40px solid #fff;
+                    content: ' ';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                }
+                span {
+                    position: relative;
+                    z-index: 2;
+                    color: #fff;
+                    transform: rotate(45deg) scale(0.9);
+                    display: block;
+                    transform-origin: bottom;
+                    margin-left: 6px;
+                    margin-top: 3px;
+                }
+                &.WQ:after {
+                    opacity: 0.6;
+                }
+            }
+
             .ntxt {
                 display: inline-block;
                 white-space: nowrap;
                 max-width: calc(100% - 140px);
                 overflow: hidden;
                 text-overflow: ellipsis;
+                cursor: pointer;
+                transition: all 0.3s;
+                &:hover {
+                    color: #0079cc;
+                }
             }
             small {
                 max-width: calc(100% - 80px);

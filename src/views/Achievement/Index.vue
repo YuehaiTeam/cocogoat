@@ -93,6 +93,7 @@
                 <img v-for="(image, index) in scannerResult.faildImages" :key="index" :src="image" />
             </div>
         </el-dialog>
+        <achievement-detail :achievement="detail" @close="detail = undefined" />
         <section :class="$style.achievementView">
             <div class="progress">
                 <div
@@ -115,16 +116,26 @@
                 >
                     <template #before>
                         <div class="page-before">
-                            <el-button class="status-switch" @click="sortByStatus = !sortByStatus">
-                                未完成优先：{{ sortByStatus ? '开' : '关' }}
-                            </el-button>
-                            <el-input v-model="search" class="search-box" placeholder="搜索成就">
-                                <template #suffix>
-                                    <span class="fa-icon">
-                                        <fa-icon icon="search" />
-                                    </span>
-                                </template>
-                            </el-input>
+                            <div class="left">
+                                <el-select v-model="statusQuest" class="status-quest">
+                                    <el-option value="" label="全部成就"></el-option>
+                                    <el-option value="WQ" label="世界任务"></el-option>
+                                    <el-option value="IQ" label="每日委托"></el-option>
+                                    <el-option value="MQ" label="主线任务"></el-option>
+                                </el-select>
+                                <el-button class="status-switch" @click="sortByStatus = !sortByStatus">
+                                    未完成优先：{{ sortByStatus ? '开' : '关' }}
+                                </el-button>
+                            </div>
+                            <div class="right">
+                                <el-input v-model="search" class="search-box" placeholder="搜索成就">
+                                    <template #suffix>
+                                        <span class="fa-icon">
+                                            <fa-icon icon="search" />
+                                        </span>
+                                    </template>
+                                </el-input>
+                            </div>
                         </div>
                     </template>
                     <template v-slot="{ item: i, active }">
@@ -137,6 +148,7 @@
                                 @check="updateFinished(i.id)"
                                 @input-date="achievementFin[i.id].date = $event"
                                 @input-status="achievementFin[i.id].status = $event"
+                                @click-title="detail = i"
                             />
                         </DynamicScrollerItem>
                     </template>
@@ -198,6 +210,7 @@ import { useContributedAchievements } from './useContributedAchievements'
 
 import AchievementItem from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
+import AchievementDetail from './AchievementDetail.vue'
 import ImportDialog from './ImportDialog.vue'
 import { uniqBy } from 'lodash'
 import bus from '@/bus'
@@ -217,6 +230,7 @@ export default defineComponent({
         IconCocogoat,
         AchievementItem,
         AchievementSidebar,
+        AchievementDetail,
         ImportDialog,
         DynamicScroller,
         DynamicScrollerItem,
@@ -298,10 +312,26 @@ export default defineComponent({
             return route.params.cat || 'wonders_of_the_world'
         })
         const currentCat = computed(() => {
-            return achievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
+            const v = achievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
+            const q = {} as Record<number, string>
+            v.achievements.forEach((e) => {
+                if (e.trigger.task && e.trigger.task.length > 0) {
+                    q[e.id] = e.trigger.task[0].type
+                }
+            })
+            return {
+                ...v,
+                quest: q,
+            }
         })
+        const statusQuest = ref('')
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
+            if (statusQuest.value) {
+                let p = statusQuest.value
+                if (p === 'MQ') p = ''
+                data = data.filter((i) => currentCat.value.quest[i.id] === p)
+            }
             if (sortByStatus.value)
                 data = data.sort((a, b) => {
                     let ret = 0
@@ -414,6 +444,7 @@ export default defineComponent({
             }
         })
         const contributed = useContributedAchievements()
+        const detail = ref(undefined as Achievement | undefined)
         return {
             store,
             search,
@@ -441,6 +472,8 @@ export default defineComponent({
             totalReward,
             contributed,
             isMobile: toRef(bus(), 'isMobile'),
+            detail,
+            statusQuest,
         }
     },
 })
@@ -552,16 +585,25 @@ export default defineComponent({
             bottom: 0;
             right: 0;
             .page-before {
+                display: flex;
                 padding-top: 15px;
-                .status-switch {
-                    float: left;
-                    width: 130px;
-                    box-sizing: border-box;
+                .right {
+                    flex-grow: 1;
+                }
+
+                .left {
+                    .el-select {
+                        width: 130px;
+                    }
+                    .status-switch {
+                        float: left;
+                        width: 130px;
+                        box-sizing: border-box;
+                    }
                 }
 
                 .search-box {
-                    width: calc(100% - 130px);
-                    float: right;
+                    width: 100%;
                 }
             }
             .page-after {
@@ -600,7 +642,15 @@ export default defineComponent({
         .progress {
             left: 0;
         }
-
+        .page-before {
+            flex-direction: column;
+            .left {
+                display: flex;
+                & > * {
+                    flex: 1;
+                }
+            }
+        }
         article {
             top: 65px;
             left: 0;

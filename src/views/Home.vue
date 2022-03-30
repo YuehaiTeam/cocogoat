@@ -10,28 +10,6 @@
                 <div :class="$style.card">
                     <div class="card-title">额外工具</div>
                     <div class="card-body">
-                        <router-link :class="$style.extraOne" to="/achievement/scan-and-export?to=paimon-moe">
-                            <div class="circle">
-                                <img src="@/assets/images/paimon.png" />
-                                <div class="svg-w">
-                                    <icon-achievement />
-                                </div>
-                            </div>
-                            <div class="text">扫描成就并导出<br />到Paimon.moe</div>
-                        </router-link>
-                        <router-link
-                            :class="$style.extraOne"
-                            style="color: #7424c5"
-                            to="/achievement/scan-and-export?to=seelie"
-                        >
-                            <div class="circle">
-                                <img style="border-color: #cb98ff" src="@/assets/images/seelie.jpg" />
-                                <div class="svg-w" style="background: #cb98ff">
-                                    <icon-achievement style="fill: #7424c5" />
-                                </div>
-                            </div>
-                            <div class="text">扫描成就并导出<br />到Seelie.me</div>
-                        </router-link>
                         <router-link :class="$style.extraOne" style="color: #0079cc" :to="{ name: 'installer.index' }">
                             <div class="circle">
                                 <div class="img" style="border-color: #0079cc">
@@ -91,14 +69,12 @@ import { faInfinity, faFolderTree, faTerminal, faBoxOpen } from '@fortawesome/fr
 import { faGithubAlt, faQq } from '@fortawesome/free-brands-svg-icons'
 library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen)
 
-import IconAchievement from '@/components/Icons/achievement.vue'
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import BuildInfo from '@/components/BuildInfo.vue'
 
 export default defineComponent({
     name: 'HomeView',
     components: {
-        IconAchievement,
         IconCocogoat,
         BuildInfo,
     },

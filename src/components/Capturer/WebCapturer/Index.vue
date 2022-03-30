@@ -3,7 +3,13 @@
         <c-intro v-if="step === 1" @request-capture="requestCapture" />
         <c-client v-else-if="step === 2" :control="control" @done="afterClient" />
         <video ref="video" style="display: none" />
-        <float-window v-if="popup" :width="250" :height="100" :class="$style.floatwindow" @exit="$emit('exit')">
+        <float-window
+            v-if="hasPictureInPicture && popup"
+            :width="250"
+            :height="100"
+            :class="$style.floatwindow"
+            @exit="$emit('exit')"
+        >
             <slot />
         </float-window>
     </section>
@@ -18,6 +24,7 @@ import 'element-plus/theme-chalk/el-message.css'
 import { IMatFromImageData } from '@/utils/IMat'
 import FloatWindow from '@/components/FloatWindow2.vue'
 import { CocogoatWebControl } from '@/modules/webcontrol'
+import { hasPictureInPicture } from '@/utils/compatibility'
 
 export default defineComponent({
     components: {
@@ -121,6 +128,7 @@ export default defineComponent({
             capture,
             stop,
             reset,
+            hasPictureInPicture,
         }
     },
 })

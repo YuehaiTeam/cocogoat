@@ -19,5 +19,4 @@ export const isLocal = process.env.VUE_APP_LOCALRES === 'true'
 // OCR需要WASM，且如是本地则需要SIMD
 export const ocrCompatible = hasWasm && (isLocal ? hasSIMD : true)
 // 识别器需要OCR，且不是Safari、Android、iOS，
-export const scannerCompatible =
-    hasGetDisplayMedia && hasPictureInPicture && !isSafari && !isAndroid && !isIOS && ocrCompatible
+export const scannerCompatible = hasGetDisplayMedia && !isSafari && !isAndroid && !isIOS && ocrCompatible

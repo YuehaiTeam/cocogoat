@@ -71,11 +71,15 @@ export default defineComponent({
                 font-size: 13px;
                 text-decoration: underline;
             }
+            transform: translateY(0);
+            -moz-transform: translateY(20px);
         }
         .inline-status {
             width: 180px;
             height: 70px;
             zoom: 1.5;
+            transform: scale(1);
+            -moz-transform: scale(1.5);
             position: relative;
             user-select: none;
             margin: 0 auto;
@@ -95,6 +99,8 @@ export default defineComponent({
             margin-top: -15px;
             z-index: 2;
             position: relative;
+            transform: translateY(0);
+            -moz-transform: translateY(20px);
             .pbar-bar {
                 width: 230px;
                 height: 30px;

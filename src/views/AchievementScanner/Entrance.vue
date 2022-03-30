@@ -16,7 +16,7 @@
                         <fa-icon icon="desktop" />
                     </i>
                     <h2>
-                        自动扫描
+                        读屏扫描
                         <small v-if="scannerCompatible">
                             <div>滚动页面自动扫描</div>
                             <div>推荐电脑用户使用</div>

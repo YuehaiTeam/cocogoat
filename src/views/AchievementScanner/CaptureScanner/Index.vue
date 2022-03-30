@@ -31,12 +31,14 @@ import type { ICVMat } from '@/utils/cv'
 import { measureLatency, tillChanged } from '@/utils/cv/measurement'
 import WebCapturer from '@/components/Capturer/WebCapturer/Index.vue'
 import { ICapturer } from '@/components/Capturer/typing'
+import CReady from './Ready.vue'
 export default defineComponent({
     name: 'AchievementScanner',
     components: {
         FloatContent,
         FloatContentB,
         Loader,
+        CReady,
         WebCapturer,
     },
     setup() {
@@ -113,7 +115,7 @@ export default defineComponent({
                 ocrQueue.push({ line: null, thread: false })
             }
 
-            if (webControlEnabled.value) {
+            if (webControlEnabled.value > 0) {
                 if (scannedVal === scanned.value) {
                     zeroTimes++
                 } else {
@@ -336,7 +338,7 @@ export default defineComponent({
         <section v-if="state === S.Init">
             <Loader @done="state++" />
         </section>
-        <section v-else>
+        <section v-else style="padding-top: 20px">
             <web-capturer
                 ref="cap"
                 :key="capKey"
@@ -367,8 +369,8 @@ export default defineComponent({
                         @click="state === S.Capture && (state = S.Processing)"
                     />
                 </div>
-                <div v-if="state === S.Capture" class="no-box">
-                    {{ webControlEnabled ? '自动滚动进行中' : '请按悬浮窗提示滚动页面' }}
+                <div v-if="state === S.Capture" class="no-box" @click="state === S.Capture && (state = S.Processing)">
+                    {{ webControlEnabled > 0 ? '自动滚动进行中' : '请按手动匀速滚动页面，完成后点此结束' }}
                 </div>
                 <div v-if="state > S.Capture" class="pbar">
                     <div class="pbar-bar" :class="{ finish: state === S.Finish }">
@@ -381,26 +383,7 @@ export default defineComponent({
                     <div v-if="state === S.Finish" class="restart" @click="reset">重新开始</div>
                 </div>
             </div>
-            <button
-                v-if="state === S.Wait"
-                style="display: block; margin: 0 auto; margin-top: 10vh"
-                @click="state = S.Capture"
-            >
-                我已切换到成就页面（自动识别页面未完成）
-                <template v-if="webControlEnabled">
-                    <br />
-                    点击后会自动切换到原神窗口并开始自动翻页，请确保已经完成页面切换再回来
-                </template>
-                <br />如没看到悬浮窗请点击窗口空白处
-            </button>
-            <div v-if="isTop" :class="$style.list">
-                <div v-for="(i, a) in results" :key="a" class="item">
-                    <div v-if="!i.success">
-                        <img :src="i.images?.main" />
-                    </div>
-                    <div v-else class="title">{{ i.achievement.name }} {{ i.date || '未完成' }}</div>
-                </div>
-            </div>
+            <c-ready v-if="state === S.Wait" @done="state = S.Capture" />
         </section>
     </main>
 </template>
@@ -487,11 +470,15 @@ export default defineComponent({
                 font-size: 13px;
                 text-decoration: underline;
             }
+            transform: translateY(0);
+            -moz-transform: translateY(20px);
         }
         .inline-status {
             width: 180px;
             height: 70px;
             zoom: 1.5;
+            transform: scale(1);
+            -moz-transform: scale(1.5);
             position: relative;
             user-select: none;
             margin: 0 auto;
@@ -511,6 +498,8 @@ export default defineComponent({
             margin-top: -15px;
             z-index: 2;
             position: relative;
+            transform: translateY(0);
+            -moz-transform: translateY(20px);
             .pbar-bar {
                 width: 230px;
                 height: 30px;
@@ -550,54 +539,6 @@ export default defineComponent({
                     color: #666;
                 }
             }
-        }
-    }
-}
-.list {
-    font-size: 12px;
-    height: calc(100vh - 50px);
-    overflow: overlay;
-    overflow-x: hidden;
-    img {
-        max-width: 100%;
-    }
-}
-.start-page {
-    position: absolute;
-    top: 10vh;
-    right: 0;
-    left: 0;
-    :global {
-        h1 {
-            text-align: center;
-            font-weight: normal;
-        }
-        img {
-            display: block;
-            margin: 0 auto;
-            margin-top: 30px;
-            width: 490px;
-            max-width: 100%;
-        }
-        button.start {
-            width: 200px;
-            height: 55px;
-            background: #333;
-            border-radius: 55px;
-            border: 0;
-            color: #fff;
-            display: block;
-            margin: 0 auto;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.2s;
-            &:hover {
-                opacity: 0.7;
-            }
-        }
-        .desc {
-            text-align: center;
-            margin-top: 20px;
         }
     }
 }

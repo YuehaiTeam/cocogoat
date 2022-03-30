@@ -12,7 +12,7 @@
         <div v-else class="scanner-loading">
             <div :class="$style.loader">
                 <div class="loader-animation">
-                    <span class="cssload-loader"><span class="cssload-loader-inner"></span></span>
+                    <icon-loading class="loader-svg" :percent="progress * 0.88 + 5" />
                 </div>
                 <div class="loader-text">椰羊正在饮甘露，马上就来</div>
                 <div class="loader-progress">
@@ -31,8 +31,16 @@ import { ref, defineComponent, onMounted } from 'vue'
 import { ocrCompatible } from '@/utils/compatibility'
 import { getScannerInstance } from '../scanner/scanner.client'
 import { send } from '../utils'
+import IconLoading from '@/components/Icons/loading.vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons'
+library.add(faTriangleExclamation, faInternetExplorer)
 
 export default defineComponent({
+    components: {
+        IconLoading,
+    },
     emits: ['done'],
     setup(props, { emit }) {
         const progress = ref(0)
@@ -115,7 +123,7 @@ export default defineComponent({
 
 .loader {
     width: 200px;
-    padding-top: 40vh;
+    padding-top: 35vh;
     color: #666;
     text-align: center;
     font-size: 14px;
@@ -124,25 +132,10 @@ export default defineComponent({
         .loader-text {
             padding-top: 15px;
         }
-        .cssload-loader {
-            display: block;
-            margin: 0 auto;
-            width: 30px;
-            height: 30px;
-            position: relative;
-            border: 3px solid #333;
-            &:local {
-                animation: scanner-cssload-loader 2.3s infinite ease;
-            }
-        }
-        .cssload-loader-inner {
-            vertical-align: top;
-            display: inline-block;
-            width: 100%;
-            background-color: #333;
-            &:local {
-                animation: scanner-cssload-loader-inner 2.3s infinite ease-in;
-            }
+        .loader-svg {
+            width: 80px;
+            height: 80px;
+            fill: #555555;
         }
         .loader-progress {
             width: 170px;
@@ -168,48 +161,6 @@ export default defineComponent({
             display: inline-block;
             padding: 0 4px;
         }
-    }
-}
-@keyframes scanner-cssload-loader {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    25% {
-        transform: rotate(180deg);
-    }
-
-    50% {
-        transform: rotate(180deg);
-    }
-
-    75% {
-        transform: rotate(360deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-@keyframes scanner-cssload-loader-inner {
-    0% {
-        height: 0%;
-    }
-
-    25% {
-        height: 0%;
-    }
-
-    50% {
-        height: 100%;
-    }
-
-    75% {
-        height: 100%;
-    }
-
-    100% {
-        height: 0%;
     }
 }
 </style>

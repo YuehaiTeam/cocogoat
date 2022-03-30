@@ -223,6 +223,7 @@ const deprecated = {
     81011: 85004,
     81012: 85005,
     81013: 85006,
+    81219: 81222,
 } as Record<number, number>
 export default defineComponent({
     name: 'ArtifactIndex',

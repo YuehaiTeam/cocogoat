@@ -342,6 +342,10 @@ export default defineComponent({
                         while (p.postStage) {
                             const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
                             p = q || p
+                            if (!q) {
+                                console.log('DATAERR: ', p.postStage)
+                                break
+                            }
                         }
                         fa = achievementFin.value[p.id]
                     }
@@ -350,6 +354,10 @@ export default defineComponent({
                         while (p.postStage) {
                             const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
                             p = q || p
+                            if (!q) {
+                                console.log('DATAERR: ', p.postStage)
+                                break
+                            }
                         }
                         fb = achievementFin.value[p.id]
                     }

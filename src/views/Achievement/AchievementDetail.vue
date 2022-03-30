@@ -8,6 +8,14 @@
         @closed="$emit('close')"
     >
         <div :class="$style.trigger">
+            <a
+                class="el-link el-link--info is-underline trigger-id"
+                target="_blank"
+                rel="nofollow"
+                :href="`https://genshin.honeyhunterworld.com/db/achiev/achiev_${achievement?.id || 0}/?lang=CHS`"
+            >
+                <span class="el-link--inner"> ID: {{ achievement?.id }} </span>
+            </a>
             <div class="trigger-type">
                 <b>触发方式：</b>
                 <span>
@@ -17,14 +25,25 @@
             </div>
             <ul v-if="tasks.length > 0" class="task-type">
                 <li v-for="i in tasks" :key="i.questId">
-                    <span v-for="j in i.badges" :key="j" :class="j" class="badge">
+                    <span v-for="j in i.badges" :key="j" class="badge" :class="j">
                         {{ taskType[j] || j || '主线任务' }}
                     </span>
-                    <span class="name">{{ amos[i.name] }}</span>
+                    <span class="name">
+                        <a
+                            class="el-link el-link--default is-underline"
+                            target="_blank"
+                            rel="nofollow"
+                            :href="`https://genshin.honeyhunterworld.com/db/q/${
+                                i.taskId ? `com_${i.taskId}` : `q_${i.questId}`
+                            }/?lang=CHS`"
+                        >
+                            <span class="el-link--inner"> {{ amos[i.name] }} </span>
+                        </a>
+                    </span>
                 </li>
             </ul>
             <div v-if="showNoTask" class="no-task">触发该成就的任务不存在或均为无名隐藏任务</div>
-            <div class="desc">触发条件为程序自动提取 请以实际游戏或攻略为准</div>
+            <div class="desc">点击ID或任务名可查看详情<br />触发条件为程序自动提取 请以实际游戏或攻略为准</div>
         </div>
     </el-dialog>
 </template>
@@ -33,6 +52,7 @@
 import { i18n } from '@/i18n'
 import { Achievement } from '@/typings/Achievement'
 import { defineComponent, PropType, toRef, computed } from 'vue'
+import 'element-plus/theme-chalk/el-link.css'
 
 export default defineComponent({
     props: {
@@ -87,10 +107,22 @@ export default defineComponent({
 <style lang="scss" module>
 .detail-dialog {
     max-width: 95%;
+    :global {
+        .el-dialog__headerbtn {
+            padding-top: 4px;
+        }
+    }
 }
 .trigger {
     margin-top: -20px;
     :global {
+        .trigger-id {
+            font-size: 12px;
+            position: absolute;
+            top: 24px;
+            right: 54px;
+        }
+
         .badge {
             font-size: 12px;
             background: #409eff;
@@ -100,10 +132,20 @@ export default defineComponent({
             border-radius: 3px;
             &.IQ {
                 background: #8d4be5;
+                & + .name a:hover {
+                    color: #8d4be5;
+                    &:after {
+                        border-color: #8d4be5;
+                    }
+                }
             }
             &.H {
                 background: #dd5959;
             }
+        }
+        .name {
+            height: 20px;
+            vertical-align: bottom;
         }
         .no-task {
             padding: 30px;

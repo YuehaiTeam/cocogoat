@@ -2133,7 +2133,7 @@
 
 "@yuehaiteam/amos@https://github.com/YuehaiTeam/amos.git":
   version "1.0.0"
-  resolved "https://github.com/YuehaiTeam/amos.git#106b7d47cdf013ac196a9b363a89fbafaa32db10"
+  resolved "https://github.com/YuehaiTeam/amos.git#4e2e5073cad7b91a87dc98a20cce55c02fcbc556"
   dependencies:
     "@types/fs-extra" "^9.0.13"
     "@types/node" "^17.0.23"

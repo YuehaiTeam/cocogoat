@@ -12,10 +12,15 @@ jobs:
     runs-on: ubuntu-latest
     name: Build
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - name: Unpack git objects
+        run: |
+          mv .git/objects/pack .
+          git unpack-objects < pack/*.pack
+          rm -rf pack
       - uses: actions/setup-node@v2
         with:
-          node-version: '14'
+          node-version: '16'
           architecture: 'x64'
       - uses: szenius/set-timezone@v1.0
         with:
@@ -43,5 +48,5 @@ jobs:
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:
-          name: cocogoat-web
+          name: cocogoat-local
           path: dist/local/

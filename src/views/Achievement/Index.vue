@@ -128,7 +128,7 @@
                                 </el-button>
                             </div>
                             <div class="right">
-                                <el-input v-model="search" class="search-box" placeholder="搜索成就">
+                                <el-input v-model="search" class="search-box" placeholder="搜索成就名字、描述或ID">
                                     <template #suffix>
                                         <span class="fa-icon">
                                             <fa-icon icon="search" />
@@ -368,14 +368,23 @@ export default defineComponent({
                     return ret
                 })
             if (search.value.trim()) {
+                const has = (ach: Achievement, search: string) => {
+                    if (ach.id.toString().includes(search)) return true
+                    if (i18n.amos[ach.name].toLowerCase().includes(search.toLowerCase())) return true
+                    if (i18n.amos[ach.desc].toLowerCase().includes(search.toLowerCase())) return true
+                }
                 data = data.filter((e) => {
-                    const hasThis = i18n.amos[e.name].toLowerCase().includes(search.value.toLowerCase())
+                    const hasThis = has(e, search.value)
                     let hasPre = false
                     let k = e
                     while (k.preStage) {
                         const q = currentCat.value.achievements.find((i) => i.id === k.preStage)
+                        if (!q) {
+                            console.log('DATAERR: ', k.preStage)
+                            break
+                        }
                         k = q || k
-                        if (i18n.amos[k.name].toLowerCase().includes(search.value.toLowerCase())) {
+                        if (has(k, search.value)) {
                             hasPre = true
                             break
                         }
@@ -384,8 +393,12 @@ export default defineComponent({
                     k = e
                     while (k.postStage) {
                         const q = currentCat.value.achievements.find((i) => i.id === k.postStage)
+                        if (!q) {
+                            console.log('DATAERR: ', k.preStage)
+                            break
+                        }
                         k = q || k
-                        if (i18n.amos[k.name].toLowerCase().includes(search.value.toLowerCase())) {
+                        if (has(k, search.value)) {
                             hasPost = true
                             break
                         }

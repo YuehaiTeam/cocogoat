@@ -117,15 +117,36 @@
                     <template #before>
                         <div class="page-before">
                             <div class="left">
-                                <el-select v-model="statusQuest" class="status-quest">
-                                    <el-option value="" label="全部成就"></el-option>
+                                <el-select
+                                    v-model="statusVersion"
+                                    class="status-version"
+                                    multiple
+                                    collapse-tags
+                                    collapse-tags-tooltip
+                                    placeholder="所有版本"
+                                >
+                                    <el-option
+                                        v-for="i in allVersions"
+                                        :key="i"
+                                        :value="i"
+                                        :label="i.toFixed(1)"
+                                    ></el-option>
+                                </el-select>
+                                <el-select
+                                    v-model="statusQuest"
+                                    multiple
+                                    collapse-tags
+                                    collapse-tags-tooltip
+                                    class="status-quest"
+                                    placeholder="所有类型"
+                                >
                                     <el-option value="WQ" label="世界任务"></el-option>
                                     <el-option value="IQ" label="每日委托"></el-option>
                                     <el-option value="MQ" label="主线任务"></el-option>
                                 </el-select>
-                                <el-button class="status-switch" @click="sortByStatus = !sortByStatus">
-                                    未完成优先：{{ sortByStatus ? '开' : '关' }}
-                                </el-button>
+                                <div class="chk">
+                                    <el-checkbox v-model="sortByStatus" label="未完成优先" size="large" />
+                                </div>
                             </div>
                             <div class="right">
                                 <el-input v-model="search" class="search-box" placeholder="搜索成就名字、描述或ID">
@@ -212,6 +233,7 @@ import AchievementItem from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
 import AchievementDetail from './AchievementDetail.vue'
 import ImportDialog from './ImportDialog.vue'
+import versionMap, { allVersions } from './versionMap'
 import { uniqBy } from 'lodash'
 import bus from '@/bus'
 
@@ -325,13 +347,16 @@ export default defineComponent({
                 quest: q,
             }
         })
-        const statusQuest = ref('')
+        const statusVersion = ref([] as number[])
+        const statusQuest = ref([] as string[])
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
-            if (statusQuest.value) {
-                let p = statusQuest.value
-                if (p === 'MQ') p = ''
-                data = data.filter((i) => currentCat.value.quest[i.id] === p)
+            const statusQuest2 = statusQuest.value.map((e) => (e === 'MQ' ? '' : e))
+            if (statusQuest2.length > 0) {
+                data = data.filter((i) => statusQuest2.includes(currentCat.value.quest[i.id]))
+            }
+            if (statusVersion.value.length > 0) {
+                data = data.filter((i) => statusVersion.value.includes(versionMap[i.id]))
             }
             if (sortByStatus.value)
                 data = data.sort((a, b) => {
@@ -496,6 +521,8 @@ export default defineComponent({
             isMobile: toRef(bus(), 'isMobile'),
             detail,
             statusQuest,
+            statusVersion,
+            allVersions,
         }
     },
 })
@@ -614,13 +641,45 @@ export default defineComponent({
                 }
 
                 .left {
+                    display: flex;
+                    flex: 4;
+                    .chk {
+                        padding: 0 15px;
+                        height: 32px;
+                        .el-checkbox {
+                            height: 32px;
+                        }
+                    }
                     .el-select {
-                        width: 130px;
+                        min-width: 130px;
+                        width: 140px;
+                        max-width: 150px;
+                        &.status-version {
+                            min-width: 110px;
+                            width: 130px;
+                            max-width: 140px;
+                            flex: 2;
+                        }
+                        flex: 3;
+                        .el-tag.is-closable {
+                            padding-left: 5px;
+                        }
+                        .el-tag__close {
+                            display: none;
+                        }
                     }
                     .status-switch {
-                        float: left;
                         width: 130px;
                         box-sizing: border-box;
+                        flex: 1;
+                    }
+                    .el-select .el-select__tags > span {
+                        display: flex !important;
+                        width: 100%;
+                        padding-left: 3px;
+                    }
+                    span.el-select__tags-text {
+                        max-width: 100% !important;
                     }
                 }
 
@@ -670,6 +729,12 @@ export default defineComponent({
                 display: flex;
                 & > * {
                     flex: 1;
+                }
+                .chk {
+                    padding: 0 5px;
+                    .el-checkbox.el-checkbox--large .el-checkbox__label {
+                        font-size: 12px;
+                    }
                 }
             }
         }

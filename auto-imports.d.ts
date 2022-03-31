@@ -4,6 +4,7 @@ declare global {
   const ElAlert: typeof import('element-plus/es')['ElAlert']
   const ElButton: typeof import('element-plus/es')['ElButton']
   const ElCard: typeof import('element-plus/es')['ElCard']
+  const ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
   const ElDialog: typeof import('element-plus/es')['ElDialog']
   const ElDivider: typeof import('element-plus/es')['ElDivider']
   const ElDrawer: typeof import('element-plus/es')['ElDrawer']

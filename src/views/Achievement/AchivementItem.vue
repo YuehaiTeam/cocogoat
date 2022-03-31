@@ -19,6 +19,9 @@
                     </div>
                     <div class="ntxt" @click="$emit('click-title')">
                         {{ amos[i.name] }}
+                        <sup class="version">
+                            {{ versionMap[i.id].toFixed(1) || '' }}
+                        </sup>
                     </div>
                 </div>
                 <small>
@@ -57,6 +60,7 @@
 
 <script lang="ts">
 import { i18n } from '@/i18n'
+import versionMap from './versionMap'
 import { toRef, PropType, defineComponent, computed } from 'vue'
 import { Achievement, IAchievementStore } from '@/typings/Achievement'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -98,6 +102,7 @@ export default defineComponent({
                     return false
                 }
             }),
+            versionMap,
         }
     },
 })
@@ -166,6 +171,12 @@ export default defineComponent({
                 transition: all 0.3s;
                 &:hover {
                     color: #0079cc;
+                }
+                .version {
+                    font-size: 12px;
+                    color: #409eff;
+                    margin-left: -2px;
+                    font-family: genshin;
                 }
             }
             small {

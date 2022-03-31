@@ -20,7 +20,7 @@ export default {
 
 <style lang="scss" module>
 .options {
-    background: #eee;
+    background: var(--c-background);
     :global {
         .el-tabs__nav-scroll {
             padding: 0 20px;

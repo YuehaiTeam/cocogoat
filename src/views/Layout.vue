@@ -110,10 +110,17 @@ export default {
         },
     },
     created() {
+        document.body.classList.add('layout')
         this.$k = function () {
             this.isMobile = document.body.offsetWidth < 640
             bus().isMobile = this.isMobile
-            document.body.className = this.isMobile ? 'm' : 'pc'
+            if (this.isMobile) {
+                document.body.classList.remove('pc')
+                document.body.classList.add('m')
+            } else {
+                document.body.classList.remove('m')
+                document.body.classList.add('pc')
+            }
         }.bind(this)
         window.addEventListener('resize', this.$k)
         this.$k()
@@ -125,9 +132,9 @@ export default {
 }
 </script>
 <style lang="scss" module>
-$main: #007acc;
+$main: var(--c-theme-sub);
 $front: rgba(255, 255, 255, 0.75);
-$--color-primary: #409eff;
+$--color-primary: var(--c-theme);
 .user-corner {
     position: fixed;
     top: 0;
@@ -135,7 +142,7 @@ $--color-primary: #409eff;
     width: 140px;
     height: 50px;
     z-index: 1000;
-    background: #fff;
+    background: var(--c-menu);
 }
 :global(.m) .user-corner {
     width: 50px;
@@ -158,7 +165,7 @@ $--color-primary: #409eff;
             left: 0;
             right: 0;
             height: 50px;
-            background: #409eff;
+            background: var(--c-theme);
             box-shadow: 2px 0 12px 0 rgb(0 0 0 / 10%);
             .cocogoat {
                 width: 50px;
@@ -208,7 +215,7 @@ $--color-primary: #409eff;
                 position: relative;
             }
             &.router-link-active {
-                background: #fff;
+                background: var(--c-menu-active);
                 color: $main;
                 svg {
                     fill: $main;
@@ -242,6 +249,14 @@ $--color-primary: #409eff;
     }
 }
 
+:global(.pc.dark) {
+    .menu :global(.nav a.router-link-active) {
+        color: var(--c-theme);
+        svg {
+            fill: var(--c-theme);
+        }
+    }
+}
 .header {
     user-select: none;
     -webkit-app-region: drag;
@@ -253,25 +268,25 @@ $--color-primary: #409eff;
     top: 0;
     height: 50px;
     z-index: 990;
-    background: #fff;
+    background: var(--c-menu);
     border-bottom: 0;
     box-sizing: border-box;
     box-shadow: 0 2px 12px 0 rgb(0 0 0 / 10%);
 }
 :global(.m) {
     .menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 55px;
+        z-index: 999;
+        background: var(--c-menu-active);
+        font-family: genshin;
         :global {
             .logo {
                 display: none;
             }
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 55px;
-            z-index: 999;
-            background: #fff;
-            font-family: genshin;
             .nav {
                 display: flex;
                 height: 100%;
@@ -308,13 +323,19 @@ $--color-primary: #409eff;
                         position: relative;
                     }
                     &.router-link-active {
-                        color: $--color-primary;
+                        color: var(--c-theme);
                         & > svg.v-icon {
-                            fill: $--color-primary;
+                            fill: var(--c-theme);
                         }
                     }
                 }
             }
+        }
+    }
+
+    &:global(.dark) {
+        .menu {
+            background: var(--c-menu);
         }
     }
     .header {
@@ -325,7 +346,7 @@ $--color-primary: #409eff;
                 height: 50px;
                 line-height: 50px;
                 padding-top: 6px;
-                background: $--color-primary;
+                background: var(--c-theme);
                 svg {
                     width: 40px;
                     height: 40px;

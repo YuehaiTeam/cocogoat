@@ -1,6 +1,6 @@
 <template>
     <section :class="$style.optionBasic">
-        <el-form>
+        <el-form label-position="right" label-width="130px">
             <el-form-item label="语言(Language)">
                 <div>
                     <div class="select">
@@ -9,6 +9,17 @@
                         </el-select>
                     </div>
                     <div class="desc">包含界面语言与识别器OCR语言。目前界面翻译基本未完成。</div>
+                </div>
+            </el-form-item>
+            <el-form-item label="颜色模式">
+                <div>
+                    <div class="select">
+                        <el-select v-model="configuredMode">
+                            <el-option label="跟随系统" value="auto" />
+                            <el-option label="浅色模式" value="light" />
+                            <el-option label="深色模式" value="dark" />
+                        </el-select>
+                    </div>
                 </div>
             </el-form-item>
             <el-form-item label="错误报告和统计">
@@ -34,6 +45,7 @@
 <script>
 import { langNames } from '@/i18n'
 import { options } from '@/store'
+import { configuredMode } from '@/utils/darkmode'
 export default {
     setup() {
         const report = async () => {
@@ -44,6 +56,7 @@ export default {
             langNames,
             options,
             report,
+            configuredMode,
         }
     },
 }

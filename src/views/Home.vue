@@ -21,13 +21,17 @@
                             </div>
                             <div class="text">PC端<br />更新包列表</div>
                         </router-link>
-                        <router-link :class="$style.extraOne" style="color: #1e1e1e" :to="{ name: 'extra.playground' }">
+                        <router-link
+                            :class="$style.extraOne"
+                            style="color: var(--c-text)"
+                            :to="{ name: 'extra.playground' }"
+                        >
                             <div class="circle">
-                                <div class="img" style="border-color: #1e1e1e">
+                                <div class="img" style="border-color: var(--c-text)">
                                     <fa-icon icon="terminal" />
                                 </div>
-                                <div class="svg-w" style="background: #1e1e1e">
-                                    <icon-cocogoat style="fill: #fff" />
+                                <div class="svg-w" style="background: var(--c-text)">
+                                    <icon-cocogoat style="fill: var(--c-white)" />
                                 </div>
                             </div>
                             <div class="text">OpenCV.js<br />Playground</div>
@@ -82,7 +86,7 @@ export default defineComponent({
 </script>
 <style lang="scss" module>
 .home {
-    background: #eee;
+    background: var(--c-background);
 }
 .root {
     padding: 20px;
@@ -102,7 +106,7 @@ export default defineComponent({
 }
 .title {
     margin: 0;
-    color: #0079cc;
+    color: var(--c-text-theme-sub);
     font-family: genshin;
     font-weight: normal;
     font-size: 40px;
@@ -110,7 +114,7 @@ export default defineComponent({
     small {
         font-family: ui-serif;
         font-size: 15px;
-        color: #555;
+        color: var(--c-text-mid);
     }
 }
 .card-list {
@@ -124,13 +128,13 @@ export default defineComponent({
 .card {
     flex: 1;
     margin: 10px;
-    background: #fff;
+    background: var(--c-white);
     border-radius: 3px;
     padding: 15px;
     box-shadow: var(--el-box-shadow-base);
     font-size: 14px;
     position: relative;
-    color: #007acc;
+    color: var(--c-text-theme-sub);
     transition: all 0.3s;
 
     @media screen and (max-width: 768px) {
@@ -139,7 +143,7 @@ export default defineComponent({
     h4 {
         margin: 0;
         font-size: 30px;
-        opacity: 0.5;
+        opacity: 0.7;
         position: absolute;
         top: 18px;
         right: 15px;
@@ -154,7 +158,7 @@ export default defineComponent({
         width: 50px;
     }
     & > div {
-        color: #555;
+        color: var(--c-text-sub);
         margin-top: 15px;
     }
     @media screen and (max-width: 1000px) {
@@ -172,7 +176,7 @@ export default defineComponent({
             margin-top: -5px;
             font-size: 17px;
             font-weight: normal;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--c-border);
             padding-bottom: 10px;
             margin-bottom: 10px;
         }
@@ -198,7 +202,7 @@ a.card {
     margin: 10px;
     text-decoration: none !important;
     &:hover {
-        background: #eee;
+        background: var(--c-background);
     }
     :global {
         .text {

@@ -6,7 +6,7 @@
         position: relative;
         z-index: 1;
         &:hover + div > div > div > .el-button {
-            border-left-color: #409eff;
+            border-left-color: var(--c-theme);
         }
     }
     .export-title {
@@ -36,8 +36,8 @@
         .el-button:hover,
         &:hover .el-button:first-child {
             background: #fff;
-            border-color: #409eff;
-            color: #409eff;
+            border-color: var(--c-theme);
+            color: var(--c-theme);
         }
     }
     .el-button + .header-plain-dropdown,

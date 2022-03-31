@@ -3,6 +3,7 @@
     <uncompatible-dialog v-if="showUncompatible" />
 </template>
 <script>
+import '@/style/theme.scss'
 import { defineAsyncComponent } from 'vue'
 export default {
     components: {

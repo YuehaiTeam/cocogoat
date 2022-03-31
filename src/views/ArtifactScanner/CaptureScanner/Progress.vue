@@ -62,7 +62,7 @@ export default defineComponent({
     right: 0;
     :global {
         .no-box {
-            color: #409eff;
+            color: var(--c-theme);
             margin-top: -23px;
             position: relative;
             z-index: 2;
@@ -104,7 +104,7 @@ export default defineComponent({
             .pbar-bar {
                 width: 230px;
                 height: 30px;
-                border: 1px solid #409eff;
+                border: 1px solid var(--c-theme);
                 border-radius: 20px;
                 position: relative;
                 &.finish {
@@ -117,7 +117,7 @@ export default defineComponent({
             }
             .pbar-bar-in {
                 height: 100%;
-                background: #409eff;
+                background: var(--c-theme);
                 border-radius: 20px;
                 transition: all 0.1s;
             }

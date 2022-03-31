@@ -77,7 +77,7 @@ export default defineComponent({
 
 <style lang="scss" module>
 :global(.pc) .sidebar {
-    background: #fff;
+    background: var(--c-white);
     box-shadow: 2px 0px 12px 0 rgb(0 0 0 / 10%);
     width: 235px;
     position: absolute;
@@ -97,8 +97,8 @@ export default defineComponent({
             padding-right: 20px;
             text-decoration: none;
             text-align: right;
-            color: #666;
-            border-right: 2px solid #eee;
+            color: var(--c-text-mid);
+            border-right: 2px solid var(--c-background);
             font-size: 14px;
             transition: all 0.2s;
 
@@ -118,8 +118,8 @@ export default defineComponent({
                 }
             }
             &.router-link-active {
-                color: #409eff;
-                border-color: #409eff;
+                color: var(--c-theme);
+                border-color: var(--c-theme);
             }
         }
     }
@@ -130,7 +130,7 @@ export default defineComponent({
     left: 0;
     right: 0;
     height: 70px;
-    background: #fff;
+    background: var(--c-white);
     z-index: 50;
     box-shadow: 0 2px 16px -8px rgb(0 0 0 / 10%);
     :global {
@@ -147,13 +147,13 @@ export default defineComponent({
         }
         a {
             height: 70px;
-            border-bottom: 2px solid #fff;
+            border-bottom: 2px solid var(--c-white);
             display: inline-flex;
             box-sizing: border-box;
             width: auto;
             font-size: 13px;
             vertical-align: top;
-            color: #666;
+            color: var(--c-text-sub);
             text-decoration: none;
             transition: all 0.2s;
             text-align: center;
@@ -186,8 +186,8 @@ export default defineComponent({
                 }
             }
             &.router-link-active {
-                color: #409eff;
-                border-color: #409eff;
+                color: var(--c-theme);
+                border-color: var(--c-theme);
             }
         }
         .lr {
@@ -196,7 +196,7 @@ export default defineComponent({
                 top: 0;
                 bottom: 0;
                 width: 15px;
-                color: #409eff;
+                color: var(--c-theme);
                 line-height: 60px;
                 text-align: center;
                 cursor: pointer;

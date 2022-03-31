@@ -125,7 +125,7 @@ export default defineComponent({
 
         .badge {
             font-size: 12px;
-            background: #409eff;
+            background: var(--c-theme);
             color: #fff;
             padding: 2px 5px;
             margin-right: 5px;

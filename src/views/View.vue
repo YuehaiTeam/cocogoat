@@ -119,8 +119,8 @@ export default defineComponent({
         }
     }
     .app-actions {
-        background: #fff;
-        border: 1px solid #409eff;
+        background: var(--c-white);
+        border: 1px solid var(--c-theme);
         border-right: 0;
         border-top-left-radius: 5px;
         border-bottom-left-radius: 5px;
@@ -143,9 +143,9 @@ export default defineComponent({
         text-align: center;
         padding: 0;
         padding-left: 1px;
-        border-color: #409eff;
-        color: #fff;
-        background: #409eff;
+        border-color: var(--c-theme);
+        color: var(--c-white);
+        background: var(--c-theme);
         svg {
             width: 23px;
             height: 23px;

@@ -116,13 +116,17 @@ export default defineComponent({
         :global(.single) {
             background: #f0f7ff;
             border-top: 1px solid #d3e8ff;
+            :global(.dark) & {
+                background: #212426;
+                border-top: 1px solid var(--c-border);
+            }
         }
     }
     :global {
         .single {
-            background: #fff;
+            background: var(--c-white);
             border-radius: 3px;
-            color: #555;
+            color: var(--c-text);
             position: relative;
             padding: 15px;
             .badge {
@@ -134,8 +138,8 @@ export default defineComponent({
                 height: 35px;
                 pointer-events: none;
                 &:after {
-                    border-right: 40px solid #409eff;
-                    border-bottom: 40px solid #fff;
+                    border-right: 40px solid var(--c-theme);
+                    border-bottom: 40px solid var(--c-white);
                     content: ' ';
                     position: absolute;
                     top: 0;
@@ -174,7 +178,7 @@ export default defineComponent({
                 }
                 .version {
                     font-size: 12px;
-                    color: #409eff;
+                    color: var(--c-theme);
                     margin-left: -2px;
                     font-family: genshin;
                 }
@@ -188,7 +192,7 @@ export default defineComponent({
 
                 a {
                     text-decoration: none;
-                    color: #409eff;
+                    color: var(--c-theme);
                     display: inline-block;
                     vertical-align: top;
                     border-bottom: 1px solid transparent;
@@ -201,7 +205,7 @@ export default defineComponent({
                     position: relative;
                     top: 2px;
                     &:hover {
-                        border-color: #409eff;
+                        border-color: var(--c-theme);
                         opacity: 0.8;
                     }
                 }
@@ -211,7 +215,7 @@ export default defineComponent({
                 display: inline-block;
                 height: 25px;
                 vertical-align: top;
-                color: #409eff;
+                color: var(--c-theme);
                 font-size: 12px;
                 padding: 0 5px;
                 box-sizing: border-box;
@@ -219,10 +223,10 @@ export default defineComponent({
                 margin-right: 10px;
                 width: 55px;
                 text-align: center;
-                border: 1px solid #409eff;
+                border: 1px solid var(--c-theme);
                 &.checked {
-                    background: #409eff;
-                    color: #fff;
+                    background: var(--c-theme);
+                    color: var(--c-white);
                 }
                 img {
                     height: 18px;
@@ -248,7 +252,7 @@ export default defineComponent({
                 input {
                     appearance: none;
                     border: 0;
-                    color: #409eff;
+                    color: var(--c-theme);
                     width: 100%;
                     text-align: center;
                     background: transparent;
@@ -258,7 +262,7 @@ export default defineComponent({
                     border-radius: 3px;
                     &:focus,
                     &:hover {
-                        border-color: #409eff;
+                        border-color: var(--c-theme);
                     }
                 }
                 .status input {
@@ -305,13 +309,19 @@ export default defineComponent({
                     font-size: 23px;
                     text-align: center;
                     transition: all 0.3s;
+                    :global(.dark) & {
+                        opacity: 0.6;
+                    }
                     &.checked {
-                        color: #fff;
-                        background: #409eff;
-                        border-color: #409eff;
+                        color: var(--c-white);
+                        background: var(--c-theme);
+                        border-color: var(--c-theme);
+                        :global(.dark) & {
+                            opacity: 0.9;
+                        }
                     }
                     &:hover {
-                        border-color: #409eff;
+                        border-color: var(--c-theme);
                     }
                     &.checked:hover {
                         border-color: #0079cc;

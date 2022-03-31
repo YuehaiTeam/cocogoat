@@ -169,5 +169,7 @@ router.afterEach((to) => {
 })
 export default router
 export function getUrl(name: string) {
-    return router.resolve({ name }).href
+    const dark = document.body.classList.contains('dark') ? 'dark' : ''
+    const h = router.resolve({ name, hash: '#theme=' + dark }).href
+    return h
 }

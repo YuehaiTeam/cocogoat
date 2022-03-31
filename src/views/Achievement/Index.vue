@@ -1,5 +1,5 @@
 <template>
-    <Layout full-height style="background: #eee">
+    <Layout full-height style="background: var(--c-background)">
         <template #title>
             <div class="teleport-title">
                 <span style="font-family: genshin">
@@ -200,7 +200,7 @@
 
 <script lang="ts">
 import '@/styles/actions.scss'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { ref, toRef, defineComponent, computed, watch, onMounted } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 
@@ -236,6 +236,7 @@ import ImportDialog from './ImportDialog.vue'
 import versionMap, { allVersions } from './versionMap'
 import { uniqBy } from 'lodash'
 import bus from '@/bus'
+import { getUrl } from '@/router'
 
 const deprecated = {
     81006: 85000,
@@ -262,8 +263,7 @@ export default defineComponent({
         const selectedIds = ref<string[]>([])
         const showScanner = ref(false)
         const search = ref('')
-        const router = useRouter()
-        const frameSrc = router.resolve({ name: 'frames.achievement.scan' }).href
+        const frameSrc = getUrl('frames.achievement.scan')
         const achievementFin = ref({} as Record<number, IAchievementStore>)
         const achievementFinStat = ref(
             {} as Record<
@@ -546,17 +546,17 @@ export default defineComponent({
         }
 
         .count {
-            border: 1px solid #409eff;
-            color: #409eff;
-            background: #fff;
+            border: 1px solid var(--c-theme);
+            color: var(--c-theme);
+            background: var(--c-white);
             margin-right: -3px;
             padding: 0 5px;
             padding-right: 7px;
             padding-top: 1px;
         }
         .reward {
-            background: #409eff;
-            color: #fff;
+            background: var(--c-theme);
+            color: var(--c-white);
             padding: 2px 5px;
             font-size: 12px;
             img {
@@ -623,7 +623,7 @@ export default defineComponent({
             z-index: 99;
             .progress-in {
                 height: 100%;
-                background: #409eff;
+                background: var(--c-theme);
                 transition: all 0.3s;
             }
         }
@@ -696,9 +696,12 @@ export default defineComponent({
                 }
                 .el-divider {
                     border-color: #ccc;
+                    :global(.dark) & {
+                        border-color: #333;
+                    }
                     margin: 40px 0;
                     .el-divider__text {
-                        background: #eee;
+                        background: var(--c-background);
                     }
                     svg {
                         fill: #aaa;
@@ -780,7 +783,7 @@ export default defineComponent({
                 max-width: 100%;
                 width: 600px;
                 height: 650px;
-                background: #fff;
+                background: var(--c-white);
                 border-radius: 5px;
                 margin: 0 auto;
                 margin-top: calc(10vh - 60px);

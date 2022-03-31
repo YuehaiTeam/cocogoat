@@ -1,0 +1,71 @@
+body {
+    --c-theme: #409eff;
+    --c-theme-sub: #007acc;
+    --c-white: #fff;
+    --c-menu: #fff;
+    --c-menu-active: #fff;
+    --c-background: #eee;
+    --c-border: #eee;
+    --c-text: #333;
+    --c-text-mid: #666;
+    --c-text-sub: #888;
+    --c-text-theme: #409eff;
+    --c-text-theme-sub: #007acc;
+}
+body.dark {
+    color-scheme: dark;
+    iframe {
+        color-scheme: light;
+    }
+    --c-theme: #007acc;
+    --c-theme-sub: #1d252e;
+    --c-background: #121212;
+    --c-border: #323232;
+    --c-text: #c9d1d9;
+    --c-text-mid: #888;
+    --c-text-sub: #8b949e;
+    --c-white: #202020;
+    --c-menu: #1d252e;
+    --c-menu-active: #1e3342;
+    --el-box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.22), 0 0 6px rgba(0, 0, 0, 0.14);
+    --c-text-theme: #409eff;
+    --c-text-theme-sub: #007acc;
+    --el-color-white: var(--c-white);
+    --el-border-color-base: var(--c-border);
+    --el-border-color-light: var(--c-border);
+    --el-border-color-lighter: var(--c-border);
+    --el-text-color-primary: var(--c-text);
+    --el-text-color-regular: var(--c-text-mid);
+    --el-color-primary-light-9: #3a3a3a;
+    --el-bg-color: var(--c-background);
+    color: var(--c-text);
+    &.layout {
+        background: var(--c-background);
+    }
+    .el-input {
+        --el-border-base: var(--el-border-width-base) var(--el-border-style-base) var(--c-border);
+        --el-input-border-color: var(--c-border);
+    }
+    .el-dropdown-menu {
+        background-color: var(--c-white);
+    }
+    .el-dropdown__popper.el-popper[role='tooltip'] {
+        background: transparent;
+    }
+    .el-table {
+        --el-table-row-hover-bg-color: var(--c-background);
+    }
+    .el-button--danger.is-plain {
+        --el-button-bg-color: #39292c !important;
+        --el-button-border-color: #533c40 !important;
+    }
+    .el-button--primary.is-plain {
+        --el-button-bg-color: #26333c !important;
+        --el-button-border-color: #344551 !important;
+    }
+}
+.layout {
+    * {
+        transition: background-color 0.2s;
+    }
+}

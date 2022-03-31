@@ -270,7 +270,7 @@ src.delete()`)
     font-family: Sarasa Term SC, Consolas, Microsoft Yahei;
     code {
         font-family: Sarasa Term SC, Consolas, Microsoft Yahei;
-        color: #409eff;
+        color: var(--c-theme);
     }
 }
 .main {
@@ -337,7 +337,7 @@ src.delete()`)
                         }
                         img,
                         canvas {
-                            border: 2px dashed #409eff;
+                            border: 2px dashed var(--c-theme);
                             width: auto;
                             height: auto;
                             max-width: 100%;

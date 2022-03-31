@@ -9,6 +9,7 @@ import { store, currentUser, options } from './store'
 import type { i18n } from '@/i18n'
 import { initSync } from './store/sync'
 import { createPinia } from 'pinia'
+import '@/utils/darkmode'
 const app = createApp(App)
 app.use(createPinia())
 

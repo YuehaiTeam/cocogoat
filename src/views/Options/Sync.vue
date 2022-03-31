@@ -258,7 +258,7 @@ export default defineComponent({
             }
         }
         .desc {
-            color: #555;
+            color: var(--c-text-mid);
             padding: 10px;
             margin-bottom: 10px;
             font-size: 14px;

@@ -1,0 +1,25 @@
+diff --git a/node_modules/git-repo-info/index.js b/node_modules/git-repo-info/index.js
+index 6202cab..7b5f367 100644
+--- a/node_modules/git-repo-info/index.js
++++ b/node_modules/git-repo-info/index.js
+@@ -215,7 +215,7 @@ module.exports = function(gitPath) {
+     committerDate: null,
+     author: null,
+     authorDate: null,
+-    commitMessage: null,
++    commitMessage: '',
+     root: null,
+     commonGitDir: null,
+     worktreeGitDir: null,
+@@ -326,9 +326,9 @@ function getCommitData(gitPath, sha) {
+             break;
+           default:
+             //should just be the commit message left
+-            data.commitMessage = section;
++            data.commitMessage = data.commitMessage||'';
++            data.commitMessage += section+'\r\n';
+         }
+-
+         return data;
+       }, {});
+   }

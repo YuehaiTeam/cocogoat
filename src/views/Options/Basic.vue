@@ -17,7 +17,14 @@
                         <el-switch v-model="options.reporting"></el-switch>
                     </div>
                     <div class="desc">关闭后刷新页面生效。</div>
-                    <el-button v-if="options.reporting" @click="report">问题反馈</el-button>
+                </div>
+            </el-form-item>
+            <el-form-item v-if="options.reporting" label="手动发送错误报告">
+                <div>
+                    <el-button @click="report">点击发送错误报告</el-button>
+                    <div class="report">
+                        错误报告为匿名信息，无法提供任何反馈或修复通知。如需反馈问题，请在Github上发送issue或加入QQ交流群，并附上错误报告ID。
+                    </div>
                 </div>
             </el-form-item>
         </el-form>

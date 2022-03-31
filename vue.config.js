@@ -19,6 +19,7 @@ process.env.VUE_APP_LOCALRES = singleFile || process.env.NODE_ENV === 'developme
 process.env.VUE_APP_TIMESTAMP = Date.now()
 process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
 process.env.VUE_APP_GIT_MSG = gitInfo.commitMessage
+console.log(gitInfo)
 module.exports = defineConfig({
     publicPath: singleFile
         ? '.'

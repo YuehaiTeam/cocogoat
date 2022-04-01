@@ -57,7 +57,7 @@ import {
     faBomb,
 } from '@fortawesome/free-solid-svg-icons'
 import { ElMessageBox } from 'element-plus'
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, ref } from 'vue'
 library.add(faAngleRight, faEnvelopeOpenText, faCheckCircle, faCircleNotch, faBomb)
 export const name = '椰羊云同步'
 export default defineComponent({
@@ -66,6 +66,10 @@ export default defineComponent({
     },
     emits: ['submit'],
     setup(props, { emit }) {
+        let destroyed = false
+        onBeforeUnmount(() => {
+            destroyed = true
+        })
         const step = ref(1)
         const mail = ref('')
         const isMail = computed(() => {
@@ -117,6 +121,7 @@ export default defineComponent({
             setTimeout(checkLoginStatus, 3000)
         }
         const checkLoginStatus = async () => {
+            if (destroyed) return
             try {
                 const res = await fetch(await apibase('/qingxin/u/' + dtoken), {
                     method: 'GET',

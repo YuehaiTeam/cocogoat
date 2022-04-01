@@ -9,4 +9,6 @@ export interface ICapturer {
     reset: () => void
     requestCapture: () => void
     video: Ref<HTMLVideoElement>
+    click: (x: number, y: number) => Promise<void>
+    onFrame: (cb: () => unknown | Promise<unknown>) => void
 }

@@ -40,7 +40,7 @@ export class Rect {
 }
 
 export class Mat extends NativeObject {
-    data: MatData
+    data: Uint8Array
     constructor()
     constructor(width: number, height: number, type: number)
     constructor(width: number, height: number, type: number, dayata: ArrayLike)
@@ -58,7 +58,7 @@ export class Mat extends NativeObject {
     type: () => MatType
     static ones: (rows: number, cols: number, type: number) => Mat
     ucharPtr: (row: number, col: number) => Uint8Array
-    convertTo: (src: Mat, type: number, scale: number, shift: number) => void
+    convertTo: (src: Mat, type: number, scale?: number, shift?: number) => void
 }
 
 export class RotateRect {

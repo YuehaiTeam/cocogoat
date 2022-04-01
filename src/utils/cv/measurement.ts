@@ -45,21 +45,30 @@ export async function measureLatency(
 }
 export async function tillChanged(
     client: typeof diffCached,
-    capture: () => ICVMat,
-    { timeout = 30 * 1e3, interval = 0, threhold = 10, signal = new AbortSignal() },
+    capture: (() => ICVMat) | (() => Promise<ICVMat>),
+    {
+        timeout = 30 * 1e3,
+        interval = 0,
+        threhold = 10,
+        signal = new AbortSignal(),
+        afterCapture = async () => {
+            /* empty func */
+        },
+    },
 ) {
     // clear client cache
     await client(false)
     // put first image in
     const captureReady = performance.now()
-    await client(capture())
+    await client(await capture())
+    await afterCapture()
     return (await new Promise((resolve, reject) => {
         const check = async () => {
             const diffFound = performance.now()
             if (diffFound - captureReady >= timeout) {
                 reject(new Error('Measurement timeout'))
             }
-            const image = capture()
+            const image = await capture()
             const result = await client(image)
             console.log(result)
             if (result > threhold) {

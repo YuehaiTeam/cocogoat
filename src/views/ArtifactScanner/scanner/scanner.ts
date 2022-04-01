@@ -256,7 +256,8 @@ export async function splitUser(
         try {
             maybeUser.roi = await normalizeToYas(src.roi(maybeUser.rect), false)
         } catch (e) {
-            throw new Error('Roi for user fielf faild')
+            console.warn('Roi for user fielf faild')
+            return false
         }
         return maybeUser
     } else {

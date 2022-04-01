@@ -136,7 +136,6 @@ export class CocogoatWebControl {
         const win = await this.getWindow(hWnd)
         const xdelta = dx === 1 ? 1 : win.width / dx
         const ydelta = dy === 1 ? 1 : win.height / dy
-        console.log({ x: x * xdelta, y: y * ydelta })
         return { x: x * xdelta + win.x, y: y * ydelta + win.y }
     }
 }

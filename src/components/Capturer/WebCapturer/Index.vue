@@ -25,6 +25,7 @@ import { IMatFromImageData } from '@/utils/IMat'
 import FloatWindow from '@/components/FloatWindow2.vue'
 import { CocogoatWebControl } from '@/modules/webcontrol'
 import { hasPictureInPicture } from '@/utils/compatibility'
+import delay from 'delay'
 
 export default defineComponent({
     components: {
@@ -102,10 +103,46 @@ export default defineComponent({
             stream.value = null
             video.value && video.value.pause()
             video.value && (video.value.srcObject = null)
+            onFrameStarted = false
         }
         const reset = () => {
             stop()
             step.value = 1
+        }
+        const click = async (x: number, y: number) => {
+            if (control && video.value) {
+                const clickPos = await control.toAbsolute(windowId.value, x, y, {
+                    dx: video.value.videoWidth,
+                    dy: video.value.videoHeight,
+                })
+                await control.SetCursorPos(clickPos.x, clickPos.y)
+                await delay(10)
+                await control.mouse_event(control.MOUSEEVENTF_LEFTDOWN, 0, 0, 0)
+                await control.mouse_event(control.MOUSEEVENTF_LEFTUP, 0, 0, 0)
+            }
+        }
+        const onFrameFun = {
+            cb: () => {
+                // do nothing
+            },
+        }
+        let onFrameStarted = false
+        const onFrame = (cb: () => unknown) => {
+            onFrameFun.cb = cb
+            if (video.value && !onFrameStarted) {
+                const fun = () => {
+                    onFrameFun.cb()
+                    if (onFrameStarted) {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-ignore
+                        video.value.requestVideoFrameCallback(fun)
+                    }
+                }
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                video.value.requestVideoFrameCallback(fun)
+                onFrameStarted = true
+            }
         }
         watch(stream, (stream) => {
             stream &&
@@ -129,6 +166,8 @@ export default defineComponent({
             stop,
             reset,
             hasPictureInPicture,
+            click,
+            onFrame,
         }
     },
 })

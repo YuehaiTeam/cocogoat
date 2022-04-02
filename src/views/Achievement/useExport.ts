@@ -1,14 +1,23 @@
+import { i18n } from '@/i18n'
+import { ElNotification } from 'element-plus'
+import 'element-plus/theme-chalk/el-notification.css'
 import { ref } from 'vue'
 import { store, options } from '@/store'
+import dayjs from 'dayjs'
+import achevementsAmos from '@/plugins/amos/achievements'
 export function useExportAchievements() {
     const exportData = ref({
         show: false,
         title: '',
         content: '',
     })
-    const doExport = (_to: 'paimon' | 'seelie' | '') => {
+    const doExport = (_to: 'paimon' | 'seelie' | 'excel' | '') => {
         const to = _to || options.value.achievements_recent_export
         options.value.achievements_recent_export = to
+        if (to === 'excel') {
+            dumpToExcel()
+            return
+        }
         let content = ''
         if (to === 'seelie') {
             const exportArray = store.value.achievements.map((i) => {
@@ -51,4 +60,51 @@ location.href='/achievement'`
         // do nothing
     }
     return { exportData, doExport }
+}
+async function dumpToExcel() {
+    const noti = ElNotification.info({
+        title: '处理中',
+        message: '请稍候...',
+        duration: 0,
+    })
+    const exceljs = await import('exceljs')
+    const workbook = new exceljs.Workbook()
+    const worksheet = workbook.addWorksheet('椰羊成就导出')
+    worksheet.columns = [
+        { header: 'ID', key: 'id' },
+        { header: '分类', key: 'category' },
+        { header: '名称', key: 'name' },
+        { header: '原石', key: 'reward' },
+        { header: '描述', key: 'desc' },
+        { header: '状态', key: 'status' },
+        { header: '日期', key: 'date' },
+    ]
+    // convert data
+    achevementsAmos.forEach((category) => {
+        category.achievements.forEach((achievement) => {
+            const ach = store.value.achievements.find((i) => i.id === achievement.id)
+            worksheet.addRow({
+                id: achievement.id,
+                category: i18n.amos[category.name],
+                name: i18n.amos[achievement.name],
+                desc: i18n.amos[achievement.desc],
+                reward: achievement.reward,
+                status: ach ? ach.status : '',
+                date: ach ? ach.date : '',
+            })
+        })
+    })
+    // download xlsx
+    noti.close()
+    ElNotification.success({
+        title: '导出成功',
+        message: '即将下载...',
+    })
+    const buf = await workbook.xlsx.writeBuffer()
+    const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = '椰羊成就导出' + dayjs().format('YYYY-MM-DD HH:mm:ss') + '.xlsx'
+    a.click()
 }

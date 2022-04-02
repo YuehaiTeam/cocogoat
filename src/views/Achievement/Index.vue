@@ -51,6 +51,10 @@
                                         Seelie.me
                                     </el-dropdown-item>
                                     <el-dropdown-item @click="doExport('seelie')">代码</el-dropdown-item>
+                                    <el-dropdown-item divided disabled class="export-title">
+                                        Excel文件
+                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('excel')">下载</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>

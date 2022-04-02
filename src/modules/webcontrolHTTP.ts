@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable max-params */
-import mitt from 'mitt'
-import { stringify } from 'qs'
 import Fly from 'flyio/dist/npm/fly'
-import type { Fly as FlyType, FlyError } from 'flyio'
+import type { Fly as FlyType, FlyError, FlyRequestConfig } from 'flyio'
+interface RequestConfig extends FlyRequestConfig {
+    params: Record<string, any>
+}
 export interface IWindow {
     hWnd: number
     title: string
@@ -18,9 +19,7 @@ export class CocogoatWebControl {
     token = ''
     hwnd = 0
     version = ''
-    ev = mitt()
     client: FlyType = new Fly()
-    ws: WebSocket | undefined
     MOUSEEVENTF_ABSOLUTE = 0x8000
     MOUSEEVENTF_LEFTDOWN = 0x0002
     MOUSEEVENTF_LEFTUP = 0x0004
@@ -70,25 +69,10 @@ export class CocogoatWebControl {
         }
     }
     async authorize() {
-        if (this.ws) {
-            return true
-        }
         try {
             const { data } = await this.client.post('/token')
             this.token = data.token
             this.hwnd = data.hwnd || 0
-            const ws = new WebSocket(`ws://localhost:${this.port}/ws/${this.token}`)
-            ws.onmessage = (e) => {
-                const data = JSON.parse(e.data)
-                this.ev.emit(data.id || data.action, data.data)
-            }
-            ws.onclose = () => {
-                this.ws = undefined
-            }
-            await new Promise((resolve) => {
-                ws.onopen = resolve
-            })
-            this.ws = ws
             return true
         } catch (e) {
             const er = e as FlyError
@@ -98,78 +82,60 @@ export class CocogoatWebControl {
             throw e
         }
     }
-    wsInvoke(method: string, path: string, querystring?: Record<string, any>) {
-        if (!this.ws) throw new Error('WebSocket not connected')
-        const url = path + (querystring ? `?${stringify(querystring)}` : '')
-        const id = Math.round(Date.now() * 1000 + Math.random() * 1000).toString(16)
-        const reqjson = {
-            id,
-            action: 'api',
-            data: {
-                url,
-                method,
-            },
-        }
-        const resp = new Promise((resolve) => {
-            this.ev.on(id, resolve)
-        })
-        this.ws.send(JSON.stringify(reqjson))
-        return resp as Promise<{
-            status: number
-            body: any
-        }>
-    }
     async mouse_event(dwFlags: number, dx: number, dy: number, dwData: number, repeat = 1) {
-        return this.wsInvoke('POST', '/api/mouse_event', {
-            dwFlags,
-            dx,
-            dy,
-            dwData,
-            repeat,
-        })
+        return this.client.post('/api/mouse_event', {}, {
+            params: {
+                dwFlags,
+                dx,
+                dy,
+                dwData,
+                repeat,
+            },
+        } as RequestConfig)
     }
     async keybd_event(bVk: number, bScan: number, dwFlags: number) {
-        return this.wsInvoke('POST', '/api/keybd_event', {
-            bVk,
-            bScan,
-            dwFlags,
-        })
+        return this.client.post('/api/keybd_event', {}, {
+            params: {
+                bVk,
+                bScan,
+                dwFlags,
+            },
+        } as RequestConfig)
     }
     async sendMessage(hWnd: number, Msg: number, wParam: number, lParam: number) {
-        return this.wsInvoke('POST', '/api/SendMessage', {
-            hWnd,
-            Msg,
-            wParam,
-            lParam,
-        })
+        return this.client.post('/api/SendMessage', {}, {
+            params: {
+                hWnd,
+                Msg,
+                wParam,
+                lParam,
+            },
+        } as RequestConfig)
     }
     async SetCursorPos(x: number, y: number) {
-        return this.wsInvoke('POST', '/api/SetCursorPos', {
-            x,
-            y,
-        })
+        return this.client.post('/api/SetCursorPos', {}, {
+            params: {
+                x,
+                y,
+            },
+        } as RequestConfig)
     }
     async listWindows(): Promise<IWindow[]> {
-        return (await this.wsInvoke('GET', '/api/windows')).body
+        return (await this.client.get('/api/windows')).data
     }
     async getWindow(id: number): Promise<IWindow> {
-        return (await this.wsInvoke('GET', '/api/windows/' + id)).body
+        return (await this.client.get('/api/windows/' + id)).data
     }
     async activeWindow(id: number) {
-        return await this.wsInvoke('PATCH', '/api/windows/' + id)
+        return await this.client.patch('/api/windows/' + id, {}, {})
     }
     async getMonitor(): Promise<IWindow> {
-        return (await this.wsInvoke('GET', '/api/monitors')).body
+        return (await this.client.get('/api/monitors')).data
     }
-    async toAbsolute(
-        hWnd: number,
-        x: number,
-        y: number,
-        { dx = 1, dy = 1, window = null as IWindow | null } = { dx: 1, dy: 1, window: null as IWindow | null },
-    ) {
-        const win = window || (await this.getWindow(hWnd))
+    async toAbsolute(hWnd: number, x: number, y: number, { dx = 1, dy = 1 } = { dx: 1, dy: 1 }) {
+        const win = await this.getWindow(hWnd)
         const xdelta = dx === 1 ? 1 : win.width / dx
         const ydelta = dy === 1 ? 1 : win.height / dy
-        return { x: x * xdelta + win.x, y: y * ydelta + win.y, win }
+        return { x: x * xdelta + win.x, y: y * ydelta + win.y }
     }
 }

@@ -16,8 +16,8 @@
                 </div>
                 <div class="content">
                     由于浏览器限制，自动操作无法在网页完成
-                    <a class="dlink" href="/assets/cocogoat-control-1.0.4.exe" target="_blank">
-                        点击此处下载辅助插件<small>(v1.0.4 140kB)</small>
+                    <a class="dlink" href="/assets/cocogoat-control-1.1.0.exe" target="_blank">
+                        点击此处下载辅助插件<small>(v1.1.0 300kB)</small>
                     </a>
                     <div class="absolute-area">
                         <el-button class="start-btn start-gray" @click="enable(false)">
@@ -85,6 +85,7 @@ import { ref, defineComponent, toRef, onMounted, PropType } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowPointer, faAngleRight, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { CocogoatWebControl } from '@/modules/webcontrol'
+import { versionCompare } from '@/utils/versionCompare'
 library.add(faArrowPointer, faAngleRight, faCheck)
 export default defineComponent({
     props: {
@@ -112,7 +113,7 @@ export default defineComponent({
                 loading.value = false
                 needUpdate.value = false
                 return
-            } else if (w.value.version !== '1.0.4') {
+            } else if (versionCompare(w.value.version, '1.1.0') < 0) {
                 needUpdate.value = true
                 notFound.value = true
                 loading.value = false
@@ -121,6 +122,7 @@ export default defineComponent({
             } else {
                 needUpdate.value = false
                 try {
+                    loading.value = true
                     const authorized = await w.value.authorize()
                     if (authorized) {
                         let windows = await w.value.listWindows()
@@ -139,8 +141,11 @@ export default defineComponent({
                     } else {
                         denied.value = true
                     }
-                } catch (e) {}
-                notFound.value = false
+                    notFound.value = false
+                } catch (e) {
+                    notFound.value = true
+                    console.log(e)
+                }
             }
             loading.value = false
         }

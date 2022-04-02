@@ -23,7 +23,7 @@ import { ElMessage } from 'element-plus'
 import 'element-plus/theme-chalk/el-message.css'
 import { IMatFromImageData } from '@/utils/IMat'
 import FloatWindow from '@/components/FloatWindow2.vue'
-import { CocogoatWebControl } from '@/modules/webcontrol'
+import { CocogoatWebControl, IWindow } from '@/modules/webcontrol'
 import { hasPictureInPicture } from '@/utils/compatibility'
 import delay from 'delay'
 
@@ -109,16 +109,21 @@ export default defineComponent({
             stop()
             step.value = 1
         }
-        const click = async (x: number, y: number) => {
+        let cachedWindow = undefined as IWindow | undefined
+        const click = async (x: number, y: number, cache = true) => {
             if (control && video.value) {
                 const clickPos = await control.toAbsolute(windowId.value, x, y, {
                     dx: video.value.videoWidth,
                     dy: video.value.videoHeight,
+                    window: cache ? cachedWindow || null : null,
                 })
                 await control.SetCursorPos(clickPos.x, clickPos.y)
                 await delay(10)
                 await control.mouse_event(control.MOUSEEVENTF_LEFTDOWN, 0, 0, 0)
                 await control.mouse_event(control.MOUSEEVENTF_LEFTUP, 0, 0, 0)
+                if (cache) {
+                    cachedWindow = clickPos.win
+                }
             }
         }
         const onFrameFun = {

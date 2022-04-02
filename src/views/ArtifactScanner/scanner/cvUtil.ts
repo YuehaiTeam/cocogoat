@@ -97,7 +97,7 @@ export async function analyzeBag(_src: Mat | ICVMat) {
     const borderL = src.cols - panelRect.x - panelRect.width - 10
     const borderT = panelRect.y - 10
     const borderB = panelRect.y + panelRect.height + 10
-    const centerRect = new cv.Rect(borderL, borderT, borderR - borderL, borderB - borderT)
+    const centerRect = new cv.Rect(borderL, borderT, borderR - borderL - 20, borderB - borderT)
     const topRects = rects.filter((e) => e.x > borderR && e.y < borderT)
     const closeRect = topRects.sort((a, b) => b.x - a.x)[0]
     const countRect = topRects.filter((e) => e.height !== closeRect.height && e.y < closeRect.y + closeRect.height)[0]
@@ -130,7 +130,7 @@ function axisPoint(mat: Mat) {
             changePoints.push(i)
         }
     })
-    changePoints.push(mat.cols)
+    changePoints.push(mat.data.length - 1)
     let avga = 0
     let cnta = 0
     let avgb = 0
@@ -139,23 +139,30 @@ function axisPoint(mat: Mat) {
         avga += changePoints[i] - changePoints[i - 1]
         cnta++
         if (changePoints[i + 1]) {
-            avgb += changePoints[i + 1] - changePoints[i - 1]
+            avgb += changePoints[i + 1] - changePoints[i]
             cntb++
         }
     }
     avga /= cnta
     avgb /= cntb
     const results = []
+    const blocks = []
     for (let i = 1; i < changePoints.length; i += 2) {
         if (avga > avgb) {
+            const height = changePoints[i] - changePoints[i - 1]
+            if (height < 16) continue
             results.push(Math.round((changePoints[i] + changePoints[i - 1]) / 2))
+            blocks.push([changePoints[i - 1], changePoints[i]])
         } else {
             if (changePoints[i + 1]) {
+                const height = changePoints[i + 1] - changePoints[i]
+                if (height < 16) continue
                 results.push(Math.round((changePoints[i] + changePoints[i + 1]) / 2))
+                blocks.push([changePoints[i], changePoints[i + 1]])
             }
         }
     }
-    return results
+    return { results, changePoints, blocks }
 }
 export async function analyzeBlocks(_src: Mat | ICVMat) {
     const cv = await getCV()
@@ -167,33 +174,50 @@ export async function analyzeBlocks(_src: Mat | ICVMat) {
     }
     const dst = new cv.Mat()
     const dst2 = new cv.Mat()
-    const mask = new cv.Mat()
-    const rgbaPlanes = new cv.MatVector()
-    cv.split(center, rgbaPlanes)
-    const dtype = -1
-    cv.subtract(rgbaPlanes.get(3), rgbaPlanes.get(2), dst, mask, dtype)
-    cv.threshold(dst, dst, 40, 255, cv.THRESH_BINARY_INV)
-    cv.subtract(rgbaPlanes.get(1), rgbaPlanes.get(2), dst2, mask, dtype)
-    cv.threshold(dst2, dst2, 120, 255, cv.THRESH_BINARY_INV)
-    cv.subtract(dst2, dst, dst, mask, dtype)
-    mask.delete()
-    const M3 = cv.Mat.ones(8, 3, cv.CV_8U)
-    cv.erode(dst, dst, M3)
-    M3.delete()
-    cv.bitwise_not(dst, dst)
+    cv.cvtColor(center, dst, cv.COLOR_RGBA2GRAY, 0)
+    cv.Canny(dst, dst, 120, 80, 3, false)
 
     cv.reduce(dst, dst2, 0, cv.CV_REDUCE_SUM, cv.CV_32S)
     dst2.convertTo(dst2, cv.CV_8U)
     cv.threshold(dst2, dst2, 160, 255, cv.THRESH_BINARY_INV)
-    const x = axisPoint(dst2)
+    const { results: x } = axisPoint(dst2)
 
     cv.reduce(dst, dst2, 1, cv.CV_REDUCE_SUM, cv.CV_32S)
     dst2.convertTo(dst2, cv.CV_8U)
     cv.threshold(dst2, dst2, 160, 255, cv.THRESH_BINARY_INV)
-    const y = axisPoint(dst2)
+    const { results: y } = axisPoint(dst2)
 
     dst.delete()
     dst2.delete()
     center.delete()
     return { x, y }
+}
+
+export async function analyzeY(_src: Mat | ICVMat) {
+    const cv = await getCV()
+    let center: Mat
+    if (isIMat(_src)) {
+        center = fromIMat(cv, _src)
+    } else {
+        center = _src
+    }
+    const dst = new cv.Mat()
+    cv.cvtColor(center, dst, cv.COLOR_RGBA2GRAY, 0)
+    cv.Canny(dst, dst, 120, 80, 3, false)
+
+    cv.reduce(dst, dst, 1, cv.CV_REDUCE_SUM, cv.CV_32S)
+    dst.convertTo(dst, cv.CV_8U)
+    cv.threshold(dst, dst, 160, 255, cv.THRESH_BINARY_INV)
+    const { results: y, changePoints, blocks } = axisPoint(dst)
+    const changeData = changePoints.map((e) => {
+        return dst.data[e]
+    })
+    dst.delete()
+    center.delete()
+    return {
+        y,
+        changeData,
+        changePoints,
+        blocks,
+    }
 }

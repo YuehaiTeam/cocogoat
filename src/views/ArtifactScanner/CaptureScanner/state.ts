@@ -49,6 +49,8 @@ export const useArstore = defineStore('artifact-capture-scanner', {
             resultHashes: [] as string[],
             scanned: 0,
             duplicates: 0,
+            cachedScroll: 0,
+            last: false,
         }
     },
     getters: {
@@ -91,7 +93,8 @@ export const useArstore = defineStore('artifact-capture-scanner', {
             const sendTick = async (step: number) => {
                 switch (step) {
                     case 3:
-                        cachedScroll = cachedScroll || cachedTimes - 1
+                        cachedScroll = cachedScroll || cachedTimes
+                        this.cachedScroll = (this.cachedScroll + cachedTimes) / 2
                         // await cap.control.mouse_event(cap.control.MOUSEEVENTF_WHEEL, 0, 0, 120, 1)
                         break
                     case 2:
@@ -111,6 +114,7 @@ export const useArstore = defineStore('artifact-capture-scanner', {
             let cachedStep = 0 // 0:quickstart 1:start 2:middlepassed 3:done
             for (let i = 0; i < this.rows && this.step === 4; i++) {
                 let fri = 0
+                cachedTimes = 0
                 let processing = false
                 await scanner.diffCached(false)
                 const waitForFinish = new Promise((resolve) => {
@@ -132,12 +136,13 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                         if (cachedStep < 2 && curr[1] <= orig[1] - (orig[1] - orig[0]) * 0.8) {
                             cachedStep = 2
                             console.log('->paging:middle', curr)
-                        } else if (cachedStep >= 2 && Math.abs(curr[1] - orig[1]) <= ((orig[1] - orig[0]) * 2) / 3) {
+                        } else if (cachedStep >= 2 && Math.abs(curr[1] - orig[1]) <= ((orig[1] - orig[0]) * 3) / 4) {
                             console.log('->paging:passed', curr)
                             cachedStep = 3
-                        } else if (cachedScroll > 0 && cachedTimes >= cachedScroll * 2) {
+                        } else if (this.cachedScroll > 0 && cachedTimes >= this.cachedScroll * 2) {
                             // 2倍次数还没到，看来是到底了
-                            console.log('->paging:last', curr)
+                            console.log('->paging:last', cachedTimes, this.cachedScroll)
+                            this.last = true
                             resolve()
                             return
                         }
@@ -234,12 +239,15 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                 let block: { x: number; y: number } | undefined
                 while (this.step === 4 && this.blocks && (block = this.blocks.shift())) {
                     await this.cap.click(this.centerRect.x + block.x, this.centerRect.y + block.y)
-                    await delay(Math.min(60, Math.max(100, this.renderLatancy / 2 || 60)))
+                    await delay(Math.min(70, Math.max(120, this.renderLatancy / 2 || 60)))
                 }
                 if (this.step !== 4) break
-                if (this.blocks && this.blocks.length === 0) {
+                if (this.blocks && this.blocks.length === 0 && !this.last) {
                     await this.scrollToNext()
                     this.blocks = null
+                }
+                if (this.last) {
+                    this.step = 5
                 }
             }
         },
@@ -306,6 +314,13 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                 image: toCanvas(image).toDataURL(),
             } as IArScannerData
             if (data.success && data.artifact) {
+                if (this.cap && this.cap.windowId > 0) {
+                    if (data.artifact.stars < 5) {
+                        // only scan 5* artifacts
+                        this.step = 5
+                        return
+                    }
+                }
                 const hash = setArtifactHash(data.artifact)
                 // find duplicated
                 if (this.resultHashes.includes(hash)) {

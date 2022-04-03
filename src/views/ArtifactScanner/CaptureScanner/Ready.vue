@@ -10,7 +10,7 @@
                     <el-alert
                         title="当前浏览器不支持悬浮窗"
                         description="如需中断扫描，请按Win键"
-                        type="warning"
+                        type="error"
                         show-icon
                     />
                 </div>
@@ -18,10 +18,17 @@
                     <el-alert
                         title="当前浏览器不支持悬浮窗"
                         description="完成翻页后，请点击“停止共享屏幕”按钮或手动回到本窗口点击停止扫描"
-                        type="warning"
+                        type="error"
                         show-icon
                     />
                 </div>
+                <el-alert
+                    v-if="windowId > 0"
+                    title="自动扫描器只扫描五星圣遗物"
+                    description="圣遗物扫描器仍在测试中，如有问题请及时反馈..."
+                    type="warning"
+                    show-icon
+                />
             </div>
         </div>
         <el-button class="start-btn start-gray" @click="step++">

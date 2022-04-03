@@ -16,6 +16,8 @@ export const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
 export const hasSIMD = hasSimd()
 // 逐帧操作
 export const hasRequestVideoFrameCallback = 'requestVideoFrameCallback' in HTMLVideoElement.prototype
+// WebCodecs
+export const hasWebCodecs = 'VideoDecoder' in window
 // 本地
 export const isLocal = process.env.VUE_APP_LOCALRES === 'true'
 // OCR需要WASM，且如是本地则需要SIMD

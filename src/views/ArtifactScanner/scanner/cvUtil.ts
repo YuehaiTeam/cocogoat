@@ -121,7 +121,7 @@ export async function analyzeBag(_src: Mat | ICVMat) {
     return { panelRect, centerRect, countRect }
 }
 
-function axisPoint(mat: Mat) {
+function axisPoint(mat: Mat, ignore = 0) {
     let last = mat.data[0]
     const changePoints = [0]
     mat.data.forEach((e, i) => {
@@ -150,13 +150,13 @@ function axisPoint(mat: Mat) {
     for (let i = 1; i < changePoints.length; i += 2) {
         if (avga > avgb) {
             const height = changePoints[i] - changePoints[i - 1]
-            if (height < 16) continue
+            if (height < ignore) continue
             results.push(Math.round((changePoints[i] + changePoints[i - 1]) / 2))
             blocks.push([changePoints[i - 1], changePoints[i]])
         } else {
             if (changePoints[i + 1]) {
                 const height = changePoints[i + 1] - changePoints[i]
-                if (height < 16) continue
+                if (height < 20) continue
                 results.push(Math.round((changePoints[i] + changePoints[i + 1]) / 2))
                 blocks.push([changePoints[i], changePoints[i + 1]])
             }
@@ -185,7 +185,7 @@ export async function analyzeBlocks(_src: Mat | ICVMat) {
     cv.reduce(dst, dst2, 1, cv.CV_REDUCE_SUM, cv.CV_32S)
     dst2.convertTo(dst2, cv.CV_8U)
     cv.threshold(dst2, dst2, 160, 255, cv.THRESH_BINARY_INV)
-    const { results: y } = axisPoint(dst2)
+    const { results: y } = axisPoint(dst2, 20)
 
     dst.delete()
     dst2.delete()

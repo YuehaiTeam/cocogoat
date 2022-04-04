@@ -52,10 +52,12 @@ jobs:
           rm -rf dist/assets/*.wasm
           rm -rf dist/assets/*.ort
       - name: Deploy
-        uses: s0/git-publish-subdir-action@develop
-        env:
-          REPO: ${{ secrets.DEPLOY_REPO }}
-          BRANCH: dist
-          FOLDER: dist
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_PRIVATE_KEY }}
-          SQUASH_HISTORY: true
+        uses: TencentCloud/cos-action@v1
+        with:
+          secret_id: ${{ secrets.COS_ID }}
+          secret_key: ${{ secrets.COS_KEY }}
+          cos_bucket: ${{ secrets.COS_BUCKET }}
+          cos_region: ${{ secrets.COS_REGION }}
+          local_path: dist
+          remote_path: /
+          clean: true

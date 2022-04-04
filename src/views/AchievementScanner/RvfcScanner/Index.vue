@@ -50,7 +50,14 @@
                         </template>
                     </el-empty>
                     <div v-show="blob" class="image-content">
-                        <video ref="videoEl" preload="preload" @timeupdate="onVideoProgress"></video>
+                        <video
+                            ref="videoEl"
+                            preload="preload"
+                            playsinline
+                            muted
+                            webkit-playsinline
+                            @timeupdate="onVideoProgress"
+                        ></video>
                     </div>
                     <div v-show="splitEnded" class="overlay">
                         <div>

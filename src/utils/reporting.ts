@@ -30,7 +30,7 @@ export function init(app: App, router: Router) {
                 tracingOrigins: ['77.cocogoat.work', 'cocogoat-1251105598.file.myqcloud.com/77', /^\//],
             }),
         ],
-        tracesSampleRate: 1.0,
+        tracesSampleRate: 0.5,
         release: process.env.VUE_APP_GIT_SHA,
         environment: process.env.VUE_APP_SINGLEFILE === 'true' ? 'singlefile' : process.env.NODE_ENV,
         transport: SimpleFetchTransport,

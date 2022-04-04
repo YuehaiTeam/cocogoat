@@ -39,6 +39,19 @@
                     </div>
                 </div>
             </div>
+            <div>
+                <div :class="$style.card" class="plz-card">
+                    <div ref="ad" class="ad module"></div>
+                    <div v-if="please" class="please"></div>
+                    <Adsense
+                        data-ad-client="ca-pub-9385417627717996"
+                        data-ad-slot="7187871056"
+                        data-ad-format="horizontal"
+                        data-full-width-responsive="false"
+                    >
+                    </Adsense>
+                </div>
+            </div>
             <div :class="$style.cardList">
                 <a :class="$style.card" href="http://github.com/yuehaiTeam/cocogoat" target="_blank">
                     <fa-icon :icon="['fab', 'github-alt']" />
@@ -67,7 +80,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { ref, defineComponent, watch } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faInfinity, faFolderTree, faTerminal, faBoxOpen } from '@fortawesome/free-solid-svg-icons'
 import { faGithubAlt, faQq } from '@fortawesome/free-brands-svg-icons'
@@ -81,6 +94,22 @@ export default defineComponent({
     components: {
         IconCocogoat,
         BuildInfo,
+    },
+    setup() {
+        const ad = ref(null as HTMLElement | null)
+        const please = ref(false)
+        watch(
+            () => ad.value,
+            () => {
+                if (ad.value) {
+                    const len = ad.value.getClientRects().length
+                    if (len <= 0) {
+                        please.value = true
+                    }
+                }
+            },
+        )
+        return { ad, please }
     },
 })
 </script>
@@ -179,6 +208,18 @@ export default defineComponent({
             border-bottom: 1px solid var(--c-border);
             padding-bottom: 10px;
             margin-bottom: 10px;
+        }
+    }
+    &:global(.plz-card) {
+        padding: 0px;
+        position: relative;
+        height: 120px;
+        :global(.adswrapper) {
+            position: absolute;
+            display: inline-block;
+            max-height: 120px;
+            width: 100%;
+            max-width: 100%;
         }
     }
 }

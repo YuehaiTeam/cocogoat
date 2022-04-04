@@ -16,6 +16,8 @@ declare module '*?rawnolocal'
 
 declare module 'vue-monaco'
 
+declare module 'vue-google-adsense/dist/Adsense.min.js'
+
 declare module '@/../resources.json' {
     import { IResourceItem } from './resources'
     const t: IResourceItem[]

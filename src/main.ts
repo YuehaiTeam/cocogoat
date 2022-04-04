@@ -9,9 +9,13 @@ import { store, currentUser, options } from './store'
 import type { i18n } from '@/i18n'
 import { initSync } from './store/sync'
 import { createPinia } from 'pinia'
+import ScriptX from 'vue-scriptx'
 import '@/utils/darkmode'
+import Adsense from 'vue-google-adsense/dist/Adsense.min.js'
 const app = createApp(App)
 app.use(createPinia())
+app.use(ScriptX)
+app.use(Adsense)
 
 // 兼容性检查：
 export let notInSameoriginFrame = parent === window

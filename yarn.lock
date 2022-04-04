@@ -7880,6 +7880,11 @@ vue-eslint-parser@^8.0.0, vue-eslint-parser@^8.0.1:
     lodash "^4.17.21"
     semver "^7.3.5"
 
+vue-google-adsense@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmmirror.com/vue-google-adsense/-/vue-google-adsense-2.0.0.tgz#7a8007336cf1471923da8372ae986fbe84c10cc2"
+  integrity sha512-/Lds405KZEufu8VKjmxubu22qRQsr073MKmZuefC9ABs3ArvTZCWfqFMyG2xNjeFOHHr4vrngXUrNhuT8Zi9lw==
+
 vue-hot-reload-api@^2.3.0:
   version "2.3.4"
   resolved "https://registry.npmmirror.com/vue-hot-reload-api/download/vue-hot-reload-api-2.3.4.tgz#532955cc1eb208a3d990b3a9f9a70574657e08f2"
@@ -7918,6 +7923,11 @@ vue-router@^4.0.3:
   integrity sha512-CPXvfqe+mZLB1kBWssssTiWg4EQERyqJZes7USiqfW9B5N2x+nHlnsM1D3b5CaJ6qgCvMmYJnz+G0iWjNCvXrg==
   dependencies:
     "@vue/devtools-api" "^6.0.0-beta.18"
+
+vue-scriptx@^0.2.5:
+  version "0.2.5"
+  resolved "https://registry.npmmirror.com/vue-scriptx/-/vue-scriptx-0.2.5.tgz#521cb3e060a85f5cb3b58cbc50945de054b24093"
+  integrity sha512-jnZr6ZLyuT23xt6t6a6bimQf8nrOVxjZVQZ5V4vF/c0phXa3kHbi/F3LwMJAoblTKlXpfq+RlQDg40hfZG1hlw==
 
 vue-style-loader@^4.1.0, vue-style-loader@^4.1.3:
   version "4.1.3"

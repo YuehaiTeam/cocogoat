@@ -27,20 +27,37 @@
                         </small>
                     </h2>
                 </router-link>
-                <router-link class="one" :to="{ name: 'frames.achievement.scan.screenshot-scanner' }">
+                <router-link
+                    class="one"
+                    :to="{ name: 'frames.achievement.scan.rvfc-scanner' }"
+                    :class="{ disabled: !hasRequestVideoFrameCallback }"
+                >
                     <i>
-                        <fa-icon icon="crop-simple" />
+                        <fa-icon icon="photo-film" />
                     </i>
                     <h2>
-                        截图识别
-                        <small>
-                            <div>手动截图上传识别</div>
+                        录屏识别
+                        <small v-if="hasRequestVideoFrameCallback">
+                            <div>上传录屏文件识别</div>
                             <div>手机用户可以选择</div>
+                        </small>
+                        <small v-else style="color: #fe6565">
+                            <div>暂不支持该浏览器</div>
+                            <div style="font-size: 12px">
+                                {{ isIOS ? '仅支持iOS 15.4及以上' : '请换用Chrome或Edge' }}
+                            </div>
                         </small>
                     </h2>
                 </router-link>
             </div>
             <div class="line-entrance">
+                <router-link :to="{ name: 'frames.achievement.scan.screenshot-scanner' }">
+                    <i>
+                        <fa-icon icon="crop-simple" />
+                    </i>
+                    <h2>截图识别</h2>
+                    <small>手动截图上传识别</small>
+                </router-link>
                 <router-link :to="{ name: 'frames.achievement.scan.line-scanner' }">
                     <i>
                         <fa-icon icon="clipboard-list" />
@@ -58,11 +75,11 @@
 import { ref, defineComponent } from 'vue'
 import Loader from './Common/Loader.vue'
 import Footer from './Common/Footer.vue'
-import { scannerCompatible } from '@/utils/compatibility'
+import { scannerCompatible, hasRequestVideoFrameCallback, isIOS } from '@/utils/compatibility'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faDesktop, faCropSimple, faClipboardList } from '@fortawesome/free-solid-svg-icons'
-library.add(faDesktop, faCropSimple, faClipboardList)
+import { faDesktop, faCropSimple, faClipboardList, faPhotoFilm } from '@fortawesome/free-solid-svg-icons'
+library.add(faDesktop, faCropSimple, faClipboardList, faPhotoFilm)
 
 export default defineComponent({
     components: {
@@ -73,7 +90,9 @@ export default defineComponent({
         const load = ref(false)
         return {
             load,
+            isIOS,
             scannerCompatible,
+            hasRequestVideoFrameCallback,
         }
     },
 })
@@ -159,6 +178,9 @@ export default defineComponent({
                 &:hover {
                     border-color: #aaa;
                     transform: translateY(-4px);
+                }
+                & + a {
+                    margin-top: -20px;
                 }
             }
 

@@ -103,6 +103,11 @@ const routes: Array<RouteRecordRaw> = [
                 name: 'frames.achievement.scan.screenshot-scanner',
                 component: () => import('@/views/AchievementScanner/ScreenshotScanner/Index.vue'),
             },
+            {
+                path: 'rvfc',
+                name: 'frames.achievement.scan.rvfc-scanner',
+                component: () => import('@/views/AchievementScanner/RvfcScanner/Index.vue'),
+            },
         ],
     },
     {

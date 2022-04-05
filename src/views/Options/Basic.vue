@@ -30,6 +30,14 @@
                     <div class="desc">关闭后刷新页面生效。</div>
                 </div>
             </el-form-item>
+            <el-form-item label="展示广告">
+                <div>
+                    <div class="select">
+                        <el-switch v-model="options.showads"></el-switch>
+                    </div>
+                    <div class="desc">仅在首页出现的广告不会影响浏览，希望您能支持我们。</div>
+                </div>
+            </el-form-item>
             <el-form-item v-if="options.reporting" label="手动发送错误报告">
                 <div>
                     <el-button @click="report">点击发送错误报告</el-button>

@@ -39,10 +39,16 @@
                     </div>
                 </div>
             </div>
-            <div>
+            <div v-if="options.showads">
                 <div :class="$style.card" class="plz-card">
                     <div ref="ad" class="ad module"></div>
-                    <div v-if="please" class="please"></div>
+                    <div v-if="please" class="please">
+                        <div class="text">
+                            如果您希望支持我们，恳请您将本站加入广告屏蔽插件的白名单
+                            <br />
+                            我们承诺广告不会影响正常浏览，如不想看到此内容，可以在设置中关闭广告展示
+                        </div>
+                    </div>
                     <Adsense
                         data-ad-client="ca-pub-9385417627717996"
                         data-ad-slot="7187871056"
@@ -88,6 +94,7 @@ library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen)
 
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import BuildInfo from '@/components/BuildInfo.vue'
+import { options } from '@/store'
 
 export default defineComponent({
     name: 'HomeView',
@@ -109,7 +116,7 @@ export default defineComponent({
                 }
             },
         )
-        return { ad, please }
+        return { ad, please, options }
     },
 })
 </script>
@@ -214,12 +221,26 @@ export default defineComponent({
         padding: 0px;
         position: relative;
         height: 120px;
+        text-align: center;
+        :global(.please) {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
         :global(.adswrapper) {
             position: absolute;
+            top: 0;
+            left: 0;
             display: inline-block;
             max-height: 120px;
             width: 100%;
             max-width: 100%;
+            text-align: center;
         }
     }
 }

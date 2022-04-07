@@ -39,6 +39,7 @@ function convertPaimonMoeJson(j: Record<string, any>) {
     Object.keys(j.achievement).forEach((index: string) => {
         const ach = j.achievement[index] as Record<number, true>
         Object.keys(ach).forEach((key) => {
+            if (!ach[Number(key)]) return
             achList.push({
                 id: Number(key),
                 status: '导入',

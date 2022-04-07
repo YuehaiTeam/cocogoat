@@ -73,6 +73,18 @@ export default defineComponent({
                     message: '已' + importText.value,
                 })
             }
+            if (inputMemoId.value) {
+                try {
+                    const jcontent = JSON.parse(content.value)
+                    if (!jcontent.id) return
+                    if (jcontent.id !== inputMemoId.value) return
+                    ;(async () => {
+                        fetch(await apibase('/v1/memo/' + inputMemoId.value), {
+                            method: 'DELETE',
+                        })
+                    })()
+                } catch (e) {}
+            }
         }, 200)
         const inputMemoId = ref(props.memoId)
         watch(

@@ -214,7 +214,12 @@ export function useImport(
             const dv = importData.value as IAchievementStore[]
             for (const ach of dv) {
                 if (!ach.id) continue
-                if (store.value.achievements.find((a) => a.id === ach.id)) continue
+                const find = store.value.achievements.find((a) => a.id === ach.id)
+                if (find) {
+                    // replace original
+                    Object.assign(find, ach)
+                    continue
+                }
                 store.value.achievements.push(ach)
             }
         }

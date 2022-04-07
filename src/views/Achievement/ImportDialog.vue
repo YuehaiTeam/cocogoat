@@ -3,13 +3,22 @@
     <div style="margin-top: -35px">
         <el-tabs v-model="activeName" stretch>
             <el-tab-pane label="本地导入" name="text">
-                <el-input
-                    v-model="content"
-                    type="textarea"
-                    :class="$style.textarea"
-                    placeholder="支持的导入项目：&#13; - 椰羊JSON&#13; - Paimon.moe JSON&#13; - 在F12页面执行的JS代码(椰羊、Paimon.moe、Seelie.me)"
+                <div
+                    :class="$style.textareaBox"
+                    @dragover.prevent.stop
+                    @dragleave.prevent
+                    @drop.prevent.stop="onFileDrop"
                 >
-                </el-input>
+                    <el-input
+                        v-model="content"
+                        type="textarea"
+                        :class="$style.textarea"
+                        placeholder="在此粘贴导入内容、在右下方选择文件，或拖动文件到这里&#13;&#13;支持的导入项目：&#13; - 椰羊JSON&#13; - Paimon.moe JSON&#13; - 在F12页面执行的JS代码(椰羊、Paimon.moe、Seelie.me)"
+                    >
+                    </el-input>
+                    <el-button class="file-button" @click="fileEl?.click()">选择文件</el-button>
+                    <input ref="fileEl" type="file" @change="onSelectFile" />
+                </div>
             </el-tab-pane>
             <el-tab-pane label="分享导入" name="memo">
                 <div :class="$style.memoBox">
@@ -124,6 +133,29 @@ export default defineComponent({
             importToStore()
             emit('close', inputMemoId.value)
         }
+        const onFile = async (e: File) => {
+            // read to content
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                if (e.target?.result) {
+                    content.value = e.target.result as string
+                }
+            }
+            reader.readAsText(e)
+        }
+        const onSelectFile = (e: Event) => {
+            if (!e.target) return
+            const files = (e.target as HTMLInputElement).files
+            if (!files) return
+            onFile(files[0])
+        }
+        const onFileDrop = (e: DragEvent) => {
+            e.preventDefault()
+            e.stopPropagation()
+            const files = (e.dataTransfer as DataTransfer).files
+            if (!files) return
+            onFile(files[0])
+        }
         return {
             content,
             allowed,
@@ -132,6 +164,9 @@ export default defineComponent({
             activeName,
             memoLoading,
             inputMemoId,
+            onSelectFile,
+            onFileDrop,
+            fileEl: ref(null as HTMLInputElement | null),
         }
     },
 })
@@ -142,6 +177,20 @@ export default defineComponent({
     font-size: 12px;
     height: 240px;
     font-family: Consolas, monospace;
+}
+.textarea-box {
+    position: relative;
+
+    :global {
+        .file-button {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+        }
+        input[type='file'] {
+            display: none;
+        }
+    }
 }
 .memo-box {
     height: 240px;

@@ -11,9 +11,27 @@ export function useExportAchievements() {
         title: '',
         content: '',
     })
-    const doExport = (_to: 'paimon' | 'seelie' | 'excel' | '') => {
+    const doExport = (_to: 'paimon' | 'seelie' | 'cocogoat' | 'excel' | '') => {
         const to = _to || options.value.achievements_recent_export
         options.value.achievements_recent_export = to
+        if (to === 'cocogoat') {
+            const data = {
+                source: '椰羊成就',
+                value: {
+                    achievements: store.value.achievements,
+                },
+                lastModified: new Date().toISOString(),
+            }
+            const jstr = JSON.stringify(data, null, 4)
+            // save to file
+            const blob = new Blob([jstr], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = '椰羊成就导出' + dayjs().format('YYYY-MM-DD HH:mm:ss') + '.json'
+            a.click()
+            return
+        }
         if (to === 'excel') {
             dumpToExcel()
             return
@@ -28,6 +46,9 @@ export function useExportAchievements() {
 * 在Seelie.me页面按F12打开调试器，
 * 选择控制台(Console)
 * 粘贴并回车执行完成导入
+* 
+* 使用此方法导入是为了保证您的原有成就不被覆盖
+*
 */
 const z = ${JSON.stringify(exportArray)};
 const a = localStorage.account || 'main'
@@ -45,6 +66,9 @@ location.href='/achievements'`
 * 在Paimon.moe页面按F12打开调试器，
 * 选择控制台(Console)
 * 粘贴并回车执行完成导入
+* 
+* 使用此方法导入是为了保证您的原有成就不被覆盖
+*
 */
 const b = ${JSON.stringify(exportArray)};
 const a = (await localforage.getItem('achievement')) || {};

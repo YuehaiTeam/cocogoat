@@ -52,7 +52,7 @@ jobs:
           rm -rf dist/assets/*.wasm
           rm -rf dist/assets/*.ort
       - name: Keep index.html
-        run: mv dist/index.html ./index.html.tmp
+        run: mv dist/index.html ./index.temp.html
       - name: Deploy static files
         uses: TencentCloud/cos-action@v1
         with:
@@ -70,6 +70,6 @@ jobs:
           secret_key: ${{ secrets.COS_KEY }}
           cos_bucket: ${{ secrets.COS_BUCKET }}
           cos_region: ${{ secrets.COS_REGION }}
-          local_path: index.html.tmp
+          local_path: index.temp.html
           remote_path: index.html
           clean: false

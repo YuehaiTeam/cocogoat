@@ -84,7 +84,7 @@ export default defineComponent({
         const submitMail = async () => {
             if (!isMail.value) return
             step.value = 2
-            const res = await fetch(await apibase('/qingxin/u'), {
+            const res = await fetch(await apibase('/v1/traveler'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,7 +123,7 @@ export default defineComponent({
         const checkLoginStatus = async () => {
             if (destroyed) return
             try {
-                const res = await fetch(await apibase('/qingxin/u/' + dtoken), {
+                const res = await fetch(await apibase('/v1/traveler/' + dtoken), {
                     method: 'GET',
                 })
                 if (res.status === 404) {

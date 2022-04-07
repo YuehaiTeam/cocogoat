@@ -3,26 +3,28 @@ const apis = {
     cn: process.env.VUE_APP_APIBASECN,
 } as Record<string, string>
 export let apiregion = navigator.language.startsWith('zh') ? 'cn' : 'global'
-export let regionchecked = false
+export let regionchecked: Promise<string> | undefined
 export const apibase = async (path = '') => {
     if (!regionchecked) {
-        regionchecked = true
-        await checkRegion()
+        regionchecked = checkRegion(apiregion)
+        apiregion = await regionchecked
     }
+    await regionchecked
     return apis[apiregion] + path
 }
-export const checkRegion = async () => {
-    const url = await apibase('/v1/utils/api-region')
+export const checkRegion = async (apiregion: string) => {
+    const url = (await apis[apiregion]) + '/v1/utils/api-region'
     try {
         const res = await fetch(url)
         if (res.ok) {
             const apistr = await res.text()
             if (apis[apistr]) {
-                apiregion = apistr
+                return apistr
             }
         }
     } catch (e) {
         console.error('API Region Probe Faild', e)
-        apiregion = apiregion === 'global' ? 'cn' : 'global'
+        return apiregion === 'global' ? 'cn' : 'global'
     }
+    return apiregion
 }

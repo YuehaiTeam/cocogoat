@@ -3,7 +3,7 @@ import { SyncProvider } from '../typing'
 import { SyncError, SYNCERR, SYNCSTAT } from '../../sync'
 import Manage from './Manage.vue'
 import { ref, markRaw } from 'vue'
-const pathbase = '/qingxin/d'
+const pathbase = '/v1/qingxin'
 export interface ICocogoatSyncStatus {
     status: SYNCSTAT
     error: SyncError<unknown> | null

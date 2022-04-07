@@ -74,7 +74,8 @@ export function useImport(
                 importType.value = 'cocogoat'
                 importData.value = j.achievements
             } else if (j.value && j.value.achievements && hasCocogoatAchievementJson(j.value)) {
-                importText.value = '导入椰羊备份 (' + j.value.achievements.length + '个)'
+                const imsource = j.source || '椰羊备份'
+                importText.value = '导入' + imsource + ' (' + j.value.achievements.length + '个)'
                 allowed.value = true
                 importType.value = 'cocogoat'
                 importData.value = j.value.achievements

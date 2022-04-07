@@ -84,7 +84,7 @@
             <el-input type="textarea" :model-value="exportData.content"></el-input>
         </el-dialog>
         <el-dialog v-model="showImport" title="导入" :custom-class="$style.importDialog" destroy-on-close>
-            <import-dialog @close="showImport = false" />
+            <import-dialog :memo-id="autoImportId" @close="closeImport" />
         </el-dialog>
         <el-dialog
             v-model="scannerResult.show"
@@ -204,7 +204,7 @@
 
 <script lang="ts">
 import '@/styles/actions.scss'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref, toRef, defineComponent, computed, watch, onMounted } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 
@@ -485,7 +485,26 @@ export default defineComponent({
             achievementFin,
             showScanner,
         })
-        const showImport = ref(false)
+        const autoImportId = computed(() => (route.query.memo ? route.query.memo.toString() : ''))
+        const showImport = ref(!!autoImportId.value)
+        watch(autoImportId, (v) => {
+            if (v) {
+                showImport.value = true
+            }
+        })
+        const router = useRouter()
+        const closeImport = (id: string) => {
+            showImport.value = false
+            if (id && id === autoImportId.value) {
+                router.replace({
+                    ...route,
+                    query: {
+                        ...route.query,
+                        memo: undefined,
+                    },
+                })
+            }
+        }
         onMounted(() => {
             // dedupe
             const dedupedResult = uniqBy(store.value.achievements, (e) => e.id)
@@ -527,6 +546,8 @@ export default defineComponent({
             statusQuest,
             statusVersion,
             allVersions,
+            autoImportId,
+            closeImport,
         }
     },
 })

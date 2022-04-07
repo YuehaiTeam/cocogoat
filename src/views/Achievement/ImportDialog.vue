@@ -1,14 +1,35 @@
 <template>
     <!-- eslint-disable vue/no-parsing-error -->
-    <div>
-        <el-input
-            v-model="content"
-            type="textarea"
-            :class="$style.textarea"
-            placeholder="支持的导入项目：&#13; - 椰羊JSON&#13; - Paimon.moe JSON&#13; - 在F12页面执行的JS代码(椰羊、Paimon.moe、Seelie.me)"
-        ></el-input>
+    <div style="margin-top: -35px">
+        <el-tabs v-model="activeName" stretch>
+            <el-tab-pane label="本地导入" name="text">
+                <el-input
+                    v-model="content"
+                    type="textarea"
+                    :class="$style.textarea"
+                    placeholder="支持的导入项目：&#13; - 椰羊JSON&#13; - Paimon.moe JSON&#13; - 在F12页面执行的JS代码(椰羊、Paimon.moe、Seelie.me)"
+                >
+                </el-input>
+            </el-tab-pane>
+            <el-tab-pane label="分享导入" name="memo">
+                <div :class="$style.memoBox">
+                    <div class="icon">
+                        <fa-icon icon="cloud-bolt" />
+                    </div>
+                    <div class="desc">输入九位分享码，从分享数据导入成就</div>
+                    <el-input
+                        v-model="inputMemoId"
+                        :disabled="memoLoading"
+                        maxlength="9"
+                        minlength="9"
+                        size="large"
+                        placeholder="INPUTCODE"
+                    ></el-input>
+                </div>
+            </el-tab-pane>
+        </el-tabs>
         <el-button :class="$style.importButton" size="large" type="primary" :disabled="!allowed" @click="doImport">
-            {{ importText }}
+            {{ memoLoading ? '处理中' : importText }}
         </el-button>
     </div>
 </template>
@@ -17,7 +38,19 @@
 import { debounce } from 'lodash'
 import { useImport } from './useImport'
 import { defineComponent, ref, watch } from 'vue'
+import { apibase } from '@/utils/apibase'
+import { ElNotification } from 'element-plus'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCloudBolt } from '@fortawesome/free-solid-svg-icons'
+library.add(faCloudBolt)
+
 export default defineComponent({
+    props: {
+        memoId: {
+            type: String,
+            required: true,
+        },
+    },
     emits: ['close'],
     setup(props, { emit }) {
         const content = ref('')
@@ -26,19 +59,67 @@ export default defineComponent({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const importData = ref(null as any)
         const importType = ref('')
+        const memoLoading = ref(false)
         const { checkContent, importToStore } = useImport(content, allowed, importText, importData, importType)
-        const debouncedCheck = debounce(checkContent, 200)
+        const debouncedCheck = debounce(() => {
+            checkContent()
+            memoLoading.value = false
+            if (props.memoId && props.memoId === inputMemoId.value) {
+                // autoimport
+                importToStore()
+                emit('close', inputMemoId.value)
+                ElNotification.success({
+                    title: '导入成功',
+                    message: '已' + importText.value,
+                })
+            }
+        }, 200)
+        const inputMemoId = ref(props.memoId)
+        watch(
+            () => props.memoId,
+            (val) => {
+                inputMemoId.value = val
+            },
+        )
+        const checkMemo = async (val: string) => {
+            if (val.length !== 9) {
+                content.value = ''
+                return
+            }
+            memoLoading.value = true
+            try {
+                const res = await fetch(await apibase('/v1/memo/' + val))
+                if (res.ok) {
+                    const data = await res.json()
+                    if (data.id && data.id === val) {
+                        content.value = JSON.stringify(data, null, 4)
+                    } else {
+                        throw new Error('memo not found')
+                    }
+                } else {
+                    throw new Error('memo not found')
+                }
+            } catch (e) {
+                memoLoading.value = false
+            }
+        }
+        checkMemo(inputMemoId.value)
+        watch(inputMemoId, checkMemo)
         watch(content, debouncedCheck)
+        const activeName = ref(inputMemoId.value ? 'memo' : 'text')
         const doImport = async () => {
             if (!allowed.value) return
             importToStore()
-            emit('close')
+            emit('close', inputMemoId.value)
         }
         return {
             content,
             allowed,
             importText,
             doImport,
+            activeName,
+            memoLoading,
+            inputMemoId,
         }
     },
 })
@@ -47,12 +128,45 @@ export default defineComponent({
 <style lang="scss" module>
 .textarea textarea {
     font-size: 12px;
-    height: 300px;
+    height: 240px;
     font-family: Consolas, monospace;
+}
+.memo-box {
+    height: 240px;
+    padding-top: 20px;
+    box-sizing: border-box;
+    :global {
+        .icon {
+            text-align: center;
+            font-size: 55px;
+            padding: 10px;
+            box-sizing: border-box;
+            color: var(--c-text-mid);
+        }
+        .desc {
+            text-align: center;
+            margin-top: -5px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: var(--c-text-sub);
+        }
+        .el-input {
+            width: 250px;
+            display: block;
+            margin: 0 auto;
+            input {
+                text-align: center;
+                height: 50px;
+                font-size: 25px;
+                font-family: Consolas, monospace;
+                border-radius: 0;
+            }
+        }
+    }
 }
 .import-button {
     display: block;
-    margin-top: 20px;
+    margin-top: 15px;
     width: calc(100% + 40px);
     margin-bottom: -30px;
     margin-left: -20px;

@@ -16,8 +16,8 @@
                 </div>
                 <div class="content">
                     由于浏览器限制，自动操作无法在网页完成
-                    <a class="dlink" href="/assets/cocogoat-control-1.1.0.exe" target="_blank">
-                        点击此处下载辅助插件<small>(v1.1.0 300kB)</small>
+                    <a class="dlink" href="/extra/client" target="_blank">
+                        点击此处下载辅助插件<small>(v1.1.1 300kB)</small>
                     </a>
                     <div class="absolute-area">
                         <el-button class="start-btn start-gray" @click="enable(false)">
@@ -113,7 +113,7 @@ export default defineComponent({
                 loading.value = false
                 needUpdate.value = false
                 return
-            } else if (versionCompare(w.value.version, '1.1.0') < 0) {
+            } else if (versionCompare(w.value.version, '1.1.1') < 0) {
                 needUpdate.value = true
                 notFound.value = true
                 loading.value = false

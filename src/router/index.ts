@@ -156,6 +156,14 @@ const routes: Array<RouteRecordRaw> = [
         path: '/extra/achievement-to-paimon-moe',
         redirect: '/achievement/scan-and-export?to=paimon-moe',
     },
+    {
+        path: '/extra/client',
+        component: () => import('@/views/Layout.vue'),
+        beforeEnter: () => {
+            location.replace(process.env.BASE_URL + 'assets/cocogoat-control-1.1.1.exe')
+            return false
+        },
+    },
 ]
 
 const router = createRouter({

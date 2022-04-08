@@ -51,6 +51,32 @@ function convertPaimonMoeJson(j: Record<string, any>) {
     })
     return achList
 }
+function hasSeelieJson(j: Record<string, any>) {
+    if (!j['achievements']) return false
+    if (Array.isArray(j['achievements'])) return false
+    if (typeof j['achievements'] !== 'object') return false
+    if (Object.keys(j['achievements']).length === 0) return false
+    const firstChild = j['achievements'][Object.keys(j['achievements'])[0]]
+    if (typeof firstChild !== 'object') return false
+    if (typeof firstChild['done'] === 'boolean') return true
+    return false
+}
+function convertSeelieJson(b: Record<string, any>) {
+    const achList = [] as IAchievementStore[]
+    Object.keys(b).forEach((key) => {
+        const seelieItem = b[key] as { done: boolean; notes: string }
+        if (!seelieItem.done) return
+        seelieItem.notes = seelieItem.notes || ''
+        achList.push({
+            id: Number(key),
+            status: seelieItem.notes.trim().split(' ')[0],
+            categoryId: -1,
+            date: (seelieItem.notes.trim() + ' ').split(' ')[1].trim(),
+            images: {},
+        })
+    })
+    return achList
+}
 // eslint-disable-next-line max-params
 export function useImport(
     content: Ref<string>,
@@ -82,6 +108,11 @@ export function useImport(
                 importData.value = j.value.achievements
             } else if (j.achievement && (importData.value = hasPaimonMoeJson(j))) {
                 importText.value = '导入Paimon.moe备份 (' + importData.value.length + '个)'
+                allowed.value = true
+                importType.value = 'cocogoat'
+            } else if (j.achievements && hasSeelieJson(j)) {
+                importData.value = convertSeelieJson(j.achievements)
+                importText.value = '导入Seelie备份 (' + importData.value.length + '个)'
                 allowed.value = true
                 importType.value = 'cocogoat'
             } else {
@@ -166,17 +197,7 @@ export function useImport(
                     // maybe seelie.me js
                     const a = result.account || 'main'
                     const b = JSON.parse(result[`${a}-achievements`])
-                    const achList = [] as IAchievementStore[]
-                    Object.keys(b).forEach((key) => {
-                        const seelieItem = b[key] as { done: true; notes: string }
-                        achList.push({
-                            id: Number(key),
-                            status: seelieItem.notes.trim().split(' ')[0],
-                            categoryId: -1,
-                            date: (seelieItem.notes.trim() + ' ').split(' ')[1].trim(),
-                            images: {},
-                        })
-                    })
+                    const achList = convertSeelieJson(b)
                     importText.value = '导入SeeLie.me代码 (' + achList.length + '个)'
                     allowed.value = true
                     importType.value = 'no-categoryId'

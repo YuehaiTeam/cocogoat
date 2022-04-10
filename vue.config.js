@@ -4,6 +4,7 @@ const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
 const InlineChunkHtmlPlugin = require('./scripts/InlineChunkHtmlPlugin')
 const DeleteSourceMapPlugin = require('./scripts/deleteSourceMapPlugin')
 const InlineFaviconHtmlPlugin = require('./scripts/InlineFaviconHtmlPlugin')
+const EntrypointJsonPlugin = require('./scripts/entrypointJsonPlugin')
 const { defineConfig } = require('@vue/cli-service')
 const AutoImport = require('unplugin-auto-import/webpack')
 const Components = require('unplugin-vue-components/webpack')
@@ -26,6 +27,7 @@ module.exports = defineConfig({
         : process.env.NODE_ENV === 'production'
         ? 'https://cocogoat-1251105598.file.myqcloud.com/'
         : '/',
+    assetsDir: 'static',
     transpileDependencies: true,
     productionSourceMap: true,
     parallel: false,
@@ -153,6 +155,9 @@ module.exports = defineConfig({
                     worker: ['Worker from @/utils/corsWorker', '...'],
                 },
             })
+            config
+                .plugin('EntrypointJsonPlugin')
+                .use(new EntrypointJsonPlugin(HtmlWebpackPlugin, Number(process.env.VUE_APP_BUILD).toString(36)))
             if (process.env.NODE_ENV === 'production' && process.env.SENTRY_KEY) {
                 config.plugin('sentry').use(SentryPlugin, [
                     {

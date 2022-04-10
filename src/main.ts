@@ -55,7 +55,8 @@ declare global {
         // Don't sync in iframes
         initSync()
     }
-    window.$cocogoat = {
+    window.$cocogoat = window.$cocogoat || { endpoint: '', build: '' }
+    const c = {
         app,
         store,
         i18n,
@@ -63,4 +64,5 @@ declare global {
         resources,
         currentUser,
     }
+    Object.assign(window.$cocogoat, c)
 })()

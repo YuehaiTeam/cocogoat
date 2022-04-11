@@ -43,7 +43,6 @@ export function useScannerFrame({
                                 ...e,
                                 done: true,
                                 success: true,
-                                date: '后续已完成',
                             }
                             result.push({
                                 ...p,

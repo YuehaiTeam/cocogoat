@@ -3,8 +3,6 @@ import ocrString from '@/plugins/ocr/ppocr.txt?txt'
 
 import resources from '@/resources'
 
-import * as nd from 'nd4js'
-
 import { ICVMat } from '@/utils/cv'
 
 const ocrMap: string[] = ocrString.toString().trim().replace(/\r/g, '').split('\n')
@@ -22,24 +20,24 @@ export async function init() {
     return session
 }
 
-export function transform(data: Uint8Array, shape = [64, 64, 4]) {
-    // 传入图片为RGBA
-    let mat = nd.array('float32', { shape: Int32Array.from(shape), data: Float32Array.from(data) })
-    // 转置
-    mat = mat.transpose(2, 0, 1)
-    let ary: number[] = mat.toNestedArray()
-    // 去除透明通道
-    ary.splice(3, 1)
-    ary = ary.flat(2)
-    // 转为Tensor
-    ary = ary.map((x) => x / 255)
-    return Float32Array.from(ary)
+export function transform(data: Uint8Array, shape = [64, 64, 3]) {
+    // hwc to chw & to float32
+    const [h, w, c] = shape
+    const tmp = new Float32Array(h * w * c)
+    for (let hh = 0; hh < h; hh++) {
+        for (let ww = 0; ww < w; ww++) {
+            for (let cc = 0; cc < c; cc++) {
+                tmp[cc * h * w + hh * w + ww] = data[hh * w * c + ww * c + cc] / 255
+            }
+        }
+    }
+    return tmp
 }
 
 export async function recognize(data: ICVMat) {
     if (!session) await init()
     if (session) {
-        const tensor = new ort.Tensor(transform(data.data, [data.rows, data.cols, 4]), [1, 3, data.rows, data.cols])
+        const tensor = new ort.Tensor(transform(data.data, [data.rows, data.cols, 3]), [1, 3, data.rows, data.cols])
         const feeds = { [session.inputNames[0]]: tensor }
         const results = await session.run(feeds)
         const output = results[session.outputNames[0]].data as Float32Array
@@ -58,10 +56,7 @@ export async function recognize(data: ICVMat) {
             }
         }
         return {
-            text: str_res
-                .join('')
-                .replace(/(.)\1+/g, '$1')
-                .replace(/\0/g, ''),
+            text: str_res.join('').replace(/([^0-9])\1+/g, '$1'),
             confidence: parseFloat(((score / count) * 100).toFixed(2)),
         }
     } else {

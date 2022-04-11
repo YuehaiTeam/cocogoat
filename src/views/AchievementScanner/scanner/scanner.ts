@@ -59,7 +59,13 @@ export interface IAScannerLine {
 export async function scannerOnLine(data: ICVMat) {
     const cv = await getCV()
     const raw = fromIMat(cv, data)
+    cv.cvtColor(raw, raw, cv.COLOR_RGBA2RGB, 0)
     const splited = cvSplitAchievement(cv, raw).map((e) => {
+        if (e.name === 'date') {
+            cv.cvtColor(e.roi, e.roi, cv.COLOR_RGB2GRAY, 0)
+            cv.threshold(e.roi, e.roi, 195, 255, cv.THRESH_BINARY)
+            cv.cvtColor(e.roi, e.roi, cv.COLOR_GRAY2RGB, 0)
+        }
         const tmpData = toIMat(cv, e.roi)
         e.roi.delete()
         return {
@@ -166,7 +172,14 @@ export async function scannerOnImage(data: ICVMat, keepLastRow = false, skipDiff
 export async function recognizeAchievement(line: IAScannerBlocks): Promise<IAScannerData | IAScannerFaild> {
     let res: Achievement | null = null
     const title = line.blocks.find((e) => e.name === 'title')
-    const subtitle = line.blocks.find((e) => e.name === 'subtitle')
+    const subtitles = line.blocks.filter((e) => e.name === 'subtitle')
+    // get subtitle with maxium width
+    const subtitle = subtitles.reduce((prev, curr) => {
+        if (curr.rect.width > prev.rect.width) {
+            return curr
+        }
+        return prev
+    }, subtitles[0])
     const result = {
         title: {},
         subtitle: {},

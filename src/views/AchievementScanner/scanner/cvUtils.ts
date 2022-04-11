@@ -117,21 +117,14 @@ export async function cvSplitImage(src: Mat): Promise<number[]> {
 
 export function cvSplitAchievement(cv: Awaited<ReturnType<typeof getCV>>, src: Mat) {
     const dst = new cv.Mat()
-    const dst2 = new cv.Mat()
     const rgbaPlanes = new cv.MatVector()
     cv.split(src, rgbaPlanes)
     rgbaPlanes.get(2).copyTo(dst)
     rgbaPlanes.delete()
     cv.threshold(dst, dst, 170, 255, cv.THRESH_BINARY)
-    const M7 = cv.Mat.ones(3, 15, cv.CV_8U)
-    const MC = cv.getStructuringElement(cv.MORPH_RECT, new cv.Size(dst.cols / 5, 1))
-    cv.dilate(dst, dst2, MC)
-    cv.bitwise_not(dst2, dst2)
-    cv.bitwise_or(dst, dst2, dst)
+    const M7 = cv.Mat.ones(4, 20, cv.CV_8U)
     cv.erode(dst, dst, M7)
     M7.delete()
-    MC.delete()
-    dst2.delete()
     const contours = new cv.MatVector()
     const hierarchy = new cv.Mat()
     cv.rectangle(
@@ -163,10 +156,10 @@ export function cvSplitAchievement(cv: Awaited<ReturnType<typeof getCV>>, src: M
                 name = 'date'
                 // 防止识别不完整
                 rect.width = src.cols - rect.x - 1
-                cv.resize(roi, roi, new cv.Size((roi.cols / roi.rows) * 32, 32), 0, 0, cv.INTER_AREA)
+                cv.resize(roi, roi, new cv.Size((roi.cols / roi.rows) * 32, 32), 0, 0, cv.INTER_LINEAR)
             } else {
                 name = 'status'
-                cv.resize(roi, roi, new cv.Size((roi.cols / roi.rows) * 32, 32), 0, 0, cv.INTER_AREA)
+                cv.resize(roi, roi, new cv.Size((roi.cols / roi.rows) * 32, 32), 0, 0, cv.INTER_LINEAR)
             }
         } else {
             // 左侧

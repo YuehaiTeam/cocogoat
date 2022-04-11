@@ -14,13 +14,16 @@ import { FetchImpl, getNativeFetchImplementation } from '@sentry/browser/esm/tra
 export let sentryLastEventId = ''
 
 export function init(app: App, router: Router) {
-    if (process.env.NODE_ENV !== 'production') return
+    /// #if SINGLEFILE
     checkHm()
-        .then(() => import(/* webpackMode: "eager" */ '@/plugins/tongji'))
+        .then(() => import('@/plugins/tongji'))
         .catch(() => {
             // ignore hm failure
         })
-
+    /// #else
+    document.head.appendChild(document.createElement('script')).src =
+        'https://hm.baidu.com/hm.js?9fa0c980766e6a8646c0f814aa40b130'
+    /// #endif
     Sentry.init({
         app,
         dsn: process.env.VUE_APP_SENTRY,

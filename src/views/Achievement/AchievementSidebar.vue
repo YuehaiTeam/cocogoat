@@ -49,8 +49,7 @@ library.add(faAngleLeft, faAngleRight)
 
 import bus from '@/bus'
 import { i18n } from '@/i18n'
-import { ref, toRef } from 'vue'
-import { defineComponent } from '@vue/runtime-core'
+import { ref, toRef, defineComponent } from 'vue'
 import { ElScrollbar } from 'element-plus/lib/components'
 export default defineComponent({
     props: ['achievementCat', 'achievementFinStat'],

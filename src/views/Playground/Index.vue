@@ -27,19 +27,19 @@
             <div class="preview">
                 <div>
                     <span class="sel-span" @click="file1.click()">点此选择输入图片(<code>cv_in</code>)</span>
-                    <div class="cc" @click="$event.currentTarget.classList.toggle('click')">
+                    <div class="cc" @click="$event.currentTarget?.classList.toggle('click')">
                         <img :src="imgsrc" />
                     </div>
                 </div>
                 <div>
                     <span class="sel-span" @click="file2.click()">点此选择第二输入(<code>cv_sub</code>)</span>
-                    <div class="cc" @click="$event.currentTarget.classList.toggle('click')">
+                    <div class="cc" @click="$event.currentTarget?.classList.toggle('click')">
                         <img :src="imgsrc2" />
                     </div>
                 </div>
                 <div>
                     <span>输出结果(<code>cv_canvas</code>)</span>
-                    <div class="cc" @click="$event.currentTarget.classList.toggle('click')">
+                    <div class="cc" @click="$event.currentTarget?.classList.toggle('click')">
                         <canvas ref="cvsel" />
                     </div>
                 </div>
@@ -81,7 +81,7 @@ import pldts from './playground.d.ts.txt?txt'
 import * as achievementScanner from '@/views/AchievementScanner/scanner/scanner.worker.expose'
 import * as artifactScanner from '@/views/ArtifactScanner/scanner/scanner.expose'
 import { IMatFromImageElement, toCanvas } from '@/utils/IMat'
-import _ from 'lodash'
+import _ from 'lodash-full'
 import { initMap } from '../ArtifactScanner/scanner/map'
 import { i18n } from '@/i18n'
 MonacoEditor.render = () => h('div')

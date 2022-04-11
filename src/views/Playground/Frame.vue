@@ -11,7 +11,7 @@
 import { ref, defineComponent, onBeforeUnmount, watch } from 'vue'
 import { getUrl } from '@/router'
 import { get, set } from '@/store/impl'
-import { debounce } from 'lodash'
+import { debounce } from 'lodash-es'
 
 export default defineComponent({
     setup() {

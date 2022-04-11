@@ -238,7 +238,7 @@ import AchievementSidebar from './AchievementSidebar.vue'
 import AchievementDetail from './AchievementDetail.vue'
 import ImportDialog from './ImportDialog.vue'
 import versionMap, { allVersions } from './versionMap'
-import { uniqBy } from 'lodash'
+import { uniqBy } from 'lodash-es'
 import bus from '@/bus'
 import { getUrl } from '@/router'
 

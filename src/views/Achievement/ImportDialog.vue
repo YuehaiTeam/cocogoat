@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { debounce } from 'lodash'
+import { debounce } from 'lodash-es'
 import { useImport } from './useImport'
 import { defineComponent, ref, watch } from 'vue'
 import { apibase } from '@/utils/apibase'

@@ -46,7 +46,7 @@ declare global {
 ;(async () => {
     const { initi18n, i18n } = await import(/* webpackMode: "eager" */ '@/i18n')
     await initi18n()
-    if (options.value.reporting) {
+    if (options.value.reporting && process.env.NODE_ENV === 'production') {
         const { init } = await import('@/utils/reporting')
         init(app, router)
     }

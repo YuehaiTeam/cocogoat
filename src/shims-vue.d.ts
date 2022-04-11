@@ -5,7 +5,10 @@ declare module '*.vue' {
     export default component
 }
 
-declare module 'nd4js'
+declare module 'lodash-full' {
+    import type _ from 'lodash'
+    export default _
+}
 
 declare module '@/plugins/ocr/*'
 declare module '@/plugins/yas/*'

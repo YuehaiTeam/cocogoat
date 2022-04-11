@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@fortawesome/free-regular-svg-icons": "^6.1.1",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
-    "@fortawesome/free-brands-svg-icons": "^6.1.1",
     "@sentry/tracing": "^6.17.9",
     "@sentry/vue": "^6.17.9",
     "@yuehaiteam/amos": "https://github.com/YuehaiTeam/amos.git",
@@ -30,7 +30,6 @@
     "flyio": "^0.6.14",
     "html2canvas": "^1.4.0",
     "js-base64": "^3.7.2",
-    "jsfeat": "^0.0.8",
     "jszip": "^3.7.1",
     "lodash-es": "^4.17.21",
     "mitt": "^3.0.0",
@@ -39,7 +38,6 @@
     "onnxruntime-web": "^1.10.0",
     "patch-package": "^6.4.7",
     "pinia": "^2.0.9",
-    "postinstall-postinstall": "^2.1.0",
     "qs": "^6.10.3",
     "util": "^0.12.4",
     "vue": "^3.2.31",
@@ -73,12 +71,14 @@
     "eslint-plugin-vue": "^8.4.1",
     "git-repo-info": "^2.1.1",
     "ifdef-loader": "^2.3.2",
+    "postinstall-postinstall": "^2.1.0",
     "prettier": "^2.4.1",
     "sass": "^1.32.7",
     "sass-loader": "^12.0.0",
     "typescript": "^4.5.4",
     "unplugin-auto-import": "^0.6.0",
     "unplugin-vue-components": "^0.17.18",
+    "webpack-bundle-analyzer": "^4.5.0",
     "worker-loader": "^3.0.8"
   }
 }

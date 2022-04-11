@@ -1,17 +1,17 @@
-;(async function (s, c, a) {
-    const p = new URL('/index.json', s.src)
+;(async function (d, w) {
+    const p = new URL('/index.json', d.currentScript.src)
     const j = await fetch(p).then((r) => r.json())
-    window.$cocogoat = window.$cocogoat || {
-        endpoint: s.dataset.endpoint || '',
+    w.$cocogoat = w.$cocogoat || {
+        endpoint: d.currentScript.dataset.endpoint || '',
         build: parseInt(j[0], 36),
     }
     ;(j[2] || []).forEach((e) => {
-        const link = c('link')
+        const link = d.createElement('link')
         link.rel = 'stylesheet'
         link.href = e
-        a(link)
+        d.head.appendChild(link)
     })
     ;(j[1] || []).forEach((e) => {
-        a(c('script')).src = e
+        d.head.appendChild(d.createElement('script')).src = e
     })
-})(document.currentScript, document.createElement, document.head.appendChild)
+})(document, window)

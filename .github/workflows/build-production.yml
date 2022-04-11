@@ -51,8 +51,8 @@ jobs:
         run: | 
           rm -rf dist/assets/*.wasm
           rm -rf dist/assets/*.ort
-      - name: Keep index.html
-        run: mv dist/index.html ./index.temp.html
+      - name: Keep index.json
+        run: mv dist/index.json ./index.temp.json
       - name: Deploy static files
         uses: TencentCloud/cos-action@v1
         with:
@@ -63,13 +63,13 @@ jobs:
           local_path: dist
           remote_path: /
           clean: false
-      - name: Deploy index.html
+      - name: Deploy index.json
         uses: TencentCloud/cos-action@v1
         with:
           secret_id: ${{ secrets.COS_ID }}
           secret_key: ${{ secrets.COS_KEY }}
           cos_bucket: ${{ secrets.COS_BUCKET }}
           cos_region: ${{ secrets.COS_REGION }}
-          local_path: index.temp.html
-          remote_path: index.html
+          local_path: index.temp.json
+          remote_path: index.json
           clean: false

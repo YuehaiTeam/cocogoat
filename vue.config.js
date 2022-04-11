@@ -13,6 +13,7 @@ const gitInfo = require('git-repo-info')()
 const singleFileDLL = process.argv.includes('--singlefile-dll')
 const singleFile = process.argv.includes('--singlefile') || singleFileDLL
 const SentryPlugin = require('@sentry/webpack-plugin')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
 process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
@@ -68,9 +69,7 @@ module.exports = defineConfig({
             util: require.resolve('util'),
             '@genshin-data': require('path').resolve(__dirname, 'src', 'plugins', 'genshin-data', 'data'),
         })
-        config.externals({
-            'monaco-editor': 'monaco',
-        })
+        config.resolve.alias.set('lodash', 'lodash-es')
         config.plugin('corsWorkerPlugin').use(corsWorkerPlugin)
         config.module.rule('ts').use('ifdef-loader').loader('ifdef-loader').options({
             SINGLEFILE: singleFile,
@@ -141,6 +140,11 @@ module.exports = defineConfig({
                 .set('generator', { filename: 'assets/[name].[contenthash:8][ext]' })
             config.module.rule('images').type('asset/inline').set('generator', {})
             config.module.rule('fonts').type('asset/inline').set('generator', {})
+
+            config.externals({
+                'monaco-editor': 'var monaco',
+            })
+            config.resolve.alias.set('lodash-full', 'lodash-es')
         } else {
             config.module
                 .rule('raw')
@@ -158,6 +162,17 @@ module.exports = defineConfig({
             config
                 .plugin('EntrypointJsonPlugin')
                 .use(new EntrypointJsonPlugin(HtmlWebpackPlugin, Number(process.env.VUE_APP_BUILD).toString(36)))
+
+            if (process.env.NODE_ENV === 'production') {
+                // bundle analyzer
+                config.plugin('BundleAnalyzerPlugin').use(BundleAnalyzerPlugin, [
+                    {
+                        analyzerMode: 'static',
+                        openAnalyzer: process.argv.includes('--report'),
+                    },
+                ])
+            }
+
             if (process.env.NODE_ENV === 'production' && process.env.SENTRY_KEY) {
                 config.plugin('sentry').use(SentryPlugin, [
                     {
@@ -176,6 +191,23 @@ module.exports = defineConfig({
                 ])
                 config.plugin('DeleteSourceMapPlugin').use(DeleteSourceMapPlugin)
             }
+
+            // externals
+            config.set('externalsType', 'script')
+            config.externals({
+                'monaco-editor': 'var monaco',
+                exceljs: ['https://s2.pstatp.com/cdn/expire-1-y/exceljs/4.3.0/exceljs.min.js', 'ExcelJS'],
+                jszip: ['https://s2.pstatp.com/cdn/expire-1-y/jszip/3.7.0/jszip.min.js', 'JSZip'],
+                'lodash-full': ['https://s2.pstatp.com/cdn/expire-1-y/lodash.js/4.17.21/lodash.min.js', '_'],
+                '@sentry/browser': [
+                    'https://npm.elemecdn.com/@sentry/tracing/build/bundle.tracing.es6.min.js',
+                    'Sentry',
+                ],
+                '@sentry/tracing': [
+                    'https://npm.elemecdn.com/@sentry/tracing/build/bundle.tracing.es6.min.js',
+                    'Sentry',
+                ],
+            })
         }
     },
 })

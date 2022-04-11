@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { $cocogoat } from '@/bus'
 const routes: Array<RouteRecordRaw> = [
     /* Main */
     {
@@ -169,7 +170,7 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-    history: process.env.VUE_APP_ROUTER_HASH === 'true' ? createWebHashHistory() : createWebHistory('/'),
+    history: $cocogoat.route === 'hash' ? createWebHashHistory() : createWebHistory('/'),
     routes,
 })
 declare global {

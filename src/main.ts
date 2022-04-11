@@ -33,6 +33,10 @@ setResourcesAndUpdateInfo(defaultResources)
 declare global {
     interface Window {
         $cocogoat: {
+            endpoint: string
+            build: string
+            route: 'history' | 'hash'
+            onload?: () => void
             app: TypeApp
             store: typeof store
             options: typeof options
@@ -55,14 +59,19 @@ declare global {
         // Don't sync in iframes
         initSync()
     }
-    window.$cocogoat = window.$cocogoat || { endpoint: '', build: '' }
+    window.$cocogoat = window.$cocogoat || {}
     const c = {
+        endpoint: '',
+        build: '',
+        route: process.env.VUE_APP_ROUTER_HASH === 'true' ? 'hash' : 'history',
         app,
         store,
         i18n,
         options,
         resources,
         currentUser,
-    }
-    Object.assign(window.$cocogoat, c)
+    } as typeof window['$cocogoat']
+    Object.assign(c, window.$cocogoat)
+    window.$cocogoat = c
+    window.$cocogoat.onload && window.$cocogoat.onload()
 })()

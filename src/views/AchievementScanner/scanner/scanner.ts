@@ -3,8 +3,10 @@ import type { Mat, Rect } from '@/utils/opencv'
 import { cvDiffImage, cvGetRect, cvSplitAchievement, cvSplitImage } from './cvUtils'
 import { recognize, init as getOCR } from '@/modules/ocr'
 import { Achievement } from '@/typings/Achievement'
-import { achievementTitles, achievementEC, achievementSubs, amos } from './achievementsList'
+import { achievementTitles, achievementEC, achievementSubs, amos, filter } from './achievementsList'
 import { textBestmatch } from '@/utils/textMatch'
+export { recognize } from '@/modules/ocr'
+export { toIMat, fromIMat } from '@/utils/cv'
 
 export let lastImage: Mat | null = null
 export let rect: Rect | null = null
@@ -65,7 +67,15 @@ export async function scannerOnLine(data: ICVMat) {
     const raw = fromIMat(cv, data)
     cv.cvtColor(raw, raw, cv.COLOR_RGBA2RGB, 0)
     const splited = cvSplitAchievement(cv, raw).map((e) => {
-        if (e.name === 'date') {
+        if (e.name === 'subtitle') {
+            cv.cvtColor(e.roi, e.roi, cv.COLOR_RGB2GRAY, 0)
+            cv.threshold(e.roi, e.roi, 195, 255, cv.THRESH_BINARY)
+            cv.cvtColor(e.roi, e.roi, cv.COLOR_GRAY2RGB, 0)
+        }
+        if (e.name === 'date' || e.name === 'subtitle') {
+            const M = cv.matFromArray(3, 3, cv.CV_32FC1, [-1, -1, -1, -1, 9, -1, -1, -1, -1])
+            cv.filter2D(e.roi, e.roi, cv.CV_8U, M, new cv.Point(-1, -1), 0, cv.BORDER_DEFAULT)
+            M.delete()
             cv.cvtColor(e.roi, e.roi, cv.COLOR_RGB2GRAY, 0)
             cv.threshold(e.roi, e.roi, 195, 255, cv.THRESH_BINARY)
             cv.cvtColor(e.roi, e.roi, cv.COLOR_GRAY2RGB, 0)
@@ -193,10 +203,9 @@ export async function recognizeAchievement(line: IAScannerBlocks): Promise<IASca
     } as Exclude<IAScannerData['result'], undefined>
     if (title && subtitle) {
         const titleText = await recognize(title.image)
+        titleText.text = titleText.text.replace(filter, '')
         result.title = titleText
-        const titleObj = !isNaN(titleText.confidence)
-            ? achievementTitles.find((e) => e.str === titleText.text.replace(/…|「|」/g, ''))
-            : false
+        const titleObj = !isNaN(titleText.confidence) ? achievementTitles.find((e) => e.str === titleText.text) : false
         if (
             titleObj &&
             titleText.confidence > 85 &&
@@ -206,18 +215,14 @@ export async function recognizeAchievement(line: IAScannerBlocks): Promise<IASca
             res = titleObj.obj
         } else {
             const subtitleText = await recognize(subtitle.image)
+            subtitleText.text = subtitleText.text.replace(filter, '')
             result.subtitle = subtitleText
-            const ecStr = `${titleText.text}-${subtitleText.text}`.replace(/…|「|」/g, '')
+            const ecStr = `${titleText.text}-${subtitleText.text}`
             const matched = textBestmatch('str', ecStr, achievementEC, ecStr.length / 3)
             if (matched) {
                 res = matched.obj
             } else {
-                const matched = textBestmatch(
-                    'str',
-                    subtitleText.text.replace(/…|「|」/g, ''),
-                    achievementSubs,
-                    subtitleText.text.length / 3,
-                )
+                const matched = textBestmatch('str', subtitleText.text, achievementSubs, subtitleText.text.length / 3)
                 if (matched) {
                     res = matched.obj
                 }
@@ -247,6 +252,15 @@ export async function recognizeAchievement(line: IAScannerBlocks): Promise<IASca
             // 如果日期长度<4，我们认为是没完成的
             if (result.date.text.length < 4) {
                 done = false
+            }
+            // 修复/识别成1/7的问题
+            if (result.date.text.length === 10) {
+                if (result.date.text[4] === '1' || result.date.text[4] === '7') {
+                    result.date.text = result.date.text.substring(0, 4) + '/' + result.date.text.substring(5)
+                }
+                if (result.date.text[7] === '1' || result.date.text[7] === '7') {
+                    result.date.text = result.date.text.substring(0, 7) + '/' + result.date.text.substring(8)
+                }
             }
         } else {
             // 没有切出日期片，也认为是没有完成

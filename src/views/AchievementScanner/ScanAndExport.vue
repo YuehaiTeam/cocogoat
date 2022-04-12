@@ -104,7 +104,6 @@ export default defineComponent({
                                     const p = {
                                         ...e,
                                         success: true,
-                                        date: '后续已完成',
                                     }
                                     result.push({
                                         ...p,

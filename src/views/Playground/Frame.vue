@@ -1,5 +1,5 @@
 <template>
-    <Layout full-height>
+    <Layout full-height style="overflow: hidden">
         <template #title>
             <span style="font-family: genshin">Code Playground</span>
         </template>

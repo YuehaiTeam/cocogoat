@@ -122,7 +122,7 @@ export function cvSplitAchievement(cv: Awaited<ReturnType<typeof getCV>>, src: M
     rgbaPlanes.get(2).copyTo(dst)
     rgbaPlanes.delete()
     cv.threshold(dst, dst, 170, 255, cv.THRESH_BINARY)
-    const M7 = cv.Mat.ones(4, 20, cv.CV_8U)
+    const M7 = cv.Mat.ones(4, src.cols / 45, cv.CV_8U)
     cv.erode(dst, dst, M7)
     M7.delete()
     const contours = new cv.MatVector()

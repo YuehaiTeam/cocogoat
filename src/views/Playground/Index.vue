@@ -83,7 +83,10 @@ import * as artifactScanner from '@/views/ArtifactScanner/scanner/scanner.expose
 import { IMatFromImageElement, toCanvas } from '@/utils/IMat'
 import _ from 'lodash-full'
 import { initMap } from '../ArtifactScanner/scanner/map'
+import achevementsAmos from '@/plugins/amos/achievements/index'
+import { initAchievementMap } from '../AchievementScanner/scanner/achievementsList'
 import { i18n } from '@/i18n'
+import { cloneDeep } from 'lodash'
 MonacoEditor.render = () => h('div')
 export default defineComponent({
     components: {
@@ -158,6 +161,8 @@ src.delete()`)
             // @ts-ignore
             window._ = _
             initMap(i18n.artifacts, i18n.atifactParams, i18n.characters)
+            const i18nAmos = cloneDeep(i18n.amos)
+            initAchievementMap(achevementsAmos, i18nAmos)
         })
         watch(
             () => cvsel.value,

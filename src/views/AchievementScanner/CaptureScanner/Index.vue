@@ -71,7 +71,7 @@ export default defineComponent({
                     })
                     if (!r.done || route.query.withImage) {
                         r.images = {
-                            main: toCanvas(line).toDataURL(),
+                            main: toCanvas(line).toDataURL('image/webp'),
                         }
                     }
                     if (r2) {
@@ -81,7 +81,7 @@ export default defineComponent({
                     }
                 } else {
                     r.images = {
-                        main: toCanvas(line).toDataURL(),
+                        main: toCanvas(line).toDataURL('image/webp'),
                     }
                     results.value.push(r)
                     new Image().src = r.images.main

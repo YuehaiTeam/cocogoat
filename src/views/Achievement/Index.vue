@@ -88,14 +88,20 @@
         </el-dialog>
         <el-dialog
             v-model="scannerResult.show"
-            title="扫描结束"
+            :title="`成功扫描${scannerResult.length}个成就`"
             :custom-class="$style.scannerResultDialog"
             destroy-on-close
         >
             以下为失败和识别到的未完成成就列表，您可以自行检查确认后手动添加。
             <div class="faildResults">
-                <img v-for="(image, index) in scannerResult.faildImages" :key="index" :src="image" />
+                <div v-for="(image, index) in scannerResult.faildImages" :key="index">
+                    <img :src="image.image" />
+                    <div class="badge" :class="{ success: image.data.success }">
+                        {{ image.data.success ? '未完' : '错误' }}
+                    </div>
+                </div>
             </div>
+            <el-button class="feedback-btn" @click="sendOops"> 反馈失败记录 </el-button>
         </el-dialog>
         <achievement-detail :achievement="detail" @close="detail = undefined" />
         <section :class="$style.achievementView">
@@ -223,6 +229,7 @@ import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import { i18n } from '@/i18n'
 import { store } from '@/store'
 import { Achievement, AchievementCategory, IAchievementStore } from '@/typings/Achievement'
+import type { IAScannerData } from '../AchievementScanner/scanner/scanner'
 import dayjs from 'dayjs'
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
@@ -478,8 +485,12 @@ export default defineComponent({
             })
         }
         const scannerFrame = ref<HTMLIFrameElement | null>(null)
-        const scannerResult = ref({ show: false, faildImages: [] as string[] })
-        useScannerFrame({
+        const scannerResult = ref({
+            show: false,
+            length: 0,
+            faildImages: [] as { image: string; data: IAScannerData }[],
+        })
+        const { sendOops } = useScannerFrame({
             scannerFrame,
             results: scannerResult,
             achievementFin,
@@ -548,6 +559,7 @@ export default defineComponent({
             allVersions,
             autoImportId,
             closeImport,
+            sendOops,
         }
     },
 })
@@ -615,6 +627,11 @@ export default defineComponent({
     width: 600px !important;
     max-width: 90%;
     :global {
+        .feedback-btn {
+            position: absolute;
+            top: 12px;
+            right: 50px;
+        }
         .faildResults {
             margin-top: 20px;
             width: 100%;
@@ -625,12 +642,34 @@ export default defineComponent({
             display: block;
             overflow-y: scroll;
             overflow-x: hidden;
-            img {
-                max-width: 100%;
+            & > div {
+                width: 100%;
                 border: 1px solid #ddd;
                 border-radius: 5px;
                 display: block;
                 margin-bottom: 5px;
+                position: relative;
+                overflow: hidden;
+            }
+            img {
+                width: 100%;
+                height: 100%;
+                display: block;
+            }
+            .badge {
+                position: absolute;
+                top: 0;
+                left: 0;
+                font-size: 12px;
+                padding: 3px 5px;
+                border: aliceblue;
+                background: #fe6565;
+                color: #fff;
+                border-bottom-right-radius: 5px;
+            }
+            .badge.success {
+                background: var(--c-theme);
+                color: var(--c-white);
             }
         }
     }

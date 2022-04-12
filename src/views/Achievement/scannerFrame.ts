@@ -1,15 +1,17 @@
+import { apibase } from '@/utils/apibase'
 import { store } from '@/store'
 import { IAchievementStore } from '@/typings/Achievement'
 import delay from 'delay'
-import { ElLoading, ElMessageBox } from 'element-plus'
+import { ElLoading, ElMessageBox, ElNotification } from 'element-plus'
 import { Ref, watch, onBeforeUnmount } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import type { IAScannerData } from '../AchievementScanner/scanner/scanner'
 export interface IScannerFrameResult {
     show: boolean
-    faildImages: string[]
+    length: number
+    faildImages: { image: string; data: IAScannerData }[]
 }
-
+let loading = false
 export function useScannerFrame({
     scannerFrame,
     results,
@@ -78,10 +80,19 @@ export function useScannerFrame({
                     store.value.achievements.push(e)
                 }
             })
-            const faildImages = faildData.map((e) => e.images?.main || '')
+            const faildImages = faildData.map((e) => {
+                return {
+                    image: e.images?.main || '',
+                    data: {
+                        ...e,
+                        images: undefined,
+                    },
+                }
+            })
             if (faildData.length > 0) {
                 console.log('Faild:', faildData)
                 results.value = {
+                    length: r.length,
                     show: true,
                     faildImages,
                 }
@@ -104,4 +115,35 @@ export function useScannerFrame({
     onBeforeUnmount(() => {
         window.removeEventListener('message', messageHandler)
     })
+    const sendOops = async () => {
+        if (loading) return
+        const body = JSON.stringify(results.value.faildImages.filter((e) => !e.data.success))
+        const endpoint = await apibase('/v1/oops', 'global')
+        loading = true
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body,
+            })
+            if (res.ok) {
+                const data = await res.json()
+                ElNotification.success({
+                    title: '反馈成功',
+                    message: 'ID:' + data.id,
+                })
+            } else {
+                throw new Error()
+            }
+        } catch (e) {
+            ElNotification.error({
+                title: '发送失败',
+                message: '发送失败，请检查网络连接',
+            })
+        }
+        loading = false
+    }
+    return { sendOops }
 }

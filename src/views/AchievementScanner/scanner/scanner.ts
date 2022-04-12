@@ -31,6 +31,10 @@ export interface IAScannerBase {
         date: Awaited<ReturnType<typeof recognize>>
     }
     images?: Record<string, string>
+    blocks?: {
+        name: string
+        rect: Rect
+    }[]
 }
 export interface IAScannerFaild extends IAScannerBase {
     success: false
@@ -77,6 +81,7 @@ export async function scannerOnLine(data: ICVMat) {
     if (!splited || splited.length <= 0) {
         return {
             success: false,
+            blocks: splited.map((e) => ({ ...e, image: undefined })),
         } as IAScannerFaild
     }
     return await recognizeAchievement({
@@ -260,7 +265,11 @@ export async function recognizeAchievement(line: IAScannerBlocks): Promise<IASca
         }
         return ret
     } else {
-        return { success: false, result }
+        return {
+            success: false,
+            result,
+            blocks: line.blocks.map((e) => ({ ...e, image: undefined })),
+        }
     }
 }
 

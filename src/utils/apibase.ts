@@ -4,13 +4,13 @@ const apis = {
 } as Record<string, string>
 export let apiregion = navigator.language.startsWith('zh') ? 'cn' : 'global'
 export let regionchecked: Promise<string> | undefined
-export const apibase = async (path = '') => {
+export const apibase = async (path = '', region = 'default') => {
     if (!regionchecked) {
         regionchecked = checkRegion(apiregion)
         apiregion = await regionchecked
     }
     await regionchecked
-    return apis[apiregion] + path
+    return apis[region === 'default' ? apiregion : region] + path
 }
 export const checkRegion = async (apiregion: string) => {
     const url = (await apis[apiregion]) + '/v1/utils/api-region'

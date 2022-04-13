@@ -48,9 +48,10 @@
                 </div>
                 <div class="date">
                     <input
-                        :value="fin.date"
+                        :value="formatDate(fin.date)"
                         type="text"
-                        @input="$emit('input-date', ($event?.target as HTMLInputElement).value)"
+                        @blur="updateDate(($event?.target as HTMLInputElement).value)"
+                        @keyup.enter="updateDate(($event?.target as HTMLInputElement).value)"
                     />
                 </div>
             </div>
@@ -65,6 +66,7 @@ import { toRef, PropType, defineComponent, computed } from 'vue'
 import { Achievement, IAchievementStore } from '@/typings/Achievement'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
+import dayjs from 'dayjs'
 library.add(faArrowUpRightFromSquare)
 export default defineComponent({
     props: {
@@ -86,7 +88,7 @@ export default defineComponent({
         },
     },
     emits: ['input-date', 'input-status', 'check', 'click-title'],
-    setup(props) {
+    setup(props, { emit }) {
         const badgeMap = {
             WQ: '任务',
             IQ: '委托',
@@ -102,6 +104,36 @@ export default defineComponent({
                     return false
                 }
             }),
+            formatDate(datestr: string) {
+                try {
+                    const d = new Date(datestr)
+                    // check 0
+                    if (d.getTime() === 0) {
+                        return ''
+                    }
+                    // check has hour minute second
+                    if (d.getHours() || d.getMinutes() || d.getSeconds()) {
+                        return dayjs(d).format('YYYY/MM/DD HH:mm:ss')
+                    }
+                    return dayjs(d).format('YYYY/MM/DD')
+                } catch (e) {
+                    return ''
+                }
+            },
+            updateDate(datestr: string) {
+                let d = datestr.trim()
+                if (d === '') {
+                    emit('input-date', new Date(0).toISOString())
+                    return
+                }
+                try {
+                    const dt = new Date(d)
+                    if (!d.includes(':') && dt.getHours() === 8 && dt.getMinutes() === 0 && dt.getSeconds() === 0) {
+                        dt.setHours(0)
+                    }
+                    emit('input-date', dt.toISOString())
+                } catch (e) {}
+            },
             versionMap,
         }
     },

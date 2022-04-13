@@ -77,9 +77,21 @@ export function useScannerFrame({
                     return true
                 })
                 .map((e: IAScannerData) => {
+                    let date = ''
+                    try {
+                        let d = new Date(e.date.replace('月', '').trim() || 0)
+                        if (d.getFullYear() > new Date().getFullYear()) {
+                            // 年份不对
+                            d = new Date(0)
+                        }
+                        date = d.toISOString()
+                    } catch (er) {
+                        date = new Date(0).toISOString()
+                        console.error('Faild to parse date:', e.date, er)
+                    }
                     return {
                         id: e.achievement.id,
-                        date: e.date,
+                        date,
                         status: e.status,
                         categoryId: e.achievement.categoryId,
                         images: e.images,

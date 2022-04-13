@@ -320,6 +320,21 @@ export default defineComponent({
                     console.log('Converted', e.id, 'to', deprecated[e.id])
                     e.id = deprecated[e.id]
                 }
+                // Migrate Date
+                if (!e.date || e.date === '后续已完成') {
+                    console.log('Migrated achievement', e.id, ' with no date')
+                    e.date = new Date(0).toISOString()
+                }
+                // check is not iso date
+                if (e.date && !e.date.includes('-')) {
+                    try {
+                        e.date = new Date(e.date).toISOString()
+                        // console.log('Migrated achievement', e.id, ' with old date format')
+                    } catch (er) {
+                        console.error('Failed to migrate date: ', e.id, e.date, er)
+                        e.date = new Date(0).toISOString()
+                    }
+                }
                 if (e.id) {
                     newFin[e.id] = e
                     newCount[e.categoryId] = newCount[e.categoryId] || {

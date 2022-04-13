@@ -15,4 +15,5 @@ export interface IAchievementStore {
     status: string
     date: string
     images: Record<string, string>
+    partial?: number[]
 }

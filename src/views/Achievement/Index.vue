@@ -245,7 +245,7 @@ import AchievementSidebar from './AchievementSidebar.vue'
 import AchievementDetail from './AchievementDetail.vue'
 import ImportDialog from './ImportDialog.vue'
 import versionMap, { allVersions } from './versionMap'
-import { uniqBy } from 'lodash-es'
+import { uniqBy, cloneDeep } from 'lodash-es'
 import bus from '@/bus'
 import { getUrl } from '@/router'
 
@@ -313,26 +313,33 @@ export default defineComponent({
                 count: number
                 reward: number
             }
-            store.value.achievements.forEach((e) => {
+            let hasMigrated = 0
+            const migratedRes = store.value.achievements.map((ach) => {
+                const e = cloneDeep(ach)
                 e.categoryId = e.categoryId || 0
+                ach.categoryId = ach.categoryId || 0
                 // 81xxx -> 8500x for compatibility
                 if (deprecated[e.id]) {
                     console.log('Converted', e.id, 'to', deprecated[e.id])
                     e.id = deprecated[e.id]
+                    hasMigrated++
                 }
                 // Migrate Date
                 if (!e.date || e.date === '后续已完成') {
                     console.log('Migrated achievement', e.id, ' with no date')
                     e.date = new Date(0).toISOString()
+                    hasMigrated++
                 }
                 // check is not iso date
                 if (e.date && !e.date.includes('-')) {
                     try {
                         e.date = new Date(e.date).toISOString()
+                        hasMigrated++
                         // console.log('Migrated achievement', e.id, ' with old date format')
                     } catch (er) {
                         console.error('Failed to migrate date: ', e.id, e.date, er)
                         e.date = new Date(0).toISOString()
+                        hasMigrated++
                     }
                 }
                 if (e.id) {
@@ -349,7 +356,12 @@ export default defineComponent({
                     totalFin_.count++
                     totalFin_.reward += currentReward
                 }
+                return e
             })
+            if (hasMigrated > 0) {
+                store.value.achievements = migratedRes
+                console.log(hasMigrated + ' migrate task finished')
+            }
             achievementFinStat.value = newCount
             achievementFin.value = newFin
             totalCount.value = totalCount.value || achevementsAmos.reduce((a, b) => a + b.achievements.length, 0)

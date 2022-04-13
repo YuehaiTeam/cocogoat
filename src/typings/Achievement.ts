@@ -14,6 +14,6 @@ export interface IAchievementStore {
     categoryId: number
     status: string
     date: string
-    images: Record<string, string>
+    images?: Record<string, string>
     partial?: number[]
 }

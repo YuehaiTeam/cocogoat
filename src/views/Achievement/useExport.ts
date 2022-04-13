@@ -5,6 +5,7 @@ import { ref } from 'vue'
 import { store, options } from '@/store'
 import dayjs from 'dayjs'
 import achevementsAmos from '@/plugins/amos/achievements'
+import { cloneDeep } from 'lodash-es'
 export function useExportAchievements() {
     const exportData = ref({
         show: false,
@@ -15,10 +16,14 @@ export function useExportAchievements() {
         const to = _to || options.value.achievements_recent_export
         options.value.achievements_recent_export = to
         if (to === 'cocogoat') {
+            const ach0 = cloneDeep(store.value.achievements)
+            ach0.forEach((e) => {
+                e.images = undefined
+            })
             const data = {
                 source: '椰羊成就',
                 value: {
-                    achievements: store.value.achievements,
+                    achievements: ach0,
                 },
                 lastModified: new Date().toISOString(),
             }

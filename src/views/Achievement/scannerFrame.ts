@@ -94,7 +94,6 @@ export function useScannerFrame({
                         date,
                         status: e.status,
                         categoryId: e.achievement.categoryId,
-                        images: e.images,
                     } as IAchievementStore
                 })
             r.forEach((e: IAchievementStore) => {

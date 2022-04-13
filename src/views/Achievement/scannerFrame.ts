@@ -3,7 +3,7 @@ import { store } from '@/store'
 import { IAchievementStore } from '@/typings/Achievement'
 import delay from 'delay'
 import { ElLoading, ElMessageBox, ElNotification } from 'element-plus'
-import { Ref, watch, onBeforeUnmount } from 'vue'
+import { ref, Ref, watch, onBeforeUnmount } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import type { IAScannerData } from '../AchievementScanner/scanner/scanner'
 export interface IScannerFrameResult {
@@ -23,6 +23,15 @@ export function useScannerFrame({
     achievementFin: Ref<Record<number, IAchievementStore>>
     showScanner: Ref<boolean>
 }) {
+    const metadata = ref(
+        {} as {
+            scanner: string
+            capturer: string
+            ua: string
+            w: number
+            h: number
+        },
+    )
     const messageHandler = async (ev: MessageEvent) => {
         const { app, event, data } = ev.data
         if (app !== 'cocogoat.scanner.achievement') return
@@ -34,6 +43,7 @@ export function useScannerFrame({
             const loader = ElLoading.service({ fullscreen: true, text: '结果处理中...' })
             await delay(100)
             const { result } = data
+            metadata.value = data.metadata
             for (const e of result as IAScannerData[]) {
                 if (!e.success) continue
                 if (e.achievement.preStage && e.achievement.preStage > 0) {
@@ -117,7 +127,26 @@ export function useScannerFrame({
     })
     const sendOops = async () => {
         if (loading) return
-        const body = JSON.stringify(results.value.faildImages.filter((e) => !e.data.success))
+        // prompt for msg
+        let msg
+        try {
+            msg = await ElMessageBox.prompt(
+                '该反馈将上传识别失败的图片、您使用的识别方式、设备类型、设备屏幕分辨率等数据到服务器。您也可以在此输入额外的备注，以便作者定位问题。如需获得最快的修复速度，请加入交流群并将提交后出现的反馈ID发送给作者。',
+                '提交识别失败反馈',
+                {
+                    inputPlaceholder: '备注其实可以不填，但就不知道能不能解决了。',
+                    inputType: 'textarea',
+                },
+            )
+        } catch (e) {
+            return
+        }
+        if (msg.action !== 'confirm') return
+        const body = JSON.stringify({
+            message: msg.value,
+            metadata: metadata.value,
+            results: results.value.faildImages.filter((e) => !e.data.success),
+        })
         const endpoint = await apibase('/v1/oops', 'global')
         loading = true
         try {

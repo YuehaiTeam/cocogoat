@@ -42,6 +42,13 @@ export default defineComponent({
         WebCapturer,
     },
     setup() {
+        const metadata = {
+            scanner: 'CaptureScanner',
+            capturer: 'WebCapturer',
+            ua: navigator.userAgent,
+            w: 0,
+            h: 0,
+        }
         const route = useRoute()
         const isTop = window === parent
         const capture = ref(false)
@@ -151,6 +158,8 @@ export default defineComponent({
             if (!cap.value) return
             tempCanvas.width = cap.value.video.videoWidth
             tempCanvas.height = cap.value.video.videoHeight
+            metadata.w = cap.value.video.videoWidth
+            metadata.h = cap.value.video.videoHeight
             let rect: Rect | null = null
             let clickPos = { x: 0, y: 0 }
 
@@ -276,6 +285,7 @@ export default defineComponent({
                     send('result', {
                         result: results.value,
                         dup: dup.value,
+                        metadata: metadata,
                     })
                 }
             },

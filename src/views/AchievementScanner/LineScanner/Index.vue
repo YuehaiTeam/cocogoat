@@ -215,6 +215,10 @@ export default defineComponent({
             send('result', {
                 result: results.value,
                 dup: dup.value,
+                metadata: {
+                    ua: navigator.userAgent,
+                    scanner: 'LineScanner',
+                },
             })
         }
         watch(step, (v) => {

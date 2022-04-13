@@ -232,6 +232,13 @@ export default defineComponent({
             send('result', {
                 result: results.value,
                 dup: dup.value,
+                metadata: {
+                    scanner: 'ScreenshotScanner',
+                    capturer: 'ImageCapturer',
+                    ua: navigator.userAgent,
+                    w: 0,
+                    h: 0,
+                },
             })
         }
         watch(step, (v) => {

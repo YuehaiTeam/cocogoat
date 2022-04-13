@@ -287,6 +287,13 @@ export default defineComponent({
                     send('result', {
                         result: results.value,
                         dup: dup.value,
+                        metadata: {
+                            scanner: 'RvfcScanner',
+                            capturer: 'VideoCapturer',
+                            ua: navigator.userAgent,
+                            w: videoEl.value?.videoWidth,
+                            h: videoEl.value?.videoHeight,
+                        },
                     })
                 },
                 {

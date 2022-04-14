@@ -248,17 +248,8 @@ import versionMap, { allVersions } from './versionMap'
 import { uniqBy, cloneDeep } from 'lodash-es'
 import bus from '@/bus'
 import { getUrl } from '@/router'
+import { runMigrate } from './runMigrate'
 
-const deprecated = {
-    81006: 85000,
-    81007: 85001,
-    81008: 85002,
-    81009: 85003,
-    81011: 85004,
-    81012: 85005,
-    81013: 85006,
-    81219: 81222,
-} as Record<number, number>
 export default defineComponent({
     name: 'ArtifactIndex',
     components: {
@@ -318,32 +309,8 @@ export default defineComponent({
                 const e = cloneDeep(ach)
                 e.categoryId = e.categoryId || 0
                 ach.categoryId = ach.categoryId || 0
-                // 81xxx -> 8500x for compatibility
-                if (deprecated[e.id]) {
-                    console.log('Converted', e.id, 'to', deprecated[e.id])
-                    e.id = deprecated[e.id]
-                    hasMigrated++
-                }
-                // Migrate Date
-                if (!e.date || e.date === '后续已完成') {
-                    console.log('Migrated achievement', e.id, ' with no date')
-                    e.date = new Date(0).toISOString()
-                    hasMigrated++
-                }
-                // check is not iso date
-                if (e.date && !e.date.includes('-')) {
-                    try {
-                        e.date = new Date(e.date).toISOString()
-                        hasMigrated++
-                        // console.log('Migrated achievement', e.id, ' with old date format')
-                    } catch (er) {
-                        console.error('Failed to migrate date: ', e.id, e.date, er)
-                        e.date = new Date(0).toISOString()
-                        hasMigrated++
-                    }
-                }
+                hasMigrated += runMigrate(e) ? 1 : 0
                 if (e.id) {
-                    newFin[e.id] = e
                     newCount[e.categoryId] = newCount[e.categoryId] || {
                         count: 0,
                         reward: 0,
@@ -362,6 +329,9 @@ export default defineComponent({
                 store.value.achievements = migratedRes
                 console.log(hasMigrated + ' migrate task finished')
             }
+            store.value.achievements.forEach((e) => {
+                if (e.id) newFin[e.id] = e
+            })
             achievementFinStat.value = newCount
             achievementFin.value = newFin
             totalCount.value = totalCount.value || achevementsAmos.reduce((a, b) => a + b.achievements.length, 0)

@@ -21,6 +21,7 @@
     "@yuehaiteam/amos": "https://github.com/YuehaiTeam/amos.git",
     "color-diff": "^1.2.0",
     "comlink": "^4.3.1",
+    "copy-to-clipboard": "^3.3.1",
     "core-js": "^3.8.3",
     "dayjs": "^1.10.7",
     "delay": "^5.0.0",

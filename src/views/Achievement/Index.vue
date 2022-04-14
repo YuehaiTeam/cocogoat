@@ -48,13 +48,14 @@
                                     <el-dropdown-item class="export-title" @click="doExport('cocogoat')">
                                         椰羊JSON
                                     </el-dropdown-item>
+                                    <el-dropdown-item divided @click="doExport('snapgenshin')">
+                                        Snap Genshin
+                                    </el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('paimon')"> Paimon.moe </el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('seelie')"> Seelie.me </el-dropdown-item>
                                     <el-dropdown-item divided class="export-title" @click="doExport('excel')">
                                         Excel文件
                                     </el-dropdown-item>
-                                    <el-dropdown-item divided @click="doExport('paimon')">
-                                        Paimon.moe
-                                    </el-dropdown-item>
-                                    <el-dropdown-item @click="doExport('seelie')"> Seelie.me </el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>

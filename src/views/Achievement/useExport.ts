@@ -6,13 +6,14 @@ import { store, options } from '@/store'
 import dayjs from 'dayjs'
 import achevementsAmos from '@/plugins/amos/achievements'
 import { cloneDeep } from 'lodash-es'
+import copy from 'copy-to-clipboard'
 export function useExportAchievements() {
     const exportData = ref({
         show: false,
         title: '',
         content: '',
     })
-    const doExport = (_to: 'paimon' | 'seelie' | 'cocogoat' | 'excel' | '') => {
+    const doExport = (_to: 'paimon' | 'seelie' | 'cocogoat' | 'excel' | 'snapgenshin' | '') => {
         const to = _to || options.value.achievements_recent_export
         options.value.achievements_recent_export = to
         if (to === 'cocogoat') {
@@ -35,6 +36,28 @@ export function useExportAchievements() {
             a.href = url
             a.download = '椰羊成就导出' + dayjs().format('YYYY-MM-DD HH:mm:ss') + '.json'
             a.click()
+            return
+        }
+        if (to === 'snapgenshin') {
+            const ach0 = store.value.achievements.map((e) => {
+                return {
+                    Id: e.id,
+                    Time: e.date,
+                }
+            })
+            const f = document.createElement('iframe')
+            f.src = 'snapgenshin://achievement/import/clipboard'
+            f.style.display = 'none'
+            copy(JSON.stringify(ach0))
+            document.body.appendChild(f)
+            setTimeout(() => {
+                document.body.removeChild(f)
+            }, 1000)
+            ElNotification.success({
+                title: '已发起自动导入',
+                message: '如果SnapGenshin没有启动或导入失败，请导出为椰羊JSON后手动导入。',
+                duration: 15 * 1e3,
+            })
             return
         }
         if (to === 'excel') {

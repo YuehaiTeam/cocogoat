@@ -42,7 +42,7 @@ export function useExportAchievements() {
             const ach0 = store.value.achievements.map((e) => {
                 return {
                     Id: e.id,
-                    Time: e.date,
+                    TimeStamp: Math.floor(new Date(e.date).getTime() / 1000),
                 }
             })
             const f = document.createElement('iframe')

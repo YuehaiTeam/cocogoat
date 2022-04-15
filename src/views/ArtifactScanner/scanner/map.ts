@@ -1,9 +1,19 @@
 import { IArtifactDesc, IArtifactDescItem } from '@/typings/Artifact'
-import { ICharacter } from '@/typings/Character'
+import { Character } from '@yuehaiteam/amos/dist/character/typing'
 export let artifactNames: { str: string; obj: string[] }[] = []
 export let artifactParams: { str: string; obj: string }[] = []
 export let artifactCharacters: { str: string; obj: string }[] = []
-export function initMap(map: IArtifactDesc[], params: Record<string, string>, characters: ICharacter[]) {
+export function initMap({
+    map,
+    params,
+    characters,
+    amos,
+}: {
+    map: IArtifactDesc[]
+    params: Record<string, string>
+    characters: Character[]
+    amos: string[]
+}) {
     artifactParams = []
     Object.keys(params).forEach((k) => {
         artifactParams.push({
@@ -25,8 +35,8 @@ export function initMap(map: IArtifactDesc[], params: Record<string, string>, ch
     artifactCharacters = []
     characters.forEach((e) => {
         artifactCharacters.push({
-            obj: e.id,
-            str: e.name,
+            obj: e.key,
+            str: amos[e.name],
         })
     })
     console.log(

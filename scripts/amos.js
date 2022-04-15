@@ -11,6 +11,10 @@ amosSources.writeFileHook = (file, data) => {
             importTxt = `import {AchievementCategory} from '@yuehaiteam/amos/dist/achievement/typing';`
             type = 'AchievementCategory[]'
         }
+        if (file.includes('characters' + path.sep + 'index')) {
+            importTxt = `import {Character} from '@yuehaiteam/amos/dist/character/typing';`
+            type = 'Character[]'
+        }
         if (file.includes('TextMap-')) {
             type = 'string[]'
         }
@@ -23,4 +27,5 @@ amosSources.writeFileHook = (file, data) => {
 }
 amosSources.setPaths(giData, output)
 amosTextmap.setArrayMode(true)
-require('@yuehaiteam/amos/dist/bin')
+const amosMain = require('@yuehaiteam/amos/dist/bin')
+amosMain(['node', 'amos', '-l', 'CHS', 'EN'])

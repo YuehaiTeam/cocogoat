@@ -4,15 +4,18 @@ const path = require('path')
 const GENERATED_PATH = path.join(__dirname, '..', 'src', 'plugins', 'genshin-data', 'src', 'data')
 const MIN_PATH = path.join(__dirname, '..', 'src', 'plugins', 'genshin-data', 'data')
 
+const langs = ['chinese-simplified', 'english']
+const only = ['artifacts']
+
 async function combineData() {
-    const languages = await fsex.readdir(GENERATED_PATH)
     const promises = []
-    for (const lang of languages) {
+    for (const lang of langs) {
         promises.push(
             (async () => {
                 const folders = await fsex.readdir(path.join(GENERATED_PATH, lang))
                 await fsex.ensureDir(path.join(MIN_PATH, lang))
                 for (const folder of folders) {
+                    if (!only.includes(folder)) continue
                     if (!(await fsex.pathExists(path.join(GENERATED_PATH, lang, folder)))) continue
                     let data = []
                     const files = await fsex.readdir(`${GENERATED_PATH}/${lang}/${folder}`)

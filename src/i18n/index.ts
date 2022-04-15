@@ -1,15 +1,11 @@
-import characterImages from '@/assets/characters'
 import { options } from '@/store'
-import { ICharacter } from '@/typings/Character'
 import { IArtifactDesc } from '@/typings/Artifact'
 import { watch } from 'vue'
 import { defineStore } from 'pinia'
 
 const createEmptyI18n = () => ({
-    characters: [] as ICharacter[],
     artifacts: [] as IArtifactDesc[],
     atifactParams: {} as Record<string, string>,
-    characterAvatar: {} as Record<string, string>,
     amos: [] as string[],
 })
 export const usei18n = defineStore('i18n', {
@@ -36,7 +32,6 @@ export async function loadi18n() {
     const langModule = langLoader[lang]
     if (langModule) {
         const langmodule = await langModule()
-        langmodule.characterAvatar = characterImages
         for (const key of Object.keys(langmodule)) {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore

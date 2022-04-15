@@ -5,6 +5,7 @@ import { requireAsBlob, speedTest } from '@/resource-main'
 import { Worker, installToWindow } from '@/utils/corsWorker'
 import { hasSIMD } from '@/utils/compatibility'
 import { i18n } from '@/i18n'
+import charactersAmos from '@/plugins/amos/characters/index'
 import { IMatFromImageElement } from '@/utils/IMat'
 import { cloneDeep } from 'lodash-es'
 export function createWorker() {
@@ -46,14 +47,17 @@ export function initScanner() {
             const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
             await race
             await requireAsBlob([ortWasm, ocvWasm, 'yas.ort'], (e) => progressHandler(e), all)
-            const artifacts = cloneDeep(i18n.artifacts)
-            const atifactParams = cloneDeep(i18n.atifactParams)
-            const characters = cloneDeep(i18n.characters)
+            const map = {
+                map: cloneDeep(i18n.artifacts),
+                params: cloneDeep(i18n.atifactParams),
+                characters: charactersAmos,
+                amos: cloneDeep(i18n.amos),
+            }
             await Promise.all([
                 workerCV.setResources(resources),
                 workerOCR.setResources(resources),
-                workerCV.initMap(artifacts, atifactParams, characters),
-                workerOCR.initMap(artifacts, atifactParams, characters),
+                workerCV.initMap(map),
+                workerOCR.initMap(map),
             ])
             progressHandler(100)
         } catch (e) {

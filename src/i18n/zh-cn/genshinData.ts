@@ -1,6 +1,4 @@
-import _characterMap from '@genshin-data/chinese-simplified/characters.json'
 import _artifactMap from '@genshin-data/chinese-simplified/artifacts.json'
-export const characters = _characterMap
 export const artifacts = _artifactMap
 export const atifactParams = {
     crit: '暴击率',

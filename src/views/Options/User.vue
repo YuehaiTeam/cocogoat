@@ -13,7 +13,7 @@
                     <span class="desc">点击头像切换用户</span>
                 </template>
                 <template #default="scope">
-                    <img class="table-avatar" :src="getAvatar(scope.row.avatar)" />
+                    <img class="table-avatar" :src="characterIcon(scope.row.avatar)" />
                     <div class="user-name">{{ scope.row.name }}</div>
                     <div class="user-id">{{ scope.row.id }}</div>
                 </template>
@@ -60,16 +60,16 @@
                     <el-input v-model="edit.name" placeholder="爷真可爱" size="large"></el-input>
                 </el-form-item>
                 <el-form-item label="头像">
-                    <el-select v-model="edit.avatar" size="large" style="width: 100%">
+                    <el-select v-model="edit.avatar" size="large" filterable style="width: 100%">
                         <el-option
-                            v-for="i in i18n.characters"
-                            :key="i.id"
-                            :value="i.id"
-                            :label="i.name"
+                            v-for="i in characterAmos"
+                            :key="i.key"
+                            :value="i.key"
+                            :label="i18n.amos[i.name]"
                             :class="$style.userSelectorItem"
                         >
-                            <img :src="getAvatar(i.id)" />
-                            <span class="sel-uname">{{ i.name }}</span>
+                            <img :src="characterIcon(i.key)" />
+                            <span class="sel-uname">{{ i18n.amos[i.name] }}</span>
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -87,19 +87,12 @@ import { ElMessageBox, ElTable } from 'element-plus'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPlus, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { del, get, set } from '@/store/impl'
+import { characterIcon } from '@/assets/mihoyoImages/characterIcon'
+import characterAmos from '@/plugins/amos/characters'
 library.add(faPlus, faPenToSquare, faTrashCan)
 type Unpacked<T> = T extends (infer U)[] ? U : T
 export default defineComponent({
     setup() {
-        function getAvatar(avatar: string) {
-            try {
-                const a = i18n.characterAvatar[avatar.replace(/_/g, '')]
-                if (!a) throw new Error()
-                return a
-            } catch (e) {
-                return i18n.characterAvatar['traveler']
-            }
-        }
         const datatable = ref(null) as Ref<null | typeof ElTable>
         watch([datatable, currentUser], () => {
             datatable.value?.setCurrentRow(allUsers.value.find((e) => e.id === currentUser.value))
@@ -115,7 +108,7 @@ export default defineComponent({
             edit: '',
             id: '',
             name: '',
-            avatar: 'traveler',
+            avatar: 'PlayerGirl',
         })
         function addUser() {
             edit.value = {
@@ -123,7 +116,7 @@ export default defineComponent({
                 edit: '',
                 id: '',
                 name: '',
-                avatar: 'traveler',
+                avatar: 'PlayerGirl',
             }
         }
         function editUser(user: Unpacked<typeof allUsers.value>) {
@@ -195,7 +188,7 @@ export default defineComponent({
             i18n,
             allUsers,
             currentUser,
-            getAvatar,
+            characterIcon,
             datatable,
             handleCurrentChange,
             addUser,
@@ -203,6 +196,7 @@ export default defineComponent({
             delUser,
             edit,
             saveForm,
+            characterAmos,
         }
     },
 })

@@ -1,5 +1,4 @@
 <script lang="ts">
-import { i18n } from '@/i18n'
 import { defineComponent, computed, ref } from 'vue'
 import { store, allUsers, currentUser } from '@/store'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -14,6 +13,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useRouter } from 'vue-router'
 import { syncStatus, SYNCSTAT } from '@/store/sync'
+import { characterIcon } from '@/assets/mihoyoImages/characterIcon'
 library.add(faAngleDown, faCheck, faXmark, faEllipsis, faExclamation, faArrowsRotate, faLaptopCode)
 export default defineComponent({
     props: {
@@ -23,17 +23,8 @@ export default defineComponent({
         },
     },
     setup() {
-        function getAvatar(avatar: string) {
-            try {
-                const a = i18n.characterAvatar[avatar.replace(/_/g, '')]
-                if (!a) throw new Error()
-                return a
-            } catch (e) {
-                return i18n.characterAvatar['traveler']
-            }
-        }
         const router = useRouter()
-        const avatar = computed(() => getAvatar(store.value.user.avatar))
+        const avatar = computed(() => characterIcon(store.value.user.avatar))
         const onSelect = ([action, param]: [string, string | undefined]) => {
             switch (action) {
                 case 'switch':
@@ -71,12 +62,12 @@ export default defineComponent({
             avatar,
             onSelect,
             allUsers,
-            getAvatar,
             currentUser,
             menuState,
             syncStatus,
             syncStatusText,
             syncIcon,
+            characterIcon,
         }
     },
 })
@@ -107,7 +98,7 @@ export default defineComponent({
                         :class="[currentUser === i.id ? $style.selected : '']"
                     >
                         <div :class="[$style.userInfo, $style.listUser, currentUser === i.id ? 'selected' : '']">
-                            <img :src="getAvatar(i.avatar)" />
+                            <img :src="characterIcon(i.avatar)" />
                             <span class="user-text">
                                 <span class="user-name">{{ i.name }}</span>
                                 <span class="user-id">{{ i.id }}</span>

@@ -83,7 +83,8 @@ import * as artifactScanner from '@/views/ArtifactScanner/scanner/scanner.expose
 import { IMatFromImageElement, toCanvas } from '@/utils/IMat'
 import _ from 'lodash-full'
 import { initMap } from '../ArtifactScanner/scanner/map'
-import achevementsAmos from '@/plugins/amos/achievements/index'
+import achevementsAmos from '@/plugins/amos/achievements'
+import charactersAmos from '@/plugins/amos/characters'
 import { initAchievementMap } from '../AchievementScanner/scanner/achievementsList'
 import { i18n } from '@/i18n'
 import { cloneDeep } from 'lodash'
@@ -160,8 +161,13 @@ src.delete()`)
             window.cvTranslateError = cvTranslateError
             // @ts-ignore
             window._ = _
-            initMap(i18n.artifacts, i18n.atifactParams, i18n.characters)
             const i18nAmos = cloneDeep(i18n.amos)
+            initMap({
+                map: i18n.artifacts,
+                params: i18n.atifactParams,
+                characters: charactersAmos,
+                amos: i18nAmos,
+            })
             initAchievementMap(achevementsAmos, i18nAmos)
         })
         watch(

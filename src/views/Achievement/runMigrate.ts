@@ -59,6 +59,11 @@ export function runMigrate(e: IAchievementStore) {
                 // set to now if unknown
                 d.setFullYear(new Date().getFullYear())
             }
+        } else if (yearstr.length === 4) {
+            // nothing to do for a correct one
+        } else {
+            // set to now if unknown
+            d.setFullYear(new Date().getFullYear())
         }
         e.date = d.toISOString()
         console.log('Migrated invaild year from ' + yearstr + ' to ' + d.getFullYear())

@@ -160,12 +160,13 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/extra/client',
         component: () => import('@/views/Layout.vue'),
-        beforeEnter: () => {
-            location.replace(
-                process.env.BASE_URL + 'assets/cocogoat-control-' + process.env.VUE_APP_CLIENT_VER?.toString() + '.exe',
-            )
-            return false
-        },
+        children: [
+            {
+                path: '',
+                name: 'extra.client',
+                component: () => import('@/views/Client.vue'),
+            },
+        ],
     },
 ]
 

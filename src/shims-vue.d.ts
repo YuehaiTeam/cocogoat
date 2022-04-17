@@ -48,6 +48,14 @@ declare module '@genshin-data/*/artifacts.json' {
     export default t
 }
 
+declare module '@yuehaiteam/shuanghua-last-version' {
+    const latest: {
+        url: string
+        ver: string
+    }
+    export default latest
+}
+
 declare module 'flyio/dist/npm/fly'
 declare module 'vue-virtual-scroller'
 declare module 'vue-virtual-scroller/src/index'

@@ -218,29 +218,33 @@ export default defineComponent({
         const ocrQueue = fastq.promise(recoginzeWorker, 2)
         let lastimat = null as null | ReturnType<typeof IMatFromCanvasElement>
         const splitWorker = async (imat: null | ReturnType<typeof IMatFromCanvasElement>) => {
-            if (!imat) {
-                if (lastimat) {
-                    const lines = await scannerOnImage(lastimat, false, true)
-                    const totalHeight = lines.reduce((a, b) => a + b.image.rows, 0)
-                    for (const line of lines) {
-                        if (line.image.rows > ((totalHeight / lines.length) * 2) / 3) {
-                            // block太少的，认为是半行
-                            ocrQueue.push({ image: line.image, thread: scanned.value % 2 === 0 })
-                            scanned.value++
+            try {
+                if (!imat) {
+                    if (lastimat) {
+                        const lines = await scannerOnImage(lastimat, false, true)
+                        const totalHeight = lines.reduce((a, b) => a + b.image.rows, 0)
+                        for (const line of lines) {
+                            if (line.image.rows > ((totalHeight / lines.length) * 2) / 3) {
+                                // block太少的，认为是半行
+                                ocrQueue.push({ image: line.image, thread: scanned.value % 2 === 0 })
+                                scanned.value++
+                            }
                         }
                     }
+                    return
                 }
-                return
-            }
-            lastimat = imat
-            const lines = await scannerOnImage(imat, false, false)
-            const totalHeight = lines.reduce((a, b) => a + b.image.rows, 0)
-            for (const line of lines) {
-                if (line.image.rows > ((totalHeight / lines.length) * 2) / 3) {
-                    // block太少的，认为是半行
-                    ocrQueue.push({ image: line.image, thread: scanned.value % 2 === 0 })
-                    scanned.value++
+                lastimat = imat
+                const lines = await scannerOnImage(imat, false, false)
+                const totalHeight = lines.reduce((a, b) => a + b.image.rows, 0)
+                for (const line of lines) {
+                    if (line.image.rows > ((totalHeight / lines.length) * 2) / 3) {
+                        // block太少的，认为是半行
+                        ocrQueue.push({ image: line.image, thread: scanned.value % 2 === 0 })
+                        scanned.value++
+                    }
                 }
+            } catch (e) {
+                console.error(e)
             }
         }
         const cvQueue = fastq.promise(splitWorker, 1)

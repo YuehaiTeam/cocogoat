@@ -17,3 +17,21 @@ export interface IAchievementStore {
     images?: Record<string, string>
     partial?: number[]
 }
+export interface UIAFItem {
+    id: number
+    current: number | null
+    timestamp: number
+}
+export interface UIAF {
+    // we read source from memo - which is not in the official UIAF format
+    source?: string
+    info: {
+        export_app?: string
+        export_app_version?: string
+        uiaf_version?: '1.0'
+        export_timestamp?: number
+    }
+    list: UIAFItem[]
+}
+// 9999-12-31 23:59:59
+export const UIAFMagicTime = 253402271999

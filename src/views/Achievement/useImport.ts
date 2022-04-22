@@ -3,7 +3,7 @@ import { Ref } from 'vue'
 import dayjs from 'dayjs'
 import { store } from '@/store'
 import { sandboxedEval } from '@/utils/sandbox'
-import { IAchievementStore } from '@/typings/Achievement'
+import { IAchievementStore, UIAFMagicTime, UIAF } from '@/typings/Achievement'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 
 function hasCocogoatAchievementJson(j: Record<string, any[]>) {
@@ -77,6 +77,34 @@ function convertSeelieJson(b: Record<string, any>) {
     })
     return achList
 }
+export function hasUIAF(data: Record<string, any>): data is UIAF {
+    if (!data.list) return false
+    if (!Array.isArray(data.list)) return false
+    if (data.list.length === 0) return false
+    if (!data.list[0].id) return false
+    if (data.list[0].current !== null && !data.list[0].current) return false
+    if (!data.list[0].timestamp) return false
+    return true
+}
+export function convertUIAF(data: UIAF): { achievements: IAchievementStore[]; source: string } {
+    let source = data.source || data.info.export_app || 'UIAF'
+    if (source === 'cocogoat') source = '椰羊UIAF'
+    const achievements: IAchievementStore[] = []
+    data.list.forEach((e) => {
+        const dt = new Date(e.timestamp === UIAFMagicTime ? 0 : e.timestamp * 1000)
+        const val = e.current ? e.current.toString() : ''
+        achievements.push({
+            id: e.id,
+            date: dt.toISOString(),
+            status: val,
+            categoryId: -1, // will be changed later
+        })
+    })
+    return {
+        achievements,
+        source,
+    }
+}
 // eslint-disable-next-line max-params
 export function useImport(
     content: Ref<string>,
@@ -106,6 +134,18 @@ export function useImport(
                 allowed.value = true
                 importType.value = 'cocogoat'
                 importData.value = j.value.achievements
+            } else if (hasUIAF(j)) {
+                const { source, achievements } = convertUIAF(j)
+                importText.value = '导入' + source + ' (' + achievements.length + '个)'
+                allowed.value = true
+                importType.value = 'no-categoryId'
+                importData.value = achievements
+            } else if (j.value && hasUIAF(j.value)) {
+                const { source, achievements } = convertUIAF(j.value)
+                importText.value = '导入' + (j.source || source) + ' (' + achievements.length + '个)'
+                allowed.value = true
+                importType.value = 'no-categoryId'
+                importData.value = achievements
             } else if (j.achievement && (importData.value = hasPaimonMoeJson(j))) {
                 importText.value = '导入Paimon.moe备份 (' + importData.value.length + '个)'
                 allowed.value = true
@@ -114,7 +154,7 @@ export function useImport(
                 importData.value = convertSeelieJson(j.achievements)
                 importText.value = '导入Seelie备份 (' + importData.value.length + '个)'
                 allowed.value = true
-                importType.value = 'cocogoat'
+                importType.value = 'no-categoryId'
             } else {
                 importText.value = '未识别到可导入的内容'
                 allowed.value = false

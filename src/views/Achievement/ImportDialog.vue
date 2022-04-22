@@ -81,8 +81,6 @@ export default defineComponent({
                     title: '导入成功',
                     message: '已' + importText.value,
                 })
-            }
-            if (inputMemoId.value) {
                 try {
                     const jcontent = JSON.parse(content.value)
                     if (!jcontent.id) return
@@ -132,6 +130,16 @@ export default defineComponent({
             if (!allowed.value) return
             importToStore()
             emit('close', inputMemoId.value)
+            try {
+                const jcontent = JSON.parse(content.value)
+                if (!jcontent.id) return
+                if (jcontent.id !== inputMemoId.value) return
+                ;(async () => {
+                    fetch(await apibase('/v1/memo/' + inputMemoId.value), {
+                        method: 'DELETE',
+                    })
+                })()
+            } catch (e) {}
         }
         const onFile = async (e: File) => {
             // read to content

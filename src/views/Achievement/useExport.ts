@@ -7,13 +7,14 @@ import dayjs from 'dayjs'
 import achevementsAmos from '@/plugins/amos/achievements'
 import { cloneDeep } from 'lodash-es'
 import copy from 'copy-to-clipboard'
+import { IAchievementStore, UIAF, UIAFMagicTime } from '@/typings/Achievement'
 export function useExportAchievements() {
     const exportData = ref({
         show: false,
         title: '',
         content: '',
     })
-    const doExport = (_to: 'paimon' | 'seelie' | 'cocogoat' | 'excel' | 'snapgenshin' | '') => {
+    const doExport = (_to: 'paimon' | 'seelie' | 'cocogoat' | 'excel' | 'snapgenshin' | 'uiaf' | '') => {
         const to = _to || options.value.achievements_recent_export
         options.value.achievements_recent_export = to
         if (to === 'cocogoat') {
@@ -34,11 +35,23 @@ export function useExportAchievements() {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = '椰羊成就导出' + dayjs().format('YYYY-MM-DD HH:mm:ss') + '.json'
+            a.download = '椰羊成就导出 ' + dayjs().format('YYYYMMDDHHmmss') + '.json'
+            a.click()
+            return
+        }
+        if (to === 'uiaf') {
+            const data = toUIAF(store.value.achievements)
+            const jstr = JSON.stringify(data, null, 4)
+            const blob = new Blob([jstr], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = '椰羊UIAF ' + dayjs().format('YYYYMMDDHHmmss') + '.json'
             a.click()
             return
         }
         if (to === 'snapgenshin') {
+            // const ach0 = toUIAF(store.value.achievements)
             const ach0 = store.value.achievements.map((e) => {
                 return {
                     Id: e.id,
@@ -46,6 +59,7 @@ export function useExportAchievements() {
                 }
             })
             const f = document.createElement('iframe')
+            // f.src = 'snapgenshin://achievement/import/uiaf'
             f.src = 'snapgenshin://achievement/import/clipboard'
             f.style.display = 'none'
             copy(JSON.stringify(ach0))
@@ -112,6 +126,29 @@ location.href='/achievement'`
         // do nothing
     }
     return { exportData, doExport }
+}
+
+export function toUIAF(data: IAchievementStore[]): UIAF {
+    const uiaf: UIAF = {
+        info: {
+            export_app: 'cocogoat',
+            export_app_version: process.env.VUE_APP_GIT_SHA || 'unkonwn',
+            export_timestamp: Math.floor(Date.now() / 1000),
+            uiaf_version: '1.0',
+        },
+        list: [],
+    }
+    data.forEach((e) => {
+        if (e.partial && e.partial.length > 0) return
+        const dt = new Date(e.date).getTime()
+        const val = (e.status.match(/[0-9/]+/g) || []).join('').split('/')[0]
+        uiaf.list.push({
+            id: e.id,
+            timestamp: Math.floor(dt > 0 ? dt / 1000 : UIAFMagicTime),
+            current: Number(val) || null,
+        })
+    })
+    return uiaf
 }
 async function dumpToExcel() {
     const noti = ElNotification.info({

@@ -48,6 +48,12 @@ declare module '@genshin-data/*/artifacts.json' {
     export default t
 }
 
+declare module '@/plugins/decomposed-achievements/DecomposedAchievements.json' {
+    import { IDecomposedAchievement } from '@/typings/Achievement'
+    const t: IDecomposedAchievement[]
+    export default t
+}
+
 declare module '@yuehaiteam/shuanghua-last-version' {
     const latest: {
         url: string

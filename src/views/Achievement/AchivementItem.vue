@@ -4,56 +4,74 @@
             <div v-show="questType" class="badge" :class="questType ? questType[1] : ''">
                 <span>{{ questType ? questType[0] : '' }}</span>
             </div>
-            <div class="check">
-                <a v-if="i.preStage && !preFin" class="check-disabled" title="上一阶段未达成"></a>
-                <div class="check-circle" :class="{ checked: fin }" @click="$emit('check')">
-                    <fa-icon v-if="!i.preStage || preFin" icon="check" />
-                    <fa-icon v-else icon="ellipsis" />
+            <div class="detail">
+                <div class="check">
+                    <a v-if="i.preStage && !preFin" class="check-disabled" title="上一阶段未达成"></a>
+                    <div class="check-circle" :class="{ checked: isFin }" @click="$emit('check')">
+                        <fa-icon v-if="!i.preStage || preFin" icon="check" />
+                        <fa-icon v-else icon="ellipsis" />
+                    </div>
+                </div>
+                <div class="middle">
+                    <div class="name">
+                        <div class="award" :class="{ checked: isFin }">
+                            <img src="@/assets/images/yuanshi.png" alt="原石" />
+                            <span class="number">{{ i.reward }}</span>
+                        </div>
+                        <div class="ntxt" @click="$emit('click-title')">
+                            {{ amos[i.name] }}
+                            <sup class="version">
+                                {{ versionMap[i.id].toFixed(1) || '' }}
+                            </sup>
+                        </div>
+                    </div>
+                    <small>
+                        <a
+                            v-if="contributed[i.id]"
+                            :href="contributed[i.id]"
+                            target="_blank"
+                            class="contributed"
+                            rel="noopener nofollow"
+                        >
+                            <fa-icon icon="arrow-up-right-from-square" />
+                            攻略
+                        </a>
+                        {{ amos[i.desc] }}
+                    </small>
+                </div>
+                <div v-if="fin && isFin" class="right">
+                    <div class="status">
+                        <input
+                            :value="fin.status"
+                            type="text"
+                            @input="$emit('input-status', ($event?.target as HTMLInputElement).value)"
+                        />
+                    </div>
+                    <div class="date">
+                        <input
+                            :value="formatDate(fin.date)"
+                            type="text"
+                            @blur="updateDate(($event?.target as HTMLInputElement).value)"
+                            @keyup.enter="updateDate(($event?.target as HTMLInputElement).value)"
+                        />
+                    </div>
                 </div>
             </div>
-            <div class="middle">
-                <div class="name">
-                    <div class="award" :class="{ checked: fin }">
-                        <img src="@/assets/images/yuanshi.png" alt="原石" />
-                        <span class="number">{{ i.reward }}</span>
-                    </div>
-                    <div class="ntxt" @click="$emit('click-title')">
-                        {{ amos[i.name] }}
-                        <sup class="version">
-                            {{ versionMap[i.id].toFixed(1) || '' }}
-                        </sup>
-                    </div>
-                </div>
-                <small>
-                    <a
-                        v-if="contributed[i.id]"
-                        :href="contributed[i.id]"
-                        target="_blank"
-                        class="contributed"
-                        rel="noopener nofollow"
+            <div v-show="partial.length > 0" class="partial">
+                <li v-for="i in partial" :key="i.id" class="partial-item" :class="partialClassMap[i.type] || i.type">
+                    <el-checkbox
+                        :model-value="
+                            fin && !fin.partial ? true : !!(fin?.partialDetail || []).find((k) => k.id === i.id)
+                        "
+                        @update:model-value="$emit('input-partial', [i.id, $event])"
                     >
-                        <fa-icon icon="arrow-up-right-from-square" />
-                        攻略
-                    </a>
-                    {{ amos[i.desc] }}
-                </small>
-            </div>
-            <div v-if="fin" class="right">
-                <div class="status">
-                    <input
-                        :value="fin.status"
-                        type="text"
-                        @input="$emit('input-status', ($event?.target as HTMLInputElement).value)"
-                    />
-                </div>
-                <div class="date">
-                    <input
-                        :value="formatDate(fin.date)"
-                        type="text"
-                        @blur="updateDate(($event?.target as HTMLInputElement).value)"
-                        @keyup.enter="updateDate(($event?.target as HTMLInputElement).value)"
-                    />
-                </div>
+                        <span class="partial-badge">
+                            {{ partialTypeMap[i.type] || i.type }}
+                        </span>
+                        {{ getPartialName(i.name) }}
+                    </el-checkbox>
+                    <span class="date">{{ getPartialDate(fin?.partialDetail || [], i.id) }}</span>
+                </li>
             </div>
         </div>
     </section>
@@ -67,6 +85,7 @@ import { Achievement, IAchievementStore } from '@/typings/Achievement'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 import dayjs from 'dayjs'
+import { IPartialAchievement } from '@yuehaiteam/amos/dist/achievement-partial/typing'
 library.add(faArrowUpRightFromSquare)
 export default defineComponent({
     props: {
@@ -86,8 +105,12 @@ export default defineComponent({
             type: Object as PropType<Record<string, string>>,
             required: true,
         },
+        partial: {
+            type: Array as PropType<IPartialAchievement>,
+            required: true,
+        },
     },
-    emits: ['input-date', 'input-status', 'check', 'click-title'],
+    emits: ['input-date', 'input-status', 'input-partial', 'check', 'click-title'],
     setup(props, { emit }) {
         const badgeMap = {
             WQ: '任务',
@@ -103,6 +126,9 @@ export default defineComponent({
                 } else {
                     return false
                 }
+            }),
+            isFin: computed(() => {
+                return props.fin && !Array.isArray(props.fin.partial)
             }),
             formatDate(datestr: string) {
                 try {
@@ -134,6 +160,49 @@ export default defineComponent({
                     emit('input-date', dt.toISOString())
                 } catch (e) {}
             },
+            partialTypeMap: {
+                quest: '任务',
+                subquest: '任务',
+                task: '委托',
+                subtask: '委托',
+                achievement: '成就',
+            },
+            partialClassMap: {
+                quest: 'WQ',
+                subquest: 'WQ',
+                task: 'IQ',
+                subtask: 'IQ',
+                achievement: 'AC',
+            },
+            getPartialDate(partial: IAchievementStore['partialDetail'], id: number) {
+                const p = (partial || []).find((i) => i.id === id)
+                if (p && p.timestamp > 0) {
+                    return dayjs(p.timestamp).format('YYYY/MM/DD HH:mm:ss')
+                }
+                return ''
+            },
+            getPartialName(namearr: (string | number)[]) {
+                const nameArr = namearr.map((i) => {
+                    if (typeof i === 'number') {
+                        return i18n.amos[i] || i.toString()
+                    } else {
+                        return i
+                    }
+                })
+                nameArr.forEach((i, a) => {
+                    if (i.indexOf('/') === 0) {
+                        const regex = new RegExp(i.split('/')[1], i.split('/')[2])
+                        // remove regex
+                        nameArr[a] = ''
+                        // match last item
+                        const matches = nameArr[a - 1].match(regex)
+                        if (matches && matches[1]) {
+                            nameArr[a - 1] = matches[1]
+                        }
+                    }
+                })
+                return nameArr.join('')
+            },
             versionMap,
         }
     },
@@ -160,7 +229,39 @@ export default defineComponent({
             border-radius: 3px;
             color: var(--c-text);
             position: relative;
-            padding: 15px;
+            .detail {
+                padding: 15px;
+            }
+            .partial {
+                background: #f0f7ff;
+                border-top: 1px solid #d3e8ff;
+                .partial-badge {
+                    height: 19px;
+                    border: 1px solid;
+                    font-size: 12px;
+                    padding: 1px 3px;
+                    box-sizing: border-box;
+                    border-radius: 2px;
+                }
+                .date {
+                    float: right;
+                    font-size: 12px;
+                    height: 100%;
+                    line-height: 28px;
+                    opacity: 0.8;
+                }
+                :global(.dark) & {
+                    background: #212426;
+                    border-top: 1px solid var(--c-border);
+                }
+                padding: 5px 23px;
+                .partial-item {
+                    list-style: none;
+                }
+                .partial-item .el-checkbox {
+                    height: 28px;
+                }
+            }
             .badge {
                 position: absolute;
                 top: 0;
@@ -371,7 +472,9 @@ export default defineComponent({
             font-size: 15px;
         }
         .single {
-            padding-left: 10px;
+            .detail {
+                padding-left: 10px;
+            }
             small {
                 max-width: calc(100% - 60px);
                 font-size: 12px;

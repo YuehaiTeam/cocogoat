@@ -48,6 +48,9 @@
                                     <el-dropdown-item class="export-title" @click="doExport('cocogoat')">
                                         椰羊JSON
                                     </el-dropdown-item>
+                                    <el-dropdown-item class="export-title" @click="doExport('cocogoat.v2')">
+                                        椰羊JSONv2
+                                    </el-dropdown-item>
                                     <el-dropdown-item divided @click="doExport('snapgenshin')">
                                         Snap Genshin
                                     </el-dropdown-item>
@@ -174,15 +177,21 @@
                         </div>
                     </template>
                     <template v-slot="{ item: i, active }">
-                        <DynamicScrollerItem :item="i" :active="active" :size-dependencies="[i.preStage, i.postStage]">
+                        <DynamicScrollerItem
+                            :item="i"
+                            :active="active"
+                            :size-dependencies="[i.preStage, i.postStage, (achPartialAmos[i.id] || []).length]"
+                        >
                             <achievement-item
                                 :i="i"
                                 :fin="achievementFin[i.id]"
                                 :preFin="achievementFin[i.preStage]"
                                 :contributed="contributed"
+                                :partial="achPartialAmos[i.id] || []"
                                 @check="updateFinished(i.id)"
                                 @input-date="achievementFin[i.id].date = $event"
                                 @input-status="achievementFin[i.id].status = $event"
+                                @input-partial="updatePartial(i.id, $event[0], $event[1])"
                                 @click-title="detail = i"
                             />
                         </DynamicScrollerItem>
@@ -217,6 +226,7 @@ import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, toRef, defineComponent, computed, watch, onMounted } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
+import achPartialAmos from '@/plugins/amos/achievements/partial'
 
 import {
     faCrosshairs,
@@ -314,7 +324,7 @@ export default defineComponent({
                 e.categoryId = e.categoryId || 0
                 ach.categoryId = ach.categoryId || 0
                 hasMigrated += runMigrate(e) ? 1 : 0
-                if (e.id) {
+                if (e.id && !Array.isArray(e.partial)) {
                     newCount[e.categoryId] = newCount[e.categoryId] || {
                         count: 0,
                         reward: 0,
@@ -361,6 +371,9 @@ export default defineComponent({
         })
         const statusVersion = ref([] as number[])
         const statusQuest = ref([] as string[])
+        const isFin = (id: number) => {
+            return achievementFin.value[id] && !Array.isArray(achievementFin.value[id].partial)
+        }
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
             const statusQuest2 = statusQuest.value.map((e) => (e === 'MQ' ? '' : e))
@@ -373,8 +386,8 @@ export default defineComponent({
             if (sortByStatus.value)
                 data = data.sort((a, b) => {
                     let ret = 0
-                    let fa = achievementFin.value[a.id]
-                    let fb = achievementFin.value[b.id]
+                    let fa = achievementFin.value[a.id] as IAchievementStore | undefined
+                    let fb = achievementFin.value[b.id] as IAchievementStore | undefined
                     if (a.postStage) {
                         let p = a
                         while (p.postStage) {
@@ -400,6 +413,8 @@ export default defineComponent({
                         fb = achievementFin.value[p.id]
                     }
                     if (a.preStage === b.id) return 1
+                    fa = fa && isFin(fa.id) ? fa : undefined
+                    fb = fb && isFin(fb.id) ? fb : undefined
                     if (fa && !fb) return 1
                     if (!fa && fb) return -1
                     return ret
@@ -447,6 +462,13 @@ export default defineComponent({
         })
         const updateFinished = (id: number) => {
             if (achievementFin.value[id]) {
+                if (Array.isArray(achievementFin.value[id].partial)) {
+                    achievementFin.value[id].partial = undefined
+                    achievementFin.value[id].status = achievementFin.value[id].status || '手动勾选'
+                    const d = new Date(achievementFin.value[id].date)
+                    if (d.getTime() <= 0) achievementFin.value[id].date = new Date().toISOString()
+                    return
+                }
                 const ids = [id]
                 let ach: Achievement | undefined
                 while ((ach = currentAch.value.find((e) => e.id === ids[0])) && ach.postStage) {
@@ -462,6 +484,58 @@ export default defineComponent({
                 date: dayjs().format('YYYY/MM/DD'),
             } as IAchievementStore
             store.value.achievements.push(finishedData)
+        }
+        const updatePartial = (id: number, index: number, state: boolean) => {
+            const d = achPartialAmos[id]
+            if (!d) return
+            if (achievementFin.value[id]) {
+                const a = achievementFin.value[id]
+                // has partial means already in partially finished state
+                if (!a.partialDetail) {
+                    // make partial full
+                    a.partialDetail = d.map((e) => ({
+                        id: e.id,
+                        timestamp: 0,
+                    }))
+                }
+                const p = a.partialDetail.find((e) => e.id === index)
+                if (state === false) {
+                    // remove it
+                    a.partialDetail = a.partialDetail.filter((e) => e.id !== index)
+                } else if (!p) {
+                    // add it
+                    a.partialDetail.push({
+                        id: index,
+                        timestamp: Date.now(),
+                    })
+                }
+                a.partial = a.partialDetail.map((e) => e.id)
+                if (a.partial.length === d.length) {
+                    a.partial = undefined
+                    const d = new Date(a.date)
+                    if (d.getTime() <= 0) a.date = new Date().toISOString()
+                    a.status = a.status || '手动勾选'
+                } else if (a.partial.length === 0) {
+                    a.partial = undefined
+                    updateFinished(id)
+                }
+            } else {
+                // push a placeholder
+                const finishedData = {
+                    id,
+                    status: '',
+                    categoryId: currentCat.value.id,
+                    date: new Date(0).toISOString(),
+                    partialDetail: [
+                        {
+                            id: index,
+                            timestamp: Date.now(),
+                        },
+                    ],
+                    partial: [index],
+                } as IAchievementStore
+                store.value.achievements.push(finishedData)
+            }
         }
         const showClear = ref(false)
         const doClear = async (all: boolean) => {
@@ -540,6 +614,7 @@ export default defineComponent({
             achievementFinStat,
             currentAch,
             updateFinished,
+            updatePartial,
             doClear,
             showClear,
             selectCat,
@@ -561,6 +636,7 @@ export default defineComponent({
             autoImportId,
             closeImport,
             sendOops,
+            achPartialAmos,
         }
     },
 })

@@ -16,6 +16,7 @@ export interface IAchievementStore {
     date: string
     images?: Record<string, string>
     partial?: number[]
+    partialDetail?: { id: number; timestamp: number }[]
 }
 export interface UIAFItem {
     id: number
@@ -35,3 +36,11 @@ export interface UIAF {
 }
 // 9999-12-31 23:59:59
 export const UIAFMagicTime = 253402271999
+
+export interface IDecomposedAchievement {
+    Id: number
+    AchievementId: number
+    Title: string
+    Daily: string[]
+    Decomposed: string[]
+}

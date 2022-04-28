@@ -8,16 +8,47 @@ import achevementsAmos from '@/plugins/amos/achievements'
 import { cloneDeep } from 'lodash-es'
 import copy from 'copy-to-clipboard'
 import { IAchievementStore, UIAF, UIAFMagicTime } from '@/typings/Achievement'
+export function getV1Json() {
+    let ach0 = cloneDeep(store.value.achievements)
+    ach0 = ach0.filter((i) => !Array.isArray(i.partial))
+    ach0.forEach((e) => {
+        e.images = undefined
+        e.partial = undefined
+        e.partialDetail = undefined
+    })
+    return ach0
+}
 export function useExportAchievements() {
     const exportData = ref({
         show: false,
         title: '',
         content: '',
     })
-    const doExport = (_to: 'paimon' | 'seelie' | 'cocogoat' | 'excel' | 'snapgenshin' | 'uiaf' | '') => {
+    const doExport = (
+        _to: 'paimon' | 'seelie' | 'cocogoat' | 'cocogoat.v2' | 'excel' | 'snapgenshin' | 'uiaf' | '',
+    ) => {
         const to = _to || options.value.achievements_recent_export
         options.value.achievements_recent_export = to
         if (to === 'cocogoat') {
+            const ach0 = getV1Json()
+            const data = {
+                source: '椰羊成就',
+                value: {
+                    achievements: ach0,
+                },
+                lastModified: new Date().toISOString(),
+            }
+            const jstr = JSON.stringify(data, null, 4)
+            // save to file
+            const blob = new Blob([jstr], { type: 'application/json' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = '椰羊成就导出 ' + dayjs().format('YYYYMMDDHHmmss') + '.cocogoat-v1.json'
+            a.click()
+            return
+        }
+        if (to === 'cocogoat.v2') {
             const ach0 = cloneDeep(store.value.achievements)
             ach0.forEach((e) => {
                 e.images = undefined
@@ -35,12 +66,12 @@ export function useExportAchievements() {
             const url = URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
-            a.download = '椰羊成就导出 ' + dayjs().format('YYYYMMDDHHmmss') + '.json'
+            a.download = '椰羊成就导出 ' + dayjs().format('YYYYMMDDHHmmss') + '.cocogoat-v2.json'
             a.click()
             return
         }
         if (to === 'uiaf') {
-            const data = toUIAF(store.value.achievements)
+            const data = toUIAF(getV1Json())
             const jstr = JSON.stringify(data, null, 4)
             const blob = new Blob([jstr], { type: 'application/json' })
             const url = URL.createObjectURL(blob)
@@ -52,7 +83,7 @@ export function useExportAchievements() {
         }
         if (to === 'snapgenshin') {
             // const ach0 = toUIAF(store.value.achievements)
-            const ach0 = store.value.achievements.map((e) => {
+            const ach0 = getV1Json().map((e) => {
                 return {
                     Id: e.id,
                     TimeStamp: Math.floor(new Date(e.date).getTime() / 1000),
@@ -80,7 +111,7 @@ export function useExportAchievements() {
         }
         let content = ''
         if (to === 'seelie') {
-            const exportArray = store.value.achievements.map((i) => {
+            const exportArray = getV1Json().map((i) => {
                 return [i.id, (i.status + ' ' + i.date).trim()]
             })
             content = `/*
@@ -100,7 +131,7 @@ localStorage.setItem(\`\${a}-achievements\`,JSON.stringify(b))
 localStorage.last_update = (new Date()).toISOString()
 location.href='/achievements'`
         } else {
-            const exportArray = store.value.achievements.map((a) => {
+            const exportArray = getV1Json().map((a) => {
                 return [a.categoryId, a.id]
             })
             content = `/*
@@ -171,14 +202,14 @@ async function dumpToExcel() {
     // convert data
     achevementsAmos.forEach((category) => {
         category.achievements.forEach((achievement) => {
-            const ach = store.value.achievements.find((i) => i.id === achievement.id)
+            const ach = getV1Json().find((i) => i.id === achievement.id)
             worksheet.addRow({
                 id: achievement.id,
                 category: i18n.amos[category.name],
                 name: i18n.amos[achievement.name],
                 desc: i18n.amos[achievement.desc],
                 reward: achievement.reward,
-                status: ach ? ach.status : '',
+                status: ach ? ach.status : '未完成',
                 date: ach ? ach.date : '',
             })
         })

@@ -5,6 +5,7 @@
             <el-tab-pane name="options.basic" label="基本设置"></el-tab-pane>
             <el-tab-pane name="options.user" label="账号管理"></el-tab-pane>
             <el-tab-pane name="options.sync" label="数据与云同步"></el-tab-pane>
+            <el-tab-pane name="options.about" label="关于"></el-tab-pane>
         </el-tabs>
         <router-view />
     </Layout>

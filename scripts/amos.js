@@ -11,6 +11,10 @@ amosSources.writeFileHook = (file, data) => {
             importTxt = `import {AchievementCategory} from '@yuehaiteam/amos/dist/achievement/typing';`
             type = 'AchievementCategory[]'
         }
+        if (file.includes('achievements' + path.sep + 'partial')) {
+            importTxt = `import {IPartialAchievementList} from '@yuehaiteam/amos/dist/achievement-partial/typing';`
+            type = 'IPartialAchievementList'
+        }
         if (file.includes('characters' + path.sep + 'index')) {
             importTxt = `import {Character} from '@yuehaiteam/amos/dist/character/typing';`
             type = 'Character[]'

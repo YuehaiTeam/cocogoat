@@ -43,7 +43,15 @@ export const absoluteSizes = {
 } as Record<string, number>
 
 export function speedTest() {
-    if (process.env.VUE_APP_LOCALRES === 'true' && !location.href.includes('forceCDN')) {
+    if (window && navigator && navigator.serviceWorker && navigator.serviceWorker.controller) {
+        const swResUrls = {} as typeof resources
+        Object.keys(defaultResources).forEach((key) => {
+            swResUrls[key] = `/_sw/resources/${key}`
+        })
+        setResources(swResUrls)
+        return []
+    }
+    if (process.env.VUE_APP_LOCALRES === 'true' && window && !location.href.includes('forceCDN')) {
         return []
     }
     // group testresources by tag
@@ -121,35 +129,16 @@ export function getBlobWithProgress(
                     throw new Error('DecompressionStream not available')
                 }
             } catch (e) {
-                if (!window.pako) {
-                    try {
-                        await loadScript('https://lib.baomitu.com/pako/2.0.4/pako_inflate.min.js')
-                    } catch (e) {
-                        try {
-                            await loadScript('https://cdn.staticfile.org/pako/2.0.4/pako_inflate.min.js')
-                        } catch (e) {}
-                    }
-                }
-                if (!window.pako) {
-                    if (!document.querySelector('.el-overlay.is-message-box'))
-                        ElMessageBox({
-                            title: '出错了！',
-                            message: '您当前的浏览器版本过低，请升级浏览器或连接网络再试。',
-                            showConfirmButton: false,
-                            showClose: false,
-                            closeOnClickModal: false,
-                            closeOnPressEscape: false,
-                        })
-                    throw new Error('cannot decompress file')
-                }
-                const response = await f
-                if (!response.body) {
-                    throw new Error('No body')
-                }
-                const arrayBuffer = await response.arrayBuffer()
-                const decompressed = window.pako.inflate(new Uint8Array(arrayBuffer))
-                console.log('Decompressed successfully using pako')
-                return new Blob([decompressed], { type: 'application/octet-stream' })
+                if (!document.querySelector('.el-overlay.is-message-box'))
+                    ElMessageBox({
+                        title: '出错了！',
+                        message: '您当前的浏览器版本过低，请升级浏览器或连接网络再试。',
+                        showConfirmButton: false,
+                        showClose: false,
+                        closeOnClickModal: false,
+                        closeOnPressEscape: false,
+                    })
+                throw new Error('cannot decompress file')
             }
         })()
     } else if (url.startsWith('data:')) {
@@ -247,14 +236,5 @@ function blobToBase64(blob: Blob): Promise<string> {
         const reader = new FileReader()
         reader.onloadend = () => resolve(reader.result as string)
         reader.readAsDataURL(blob)
-    })
-}
-function loadScript(url: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        const script = document.createElement('script')
-        script.src = url
-        script.onload = () => resolve()
-        script.onerror = (e) => reject(e)
-        document.head.appendChild(script)
     })
 }

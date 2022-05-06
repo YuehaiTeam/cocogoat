@@ -14,7 +14,7 @@
         "useDefineForClassFields": true,
         "sourceMap": true,
         "baseUrl": ".",
-        "types": ["webpack-env", "element-plus/global"],
+        "types": ["webpack-env", "element-plus/global", "service-worker"],
         "paths": {
             "@/*": ["src/*"],
             "@genshin-data/*": ["src/plugins/genshin-data/data/*"]
@@ -22,5 +22,5 @@
         "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
     },
     "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx"],
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules", "src/plugins/genshin-data/**"]
 }

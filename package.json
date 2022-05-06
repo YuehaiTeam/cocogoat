@@ -46,7 +46,10 @@
     "vue-monaco": "^1.2.2",
     "vue-router": "^4.0.3",
     "vue-scriptx": "^0.2.5",
-    "vue-virtual-scroller": "^2.0.0-alpha.1"
+    "vue-virtual-scroller": "^2.0.0-alpha.1",
+    "workbox-precaching": "^6.5.3",
+    "workbox-routing": "^6.5.3",
+    "workbox-strategies": "^6.5.3"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.16.5",

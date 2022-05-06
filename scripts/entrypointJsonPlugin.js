@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 module.exports = class EntrypointJsonPlugin {
     files = []
     constructor(htmlWebpackPlugin, data) {
@@ -33,6 +34,20 @@ module.exports = class EntrypointJsonPlugin {
         })
         // write json file
         compiler.hooks.emit.tap('EntrypointJsonPlugin', (compilation) => {
+            // write assets json
+            const assetList = Object.keys(compilation.assets).filter(
+                (e) => !e.endsWith('.map') && !e.endsWith('.wasm') && !e.endsWith('.ort') && !e.endsWith('.html'),
+            )
+            const assetsJson = JSON.stringify(assetList)
+            // get md5 of assetsJson
+            const assetsMd5 = crypto.createHash('md5').update(assetsJson).digest('hex')
+            const fn = `sw/${assetsMd5.substring(0, 8)}.json`
+            compilation.assets[fn] = {
+                source: () => assetsJson,
+                size: () => assetsJson.length,
+            }
+            this.files.push(fn)
+            // write entrypoint json
             const json = JSON.stringify(this.files)
             compilation.assets['index.json'] = {
                 source: () => json,

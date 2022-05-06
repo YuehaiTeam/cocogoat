@@ -14,6 +14,7 @@ const singleFileDLL = process.argv.includes('--singlefile-dll')
 const singleFile = process.argv.includes('--singlefile') || singleFileDLL
 const SentryPlugin = require('@sentry/webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const useCDN = !process.argv.includes('--no-cdn')
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
 process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
@@ -25,7 +26,7 @@ console.log(gitInfo)
 module.exports = defineConfig({
     publicPath: singleFile
         ? '.'
-        : process.env.NODE_ENV === 'production'
+        : process.env.NODE_ENV === 'production' && useCDN
         ? 'https://cocogoat-1251105598.file.myqcloud.com/'
         : '/',
     assetsDir: 'static',
@@ -157,10 +158,10 @@ module.exports = defineConfig({
                 .set('generator', { filename: 'assets/[name].[contenthash:8][ext]' })
             config.module.set('parser', {
                 'javascript/auto': {
-                    worker: ['Worker from @/utils/corsWorker', '...'],
+                    worker: ['Worker from @/utils/corsWorker', 'ServiceWorker from @/utils/serviceWorker', '...'],
                 },
                 'javascript/esm': {
-                    worker: ['Worker from @/utils/corsWorker', '...'],
+                    worker: ['Worker from @/utils/corsWorker', 'ServiceWorker from @/utils/serviceWorker', '...'],
                 },
             })
             config
@@ -195,7 +196,6 @@ module.exports = defineConfig({
                 ])
                 config.plugin('DeleteSourceMapPlugin').use(DeleteSourceMapPlugin)
             }
-
             // externals
             config.externals({
                 'monaco-editor': 'var monaco',

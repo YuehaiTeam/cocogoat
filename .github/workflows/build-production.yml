@@ -47,10 +47,11 @@ jobs:
         with:
           name: cocogoat-web
           path: dist/
-      - name: Remove Models
+      - name: Remove unused files
         run: | 
           rm -rf dist/assets/*.wasm
           rm -rf dist/assets/*.ort
+          rm -rf dist/index.html
       - name: Keep index.json
         run: mv dist/index.json ./index.temp.json
       - name: Deploy static files

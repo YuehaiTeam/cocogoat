@@ -12,6 +12,8 @@ import { createPinia } from 'pinia'
 import ScriptX from 'vue-scriptx'
 import '@/utils/darkmode'
 import Adsense from 'vue-google-adsense/dist/Adsense.min.js'
+import { ServiceWorker } from './utils/serviceWorker'
+
 const app = createApp(App)
 app.use(createPinia())
 app.use(ScriptX)
@@ -36,6 +38,7 @@ declare global {
             endpoint: string
             build: string
             route: 'history' | 'hash'
+            manifest: string
             onload?: () => void
             app: TypeApp
             store: typeof store
@@ -43,6 +46,7 @@ declare global {
             i18n: typeof i18n
             resources: typeof resources
             currentUser: typeof currentUser
+            sw: ServiceWorker
         }
     }
 }
@@ -74,4 +78,21 @@ declare global {
     Object.assign(c, window.$cocogoat)
     window.$cocogoat = c
     window.$cocogoat.onload && window.$cocogoat.onload()
+    /// #if !SINGLEFILE
+    import(/* webpackMode: "eager" */ '@/utils/serviceWorkerEntrance')
+    /// #endif
 })()
+
+// 检查连续刷新
+const lastT = sessionStorage.lastRefreshTimes || 0
+if (lastT > 3) {
+    caches.keys().then((names) => names.forEach((name) => caches.delete(name)))
+    delete sessionStorage.lastRefreshTimes
+} else {
+    const openTime = Date.now()
+    window.addEventListener('beforeunload', () => {
+        if (Date.now() - openTime < 800) {
+            sessionStorage.lastRefreshTimes = (Number(sessionStorage.lastRefreshTimes) || 0) + 1
+        }
+    })
+}

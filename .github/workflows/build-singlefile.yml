@@ -44,7 +44,7 @@ jobs:
         run: yarn build:singlefile
       
       - name: Rename
-        run: mkdir dist/local && mv dist/index.html dist/local/cocogoat-web-local.html && mv dist/assets/*.exe dist/local/
+        run: mkdir dist/local && mv dist/index.html dist/local/cocogoat-web-local.html
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:

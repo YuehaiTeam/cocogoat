@@ -5,13 +5,8 @@ export class ServiceWorker {
     sw = navigator.serviceWorker ? navigator.serviceWorker.controller : null
     constructor(_url: string | URL, _fallback: string | URL) {
         const url: URL = new URL(_url, location.href)
-        const fallback = new URL(_fallback, location.href)
         if (url.origin !== location.origin) {
-            const urlHash = (url.href.match(/\.(.*?).js$/) || [])[1]
-            if (urlHash) {
-                fallback.searchParams.set('id', urlHash)
-            }
-            this.url = fallback.href
+            this.url = _fallback.toString()
             this.fallback = true
         } else {
             this.url = url.href
@@ -89,7 +84,9 @@ export class ServiceWorker {
         let loaded = 0
         const promises = manifest.map((url) => {
             const urlObj = new URL(url, publicPath)
-            return fetch(urlObj.toString())
+            return fetch(urlObj.toString(), {
+                cache: 'no-store',
+            })
                 .then((res) => {
                     if (res.status !== 200) {
                         throw new Error(`${res.status} ${res.statusText}`)

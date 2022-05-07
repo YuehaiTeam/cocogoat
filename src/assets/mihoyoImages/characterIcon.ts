@@ -63,7 +63,7 @@ const mapping = {
     yae_miko: 'Yae',
     kamisato_ayato: 'Ayato',
 } as Record<string, string>
-const template =
+export const template =
     'https://upload-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_#.png?x-oss-process=image/crop,w_200,h_200,y_5,g_north'
 export const characterIcon = (name: string) => {
     let n = ''

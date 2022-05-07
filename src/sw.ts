@@ -93,7 +93,7 @@ registerRoute(/\/_sw\/resources\/(.*?)/, async ({ url, request }): Promise<Respo
 registerRoute(
     new RegExp(`${publicPath}static/(.*)`),
     new CacheFirst({
-        cacheName,
+        cacheName: cacheName,
     }),
 )
 
@@ -101,7 +101,7 @@ registerRoute(
 registerRoute(
     /(.*).json/,
     new NetworkFirst({
-        cacheName,
+        cacheName: cacheName,
     }),
 )
 
@@ -109,7 +109,7 @@ registerRoute(
 registerRoute(
     /contributed/,
     new NetworkFirst({
-        cacheName,
+        cacheName: cacheName + '-api',
     }),
 )
 
@@ -117,7 +117,7 @@ registerRoute(
 registerRoute(
     /api-region/,
     new NetworkFirst({
-        cacheName,
+        cacheName: cacheName + '-api',
     }),
 )
 
@@ -125,7 +125,7 @@ registerRoute(
 registerRoute(
     /mihoyo\.com/,
     new NetworkFirst({
-        cacheName,
+        cacheName: cacheName + '-mohoyo',
     }),
 )
 
@@ -172,3 +172,11 @@ registerRoute(
         }
     },
 )
+
+// precache /
+addEventListener('install', () => {
+    fetch(new Request(new URL('/', location.href).toString())).then(async (response) => {
+        const cache = await caches.open(cacheName)
+        return cache.put(new Request(new URL('/', location.href).toString()), response)
+    })
+})

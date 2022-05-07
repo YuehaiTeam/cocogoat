@@ -1,16 +1,31 @@
 export class ServiceWorker {
     url: string
     fallback = false
+    manifest = ''
+    additionalCachedUrls = [] as string[]
     justinstall = false
     sw = navigator.serviceWorker ? navigator.serviceWorker.controller : null
-    constructor(_url: string | URL, _fallback: string | URL) {
+    constructor(
+        _url: string | URL,
+        {
+            fallback,
+            manifest,
+            additionalCachedUrls,
+        }: {
+            fallback: string
+            manifest: string
+            additionalCachedUrls?: string[]
+        },
+    ) {
         const url: URL = new URL(_url, location.href)
         if (url.origin !== location.origin) {
-            this.url = _fallback.toString()
+            this.url = fallback.toString()
             this.fallback = true
         } else {
             this.url = url.href
         }
+        this.manifest = manifest
+        this.additionalCachedUrls = additionalCachedUrls || []
     }
     async install() {
         // if fallback, check file exists
@@ -59,7 +74,7 @@ export class ServiceWorker {
         if (!navigator.serviceWorker || !this.sw) {
             return
         }
-        window.addEventListener('onappinstalled', () => {
+        window.addEventListener('appinstalled', () => {
             console.log('[cocogoat-sw] installed to app')
             this.cacheAll()
         })
@@ -68,7 +83,7 @@ export class ServiceWorker {
         if (!navigator.serviceWorker || !this.sw) {
             throw new Error('ServiceWorker not installed')
         }
-        if (!window.$cocogoat.manifest) {
+        if (!this.manifest) {
             throw new Error('Manifest not loaded')
         }
         // fetch manifest
@@ -78,7 +93,8 @@ export class ServiceWorker {
         if (manifestReq.status !== 200) {
             throw new Error(`${manifestReq.status} ${manifestReq.statusText}`)
         }
-        const manifest = (await manifestReq.json()) as string[]
+        const _manifest = (await manifestReq.json()) as string[]
+        const manifest = [..._manifest, ...this.additionalCachedUrls]
         manifest.push(new URL('/', location.href).toString())
         // fetch all files
         let loaded = 0

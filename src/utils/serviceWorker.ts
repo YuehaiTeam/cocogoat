@@ -155,7 +155,7 @@ export class ServiceWorker {
             await manifestCache.put('/_sw/meta/resources', new Response(JSON.stringify(this.additionalResources)))
         }
         const cachedManifest = await manifestCache.match('/_sw/meta/registered')
-        if (!cachedManifest && !force) return
+        if (!cachedManifest && !force) return this.updateCachedManifest()
         const manifest = [
             ..._manifest,
             ...this.additionalCachedUrls,
@@ -186,5 +186,12 @@ export class ServiceWorker {
                 })
         })
         await Promise.all(promises)
+        this.updateCachedManifest()
+    }
+    async updateCachedManifest() {
+        const path = __webpack_public_path__ + 'index.json'
+        const manifestCache = await caches.open('cocogoat-sw-manifest')
+        const indexJson = await fetch(path)
+        await manifestCache.put(path, indexJson)
     }
 }

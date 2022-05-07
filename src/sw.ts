@@ -53,7 +53,6 @@ export function speedTest() {
 
 const cacheName = 'cocogoat-sw'
 const publicPath = __webpack_public_path__
-const cachePromise = caches.open(cacheName)
 
 let speedTestResult = [] as Awaited<ReturnType<typeof speedTest>>
 
@@ -92,7 +91,7 @@ registerRoute(/\/_sw\/resources\/(.*?)/, async ({ url, request }): Promise<Respo
     const u = new URL(url)
     const basename = u.pathname.split('/').pop() || ''
     // check cache
-    const cache = await cachePromise
+    const cache = await caches.open(cacheName + '-resources')
     const cached = await cache.match(request)
     if (cached) {
         console.log('[cocogoat-sw] resource cached:', basename)
@@ -180,7 +179,7 @@ registerRoute(
             const response = await fetch(request)
             console.log(u.pathname)
             if (u.pathname === '/') {
-                const cache = await cachePromise
+                const cache = await caches.open(cacheName)
                 await cache.put(request, response.clone())
             }
             return response
@@ -191,7 +190,7 @@ registerRoute(
                 })
             }
             // fallback to `/` for cache
-            const cache = await cachePromise
+            const cache = await caches.open(cacheName)
             const cached = await cache.match(new Request(new URL('/', url).toString()))
             if (cached) {
                 return cached

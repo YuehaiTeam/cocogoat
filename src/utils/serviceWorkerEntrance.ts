@@ -8,16 +8,14 @@ import 'element-plus/theme-chalk/el-notification.css'
 import { hasSIMD } from './compatibility'
 const ortWasm = hasSIMD ? 'ort-wasm-simd.wasm' : 'ort-wasm.wasm'
 const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
-const resourcesArr = [ortWasm, ocvWasm, 'ppocr.ort', 'yas.ort']
+const resourcesArr = { [ortWasm]: '1.10.0', [ocvWasm]: '1.0.5', 'ppocr.ort': '1.0.5', 'yas.ort': '1.0.5' }
 export const sw = new ServiceWorker(
     new URL(/* webpackChunkName: "sw" */ /* webpackEntryOptions: { filename: "sw.js" } */ '@/sw.ts', import.meta.url),
     {
         fallback: '/sw.js',
         manifest: window.$cocogoat.manifest || '',
-        additionalCachedUrls: [
-            ...characterAmos.map((c) => template.replace('#', c.key)),
-            ...resourcesArr.map((r) => new URL('/_sw/resources/' + r, location.href).toString()),
-        ],
+        additionalCachedUrls: [...characterAmos.map((c) => template.replace('#', c.key))],
+        additionalResources: resourcesArr,
         onprogress(this: ServiceWorker, a, b) {
             if (!this.custom.progress) {
                 const comp = h(ProgressNotf)

@@ -1,8 +1,11 @@
+import { isEqual, reduce } from 'lodash-es'
+
 export class ServiceWorker {
     url: string
     fallback = false
     manifest = ''
     additionalCachedUrls = [] as string[]
+    additionalResources: Record<string, string> = {}
     justinstall = false
     sw = navigator.serviceWorker ? navigator.serviceWorker.controller : null
     onprogress?: (loaded: number, total: number) => unknown
@@ -13,11 +16,13 @@ export class ServiceWorker {
             fallback,
             manifest,
             additionalCachedUrls,
+            additionalResources,
             onprogress,
         }: {
             fallback: string
             manifest: string
             additionalCachedUrls?: string[]
+            additionalResources: Record<string, string>
             onprogress?: (loaded: number, total: number) => unknown
         },
     ) {
@@ -30,6 +35,7 @@ export class ServiceWorker {
         }
         this.manifest = manifest
         this.additionalCachedUrls = additionalCachedUrls || []
+        this.additionalResources = additionalResources
         this.onprogress = onprogress
     }
     async install() {
@@ -125,13 +131,42 @@ export class ServiceWorker {
             if (u[0] === '/') u = u.substring(1)
             if (!_manifest.includes(u)) {
                 swCache.delete(i.r)
-                console.log('[cocogoat-sw] purged:', i)
+                console.log('[cocogoat-sw] purged:', i.p)
             }
         }
         const manifestCache = await caches.open('cocogoat-sw-manifest')
+        const cachedResources = await manifestCache.match(new Request('/_sw/meta/resources'))
+        const cachedResourcesJson: typeof this.additionalResources = cachedResources ? await cachedResources.json() : {}
+        if (!isEqual(cachedResourcesJson, this.additionalResources)) {
+            const resCache = await caches.open('cocogoat-sw-resources')
+            // get diff
+            const diffKey = reduce(
+                this.additionalResources,
+                function (result, value, key) {
+                    return isEqual(value, cachedResourcesJson[key]) ? result : result.concat(key)
+                },
+                [] as string[],
+            )
+
+            for (const i of diffKey) {
+                resCache.delete(new Request(new URL('/_sw/resources/' + i, location.href).toString()))
+                console.log('[cocogoat-sw] purged:', diffKey)
+            }
+            // set to cache
+            await manifestCache.put(
+                new Request('/_sw/meta/resources'),
+                new Response(JSON.stringify(this.additionalResources)),
+            )
+        }
         const cachedManifest = await manifestCache.match(new Request('/_sw/meta/registered'))
         if (!cachedManifest && !force) return
-        const manifest = [..._manifest, ...this.additionalCachedUrls]
+        const manifest = [
+            ..._manifest,
+            ...this.additionalCachedUrls,
+            ...Object.keys(this.additionalResources).map((e) =>
+                new URL('/_sw/resources/' + e, location.href).toString(),
+            ),
+        ]
         manifest.push(new URL('/', location.href).toString())
         // fetch all files
         let loaded = 0

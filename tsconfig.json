@@ -14,7 +14,7 @@
         "useDefineForClassFields": true,
         "sourceMap": true,
         "baseUrl": ".",
-        "types": ["webpack-env", "element-plus/global", "service-worker"],
+        "types": ["webpack-env", "element-plus/global", "serviceworker"],
         "paths": {
             "@/*": ["src/*"],
             "@genshin-data/*": ["src/plugins/genshin-data/data/*"]

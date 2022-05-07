@@ -1505,6 +1505,11 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
+"@types/serviceworker@^0.0.43":
+  version "0.0.43"
+  resolved "https://registry.npmmirror.com/@types/serviceworker/-/serviceworker-0.0.43.tgz#89914b0c61bf51c3d5f72aa1aed21b7d1851016b"
+  integrity sha512-WOXfV8oKwmkEJr3yQg44s+/ds0G5DzP1ZD7oZzPXWqwno8imiaBJN2HjHgvag4MfA+q+QBv4UxGueXZ823OVFg==
+
 "@types/sockjs@^0.3.33":
   version "0.3.33"
   resolved "https://registry.npmmirror.com/@types/sockjs/download/@types/sockjs-0.3.33.tgz#570d3a0b99ac995360e3136fd6045113b1bd236f"

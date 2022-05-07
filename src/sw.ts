@@ -57,6 +57,22 @@ const cachePromise = caches.open(cacheName)
 
 let speedTestResult = [] as Awaited<ReturnType<typeof speedTest>>
 
+addEventListener('install', (event: ExtendableEvent) => {
+    event.waitUntil(
+        Promise.all([
+            caches.open(cacheName + '-manifest').then((cache) => cache.add(__webpack_public_path__ + 'index.json')),
+            fetch(new Request(new URL('/', location.href).toString())).then(async (response) => {
+                const cache = await caches.open(cacheName)
+                return cache.put(new Request(new URL('/', location.href).toString()), response)
+            }),
+        ]),
+    )
+})
+
+addEventListener('activate', () => {
+    clients.claim()
+})
+
 // wasm(s)
 registerRoute(/\/_sw\/resources\/(.*?)/, async ({ url, request }): Promise<Response> => {
     const u = new URL(url)
@@ -173,10 +189,16 @@ registerRoute(
     },
 )
 
-// precache /
-addEventListener('install', () => {
-    fetch(new Request(new URL('/', location.href).toString())).then(async (response) => {
-        const cache = await caches.open(cacheName)
-        return cache.put(new Request(new URL('/', location.href).toString()), response)
-    })
+// cache manifest handler
+registerRoute(/\/_sw\/register/, async (): Promise<Response> => {
+    try {
+        caches
+            .open(cacheName + '-manifest')
+            .then((cache) => cache.put(new Request('/_sw/meta/registered'), new Response('true')))
+        return new Response('[cocogoat-sw] manifest registered')
+    } catch (e) {
+        return new Response('[cocogoat-sw] manifest register FAILD: ' + (e as Error).message, {
+            status: 500,
+        })
+    }
 })

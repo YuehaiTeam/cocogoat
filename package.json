@@ -18,6 +18,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-5",
     "@sentry/tracing": "^6.17.9",
     "@sentry/vue": "^6.17.9",
+    "@types/serviceworker": "^0.0.43",
     "@yuehaiteam/amos": "https://github.com/YuehaiTeam/amos.git",
     "color-diff": "^1.2.0",
     "comlink": "^4.3.1",

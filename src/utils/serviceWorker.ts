@@ -48,6 +48,7 @@ export class ServiceWorker {
         if (!('serviceWorker' in navigator)) {
             return
         }
+        this.addInstallListener()
         // check if already installed and is the same version
         if (navigator.serviceWorker.controller) {
             const current = navigator.serviceWorker.controller
@@ -98,7 +99,7 @@ export class ServiceWorker {
             this.cacheAll()
         }
     }
-    async cacheAll() {
+    async cacheAll(force = false) {
         if (!navigator.serviceWorker || !this.sw) {
             throw new Error('ServiceWorker not installed')
         }
@@ -125,7 +126,7 @@ export class ServiceWorker {
         }
         const manifestCache = await caches.open('cocogoat-sw-manifest')
         const cachedManifest = await manifestCache.match(new Request('/_sw/meta/registered'))
-        if (!cachedManifest) return
+        if (!cachedManifest && !force) return
         const manifest = [..._manifest, ...this.additionalCachedUrls]
         manifest.push(new URL('/', location.href).toString())
         // fetch all files

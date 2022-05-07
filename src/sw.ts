@@ -73,6 +73,20 @@ addEventListener('activate', () => {
     clients.claim()
 })
 
+// cache manifest handler
+registerRoute(/\/_sw\/register/, async (): Promise<Response> => {
+    try {
+        caches
+            .open(cacheName + '-manifest')
+            .then((cache) => cache.put(new Request('/_sw/meta/registered'), new Response('true')))
+        return new Response('[cocogoat-sw] manifest registered')
+    } catch (e) {
+        return new Response('[cocogoat-sw] manifest register FAILD: ' + (e as Error).message, {
+            status: 500,
+        })
+    }
+})
+
 // wasm(s)
 registerRoute(/\/_sw\/resources\/(.*?)/, async ({ url, request }): Promise<Response> => {
     const u = new URL(url)
@@ -188,17 +202,3 @@ registerRoute(
         }
     },
 )
-
-// cache manifest handler
-registerRoute(/\/_sw\/register/, async (): Promise<Response> => {
-    try {
-        caches
-            .open(cacheName + '-manifest')
-            .then((cache) => cache.put(new Request('/_sw/meta/registered'), new Response('true')))
-        return new Response('[cocogoat-sw] manifest registered')
-    } catch (e) {
-        return new Response('[cocogoat-sw] manifest register FAILD: ' + (e as Error).message, {
-            status: 500,
-        })
-    }
-})

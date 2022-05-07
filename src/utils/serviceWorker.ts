@@ -56,9 +56,9 @@ export class ServiceWorker {
         }
         this.addInstallListener()
         // check if already installed and is the same version
-        if (navigator.serviceWorker.controller) {
-            const current = navigator.serviceWorker.controller
-            if (current.scriptURL === this.url) {
+        const current = navigator.serviceWorker.controller
+        if (current) {
+            if (new URL(this.url, location.href).toString() === current.scriptURL) {
                 return this.checkUpdate()
             }
         }

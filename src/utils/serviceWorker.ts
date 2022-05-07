@@ -83,9 +83,6 @@ export class ServiceWorker {
     }
 
     async addInstallListener() {
-        if (!navigator.serviceWorker || !this.sw) {
-            return
-        }
         window.addEventListener('appinstalled', async () => {
             console.log('[cocogoat-sw] installed to app')
             await fetch('/_sw/register')

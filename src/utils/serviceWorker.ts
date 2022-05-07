@@ -80,10 +80,10 @@ export class ServiceWorker {
         if (!navigator.serviceWorker || !this.sw) {
             return
         }
-        window.addEventListener('appinstalled', () => {
+        window.addEventListener('appinstalled', async () => {
             console.log('[cocogoat-sw] installed to app')
-            fetch('/_sw/register')
-            this.cacheAll()
+            await fetch('/_sw/register')
+            this.cacheAll(true)
         })
     }
     async checkUpdate() {
@@ -95,8 +95,10 @@ export class ServiceWorker {
         const cachedJson = await cachedManifest.json()
         const swManifest = cachedJson[3]
         if (this.manifest !== swManifest) {
-            console.log('[cocogoat-sw] update found')
+            console.log('[cocogoat-sw] update found:', this.manifest + ' >> ' + swManifest)
             this.cacheAll()
+        } else {
+            console.log('[cocogoat-sw] no update found', this.manifest)
         }
     }
     async cacheAll(force = false) {
@@ -115,12 +117,14 @@ export class ServiceWorker {
         }
         const _manifest = (await manifestReq.json()) as string[]
         const swCache = await caches.open('cocogoat-sw')
-        const urls = (await swCache.keys()).map((e) => new URL(e.url).pathname).filter((e) => e.includes('static/'))
+        const urls = (await swCache.keys())
+            .map((e) => ({ p: new URL(e.url).pathname, r: e }))
+            .filter((e) => e.p.includes('static/'))
         for (const i of urls) {
-            let u = i
+            let u = i.p
             if (u[0] === '/') u = u.substring(1)
             if (!_manifest.includes(u)) {
-                swCache.delete(i)
+                swCache.delete(i.r)
                 console.log('[cocogoat-sw] purged:', i)
             }
         }

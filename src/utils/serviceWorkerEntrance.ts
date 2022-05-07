@@ -5,12 +5,19 @@ import ProgressNotf from '@/components/ProgressNotf.vue'
 import { h, VNode, ComponentInternalInstance } from 'vue'
 import { ElNotification, NotificationHandle } from 'element-plus'
 import 'element-plus/theme-chalk/el-notification.css'
+import { hasSIMD } from './compatibility'
+const ortWasm = hasSIMD ? 'ort-wasm-simd.wasm' : 'ort-wasm.wasm'
+const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
+const resourcesArr = [ortWasm, ocvWasm, 'ppocr.ort', 'yas.ort']
 export const sw = new ServiceWorker(
     new URL(/* webpackChunkName: "sw" */ /* webpackEntryOptions: { filename: "sw.js" } */ '@/sw.ts', import.meta.url),
     {
         fallback: '/sw.js',
         manifest: window.$cocogoat.manifest || '',
-        additionalCachedUrls: [...characterAmos.map((c) => template.replace('#', c.key))],
+        additionalCachedUrls: [
+            ...characterAmos.map((c) => template.replace('#', c.key)),
+            ...resourcesArr.map((r) => new URL('/_sw/resources/' + r, location.href).toString()),
+        ],
         onprogress(this: ServiceWorker, a, b) {
             if (!this.custom.progress) {
                 const comp = h(ProgressNotf)

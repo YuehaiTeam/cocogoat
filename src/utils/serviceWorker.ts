@@ -95,8 +95,7 @@ export class ServiceWorker {
     async checkUpdate() {
         if (!this.manifest) return
         const manifestCache = await caches.open('cocogoat-sw-manifest')
-        const request = new Request(__webpack_public_path__ + 'index.json')
-        const cachedManifest = await manifestCache.match(request)
+        const cachedManifest = await manifestCache.match(__webpack_public_path__ + 'index.json')
         if (!cachedManifest) return
         const cachedJson = await cachedManifest.json()
         const swManifest = cachedJson[3]
@@ -135,7 +134,7 @@ export class ServiceWorker {
             }
         }
         const manifestCache = await caches.open('cocogoat-sw-manifest')
-        const cachedResources = await manifestCache.match(new Request('/_sw/meta/resources'))
+        const cachedResources = await manifestCache.match('/_sw/meta/resources')
         const cachedResourcesJson: typeof this.additionalResources = cachedResources ? await cachedResources.json() : {}
         if (!isEqual(cachedResourcesJson, this.additionalResources)) {
             const resCache = await caches.open('cocogoat-sw-resources')
@@ -149,16 +148,13 @@ export class ServiceWorker {
             )
 
             for (const i of diffKey) {
-                resCache.delete(new Request(new URL('/_sw/resources/' + i, location.href).toString()))
+                resCache.delete(new URL('/_sw/resources/' + i, location.href).toString())
                 console.log('[cocogoat-sw] purged:', diffKey)
             }
             // set to cache
-            await manifestCache.put(
-                new Request('/_sw/meta/resources'),
-                new Response(JSON.stringify(this.additionalResources)),
-            )
+            await manifestCache.put('/_sw/meta/resources', new Response(JSON.stringify(this.additionalResources)))
         }
-        const cachedManifest = await manifestCache.match(new Request('/_sw/meta/registered'))
+        const cachedManifest = await manifestCache.match('/_sw/meta/registered')
         if (!cachedManifest && !force) return
         const manifest = [
             ..._manifest,

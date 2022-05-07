@@ -52,14 +52,18 @@ export function speedTest() {
 }
 
 const cacheName = 'cocogoat-sw'
-const publicPath = __webpack_public_path__
 
 let speedTestResult = [] as Awaited<ReturnType<typeof speedTest>>
 
 addEventListener('install', (event: ExtendableEvent) => {
     event.waitUntil(
         Promise.all([
-            caches.open(cacheName + '-manifest').then((cache) => cache.add(__webpack_public_path__ + 'index.json')),
+            caches.open(cacheName + '-manifest').then(async (cache) => {
+                if (await cache.match(__webpack_public_path__ + 'index.json')) {
+                    return
+                }
+                await cache.add(__webpack_public_path__ + 'index.json')
+            }),
             fetch(new Request(new URL('/', location.href).toString())).then(async (response) => {
                 const cache = await caches.open(cacheName)
                 return cache.put(new Request(new URL('/', location.href).toString()), response)
@@ -120,7 +124,7 @@ registerRoute(/\/_sw\/resources\/(.*?)/, async ({ url, request }): Promise<Respo
 
 // offlinefirst for cache
 registerRoute(
-    new RegExp(`${publicPath}static/(.*)`),
+    new RegExp(`${__webpack_public_path__}static/(.*)`),
     new CacheFirst({
         cacheName: cacheName,
     }),
@@ -152,14 +156,16 @@ registerRoute(
 
 // networkfirst for mihoyo.com
 registerRoute(
-    /mihoyo\.com/,
+    ({ url }) => {
+        return new URL(url).origin.includes('mihoyo.com')
+    },
     new NetworkFirst({
-        cacheName: cacheName + '-mohoyo',
+        cacheName: cacheName + '-mihoyo',
     }),
 )
 
 // network-only for api
-registerRoute(new RegExp(`${publicPath}77/(.*)`), new NetworkOnly())
+registerRoute(new RegExp(`${__webpack_public_path__}77/(.*)`), new NetworkOnly())
 
 // networkfirst for pages
 registerRoute(

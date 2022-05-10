@@ -439,7 +439,7 @@ export default defineComponent({
             .loader-progress-bar {
                 width: 0;
                 height: 100%;
-                background: #777;
+                background: var(--c-text);
                 position: absolute;
                 left: 0;
                 top: 0;

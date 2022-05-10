@@ -113,7 +113,7 @@ export default defineComponent({
                     small {
                         display: block;
                         font-size: 13px;
-                        color: #777;
+                        color: var(--c-text);
                         margin-top: 9px;
                     }
                 }

@@ -154,52 +154,10 @@ export default defineComponent({
             font-size: 12px;
             position: relative;
             top: -12px;
-            background: #fff;
+            background: var(--c-background);
             display: inline-block;
             padding: 0 4px;
         }
-    }
-}
-@keyframes scanner-cssload-loader {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    25% {
-        transform: rotate(180deg);
-    }
-
-    50% {
-        transform: rotate(180deg);
-    }
-
-    75% {
-        transform: rotate(360deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-@keyframes scanner-cssload-loader-inner {
-    0% {
-        height: 0%;
-    }
-
-    25% {
-        height: 0%;
-    }
-
-    50% {
-        height: 100%;
-    }
-
-    75% {
-        height: 100%;
-    }
-
-    100% {
-        height: 0%;
     }
 }
 </style>

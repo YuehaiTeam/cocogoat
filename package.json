@@ -26,7 +26,7 @@
     "core-js": "^3.8.3",
     "dayjs": "^1.10.7",
     "delay": "^5.0.0",
-    "element-plus": "^2.0.2",
+    "element-plus": "^2.2.0",
     "exceljs": "^4.3.0",
     "fastq": "^1.13.0",
     "flyio": "^0.6.14",

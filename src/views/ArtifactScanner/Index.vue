@@ -1,6 +1,6 @@
 <template>
     <router-view v-if="done" />
-    <Loader v-else @done="done = true" />
+    <Loader v-else />
 </template>
 
 <script lang="ts">

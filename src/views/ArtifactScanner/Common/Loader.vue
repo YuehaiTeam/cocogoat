@@ -157,7 +157,7 @@ export default defineComponent({
             font-size: 12px;
             position: relative;
             top: -12px;
-            background: #fff;
+            background: var(--c-background);
             display: inline-block;
             padding: 0 4px;
         }

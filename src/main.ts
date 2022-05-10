@@ -62,6 +62,8 @@ declare global {
     if (top === window && !location.href.includes('/frames')) {
         // Don't sync in iframes
         initSync()
+    } else if (top !== window && !location.href.includes('/frames')) {
+        document.body.classList.add('layout')
     }
     window.$cocogoat = window.$cocogoat || {}
     const c = {

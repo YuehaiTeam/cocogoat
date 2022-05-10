@@ -250,13 +250,13 @@ export default defineComponent({
             .user-name {
                 display: block;
                 font-size: 15px;
-                color: #777;
+                color: var(--c-text);
             }
 
             .user-id {
                 display: block;
                 font-size: 12px;
-                color: #999;
+                color: var(--c-text-sub);
                 margin-top: -2px;
                 font-family: Consolas, monospace;
             }

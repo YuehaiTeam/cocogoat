@@ -132,7 +132,7 @@ export default defineComponent({
                 border-radius: 5px;
                 cursor: pointer;
                 transition: all 0.2s;
-                color: #555;
+                color: var(--c-text);
                 text-decoration: none;
                 i {
                     font-size: 40px;
@@ -146,12 +146,12 @@ export default defineComponent({
                     small {
                         display: block;
                         font-size: 13px;
-                        color: #777;
+                        color: var(--c-text-sub);
                         margin-top: 9px;
                     }
                 }
                 &:hover {
-                    border-color: #aaa;
+                    border-color: var(--c-text-sub);
                     transform: translateY(-4px);
                 }
                 &.disabled {
@@ -168,7 +168,7 @@ export default defineComponent({
                 border-radius: 5px;
                 cursor: pointer;
                 transition: all 0.2s;
-                color: #555;
+                color: var(--c-text);
                 text-decoration: none;
                 width: 330px;
                 display: block;

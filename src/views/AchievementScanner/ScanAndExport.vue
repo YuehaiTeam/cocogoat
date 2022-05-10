@@ -221,7 +221,7 @@ location.href='/achievements'`
             }
 
             .operations {
-                color: #777;
+                color: var(--c-text);
                 font-size: 13px;
                 margin-top: 15px;
                 cursor: pointer;

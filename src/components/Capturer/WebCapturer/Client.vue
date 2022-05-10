@@ -186,7 +186,7 @@ export default defineComponent({
             }
 
             a {
-                color: #555;
+                color: var(--c-text);
                 text-decoration: none;
                 &.dlink {
                     margin-top: 8px;
@@ -238,7 +238,7 @@ export default defineComponent({
             .loader-progress-bar {
                 width: 0;
                 height: 100%;
-                background: #777;
+                background: var(--c-text);
                 position: absolute;
                 left: 0;
                 top: 0;

@@ -15,6 +15,9 @@ const singleFile = process.argv.includes('--singlefile') || singleFileDLL
 const SentryPlugin = require('@sentry/webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const useCDN = !process.argv.includes('--no-cdn')
+const useSWC = !process.argv.includes('--no-swc')
+const useSentry =
+    !process.argv.includes('--no-sentry') && process.env.NODE_ENV === 'production' && !!process.env.SENTRY_KEY
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
 process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
@@ -22,7 +25,11 @@ process.env.VUE_APP_LOCALRES = singleFile || process.env.NODE_ENV === 'developme
 process.env.VUE_APP_TIMESTAMP = Date.now()
 process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
 process.env.VUE_APP_GIT_MSG = gitInfo.commitMessage
-console.log(gitInfo)
+console.log(`[cocogoat-web] Build ${process.env.NODE_ENV} ${process.env.VUE_APP_GIT_SHA}/${process.env.VUE_APP_BUILD}`)
+console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, SWC: ${useSWC}, Sentry: ${useSentry}`)
+console.log('')
+console.log(gitInfo.commitMessage)
+console.log('')
 module.exports = defineConfig({
     publicPath: singleFile
         ? '.'
@@ -34,6 +41,7 @@ module.exports = defineConfig({
     productionSourceMap: true,
     parallel: false,
     // worker-loader、sentry-plugin都和thread-loader冲突
+    // swc下thread-loader降低速度
     css: {
         extract: singleFile
             ? false
@@ -49,6 +57,9 @@ module.exports = defineConfig({
                 },
             },
         },
+    },
+    terser: {
+        minify: useSWC ? 'swc' : 'terser',
     },
     configureWebpack: {
         plugins: [
@@ -178,7 +189,7 @@ module.exports = defineConfig({
                 ])
             }
 
-            if (process.env.NODE_ENV === 'production' && process.env.SENTRY_KEY) {
+            if (useSentry) {
                 config.plugin('sentry').use(SentryPlugin, [
                     {
                         url: process.env.SENTRY_URL,
@@ -215,6 +226,35 @@ module.exports = defineConfig({
                     '_SHUANGHUA_LAST_VERSION',
                 ],
             })
+
+            // swc
+            if (useSWC) {
+                config.module
+                    .rule('js')
+                    .uses.delete('babel-loader')
+                    .end()
+                    .use('swc-loader')
+                    .loader('swc-loader')
+                    .options({
+                        sync: false,
+                    })
+                config.module
+                    .rule('ts')
+                    .uses.delete('babel-loader')
+                    .delete('ts-loader')
+                    .end()
+                    .use('swc-loader')
+                    .before('ifdef-loader')
+                    .loader('swc-loader')
+                    .options({
+                        sync: false,
+                        jsc: {
+                            parser: {
+                                syntax: 'typescript',
+                            },
+                        },
+                    })
+            }
         }
     },
 })

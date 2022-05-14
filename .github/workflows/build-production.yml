@@ -42,6 +42,11 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Upload Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: cocogoat-web-report
+          path: dist/report.html
       - name: Upload package
         uses: actions/upload-artifact@v2
         with:
@@ -52,6 +57,7 @@ jobs:
           rm -rf dist/assets/*.wasm
           rm -rf dist/assets/*.ort
           rm -rf dist/index.html
+          rm -rf dist/report.html
       - name: Keep index.json
         run: mv dist/index.json ./index.temp.json
       - name: Deploy static files

@@ -14,8 +14,15 @@ const singleFileDLL = process.argv.includes('--singlefile-dll')
 const singleFile = process.argv.includes('--singlefile') || singleFileDLL
 const SentryPlugin = require('@sentry/webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const isCI = !!process.env.SENTRY_KEY
 const useCDN = !process.argv.includes('--no-cdn')
-const useSWC = !process.argv.includes('--no-swc')
+const useSWC = isCI
+    ? 'compile'
+    : process.argv.includes('--no-swc')
+    ? 'false'
+    : process.argv.includes('--no-swc-minify')
+    ? 'compile'
+    : 'true'
 const useSentry =
     !process.argv.includes('--no-sentry') && process.env.NODE_ENV === 'production' && !!process.env.SENTRY_KEY
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
@@ -59,7 +66,12 @@ module.exports = defineConfig({
         },
     },
     terser: {
-        minify: useSWC ? 'swc' : 'terser',
+        minify: useSWC === 'true' ? 'swc' : 'terser',
+        terserOptions: {
+            format: {
+                ascii_only: false,
+            },
+        },
     },
     configureWebpack: {
         plugins: [
@@ -228,7 +240,7 @@ module.exports = defineConfig({
             })
 
             // swc
-            if (useSWC) {
+            if (useSWC !== 'false') {
                 config.module
                     .rule('js')
                     .uses.delete('babel-loader')

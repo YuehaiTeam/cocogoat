@@ -211,7 +211,7 @@ export default defineComponent({
 <style lang="scss" module>
 .page {
     height: 100%;
-    background: #eee;
+    background: var(--c-background);
     :global {
         .el-tabs__nav-scroll {
             padding: 0 20px;
@@ -220,12 +220,12 @@ export default defineComponent({
             margin: 20px;
         }
         .d-link {
-            border: 1px solid #ccc;
+            border: 1px solid var(--c-border);
             display: block;
             height: 55px;
             text-decoration: none;
             border-radius: 5px;
-            color: #555;
+            color: var(--c-text);
             box-sizing: border-box;
             position: relative;
             display: flex;
@@ -252,7 +252,7 @@ export default defineComponent({
             }
 
             .meta {
-                opacity: 0.8;
+                opacity: 0.7;
                 font-size: 12px;
                 span {
                     margin-right: 10px;

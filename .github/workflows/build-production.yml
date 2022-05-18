@@ -42,6 +42,10 @@ jobs:
         run: yarn
       - name: Build
         run: yarn build
+      - name: Build Check
+        if: failure()
+        run: |
+          curl -X POST -H "Content-Type: application/json" -d '{"msg_type":"interactive","card":{"config":{"wide_screen_mode":false},"header":{"template":"red","title":{"content":"构建失败通知","tag":"plain_text"}},"elements":[{"tag":"div","text":{"content":"cocogoat-web构建失败，请检查错误信息","tag":"lark_md"}}]}}' ${{ secrets.FEISHU_WEBHOOK }}
       - name: Upload Report
         uses: actions/upload-artifact@v2
         with:
@@ -70,6 +74,10 @@ jobs:
           local_path: dist
           remote_path: /
           clean: false
+      - name: Deploy Check
+        if: failure()
+        run: |
+          curl -X POST -H "Content-Type: application/json" -d '{"msg_type":"interactive","card":{"config":{"wide_screen_mode":false},"header":{"template":"red","title":{"content":"构建失败通知","tag":"plain_text"}},"elements":[{"tag":"div","text":{"content":"cocogoat-web构建成功但部署失败，请检查错误信息","tag":"lark_md"}}]}}' ${{ secrets.FEISHU_WEBHOOK }}
       - name: Deploy index.json
         uses: TencentCloud/cos-action@v1
         with:
@@ -83,9 +91,3 @@ jobs:
       - name: Notification
         run: |
           curl -X POST -H "Content-Type: application/json" -d '{"msg_type":"interactive","card":{"config":{"wide_screen_mode":false},"header":{"template":"turquoise","title":{"content":"构建成功通知","tag":"plain_text"}},"elements":[{"tag":"div","text":{"content":"cocogoat-web已构建并部署成功","tag":"lark_md"}}]}}' ${{ secrets.FEISHU_WEBHOOK }}
-      - name: Failure Notification
-        if:
-          - failed
-          - canceled
-        run: |
-          curl -X POST -H "Content-Type: application/json" -d '{"msg_type":"interactive","card":{"config":{"wide_screen_mode":false},"header":{"template":"red","title":{"content":"构建失败通知","tag":"plain_text"}},"elements":[{"tag":"div","text":{"content":"cocogoat-web构建失败，请检查错误信息","tag":"lark_md"}}]}}' ${{ secrets.FEISHU_WEBHOOK }}

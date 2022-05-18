@@ -3,6 +3,9 @@ import resources, { resourceInfo, IResourceItem, setResources } from '@/resource
 import { registerRoute } from 'workbox-routing'
 import { NetworkFirst, NetworkOnly, CacheFirst } from 'workbox-strategies'
 
+// polyfill promise.any
+import 'core-js/features/promise/any'
+
 import testResources from '@/../resources.json'
 export function speedTest() {
     // group testresources by tag

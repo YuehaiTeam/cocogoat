@@ -11,8 +11,6 @@ import { SentryError, supportsReferrerPolicy, SyncPromise } from '@sentry/utils'
 import { BaseTransport } from '@sentry/browser/esm/transports/base'
 import { FetchImpl, getNativeFetchImplementation } from '@sentry/browser/esm/transports/utils'
 
-export let sentryLastEventId = ''
-
 export function init(app: App, router: Router) {
     /// #if SINGLEFILE
     checkHm()
@@ -37,12 +35,14 @@ export function init(app: App, router: Router) {
         release: process.env.VUE_APP_GIT_SHA,
         environment: process.env.VUE_APP_SINGLEFILE === 'true' ? 'singlefile' : process.env.NODE_ENV,
         transport: SimpleFetchTransport,
-        beforeSend(event) {
-            if (event.exception) {
-                sentryLastEventId = event.event_id || ''
-            }
-            return event
-        },
+    })
+}
+let currentEmail = ''
+export async function setUser(email: string) {
+    if (currentEmail) return
+    currentEmail = email
+    Sentry.setUser({
+        email,
     })
 }
 
@@ -58,7 +58,7 @@ export async function report() {
     }
     if (!input.value) return
     const comments = input.value
-    const evid = sentryLastEventId || Sentry.captureMessage('用户反馈：\n' + comments)
+    const evid = Sentry.captureMessage('用户反馈：\n' + comments)
     const u = new URL(process.env.VUE_APP_SENTRY || '')
     u.username = ''
     u.password = ''
@@ -68,7 +68,7 @@ export async function report() {
 
     const reportData = {
         name: 'anonymous-report',
-        email: `anonymous-report@cocogoat.work`,
+        email: currentEmail || `anonymous-report@cocogoat.work`,
         comments,
     }
     try {

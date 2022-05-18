@@ -3,6 +3,7 @@ import { SyncProvider } from '../typing'
 import { SyncError, SYNCERR, SYNCSTAT } from '../../sync'
 import Manage from './Manage.vue'
 import { ref, markRaw } from 'vue'
+import { options } from '@/store'
 const pathbase = '/v1/qingxin'
 export interface ICocogoatSyncStatus {
     status: SYNCSTAT
@@ -24,6 +25,11 @@ class CocogoatSyncProvider implements SyncProvider {
             this.token = data.token
             this.email = this.getFromJWT(this.token, 'email')
             this.user = this.getFromJWT(this.token, 'sub')
+            if (options.value.reporting) {
+                import('@/utils/reporting').then(({ setUser }) => {
+                    setUser(this.email)
+                })
+            }
         } catch (e) {
             const err = new SyncError(SYNCERR.AUTH, 'Authorization required', null)
             this.status.value.status = SYNCSTAT.OFFLINE

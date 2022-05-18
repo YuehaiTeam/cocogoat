@@ -19,8 +19,19 @@ export function init(app: App, router: Router) {
             // ignore hm failure
         })
     /// #else
+    window.dataLayer = window.dataLayer || []
+    window.gtag = function () {
+        // eslint-disable-next-line prefer-rest-params
+        window.dataLayer.push(arguments)
+    }
+    window.gtag('js', new Date())
+    window.gtag('config', 'G-N5RVN34736')
+    window.gtag('config', 'UA-167575061-1')
     document.head.appendChild(document.createElement('script')).src =
         'https://hm.baidu.com/hm.js?9fa0c980766e6a8646c0f814aa40b130'
+    document.head.appendChild(document.createElement('script')).src =
+        'https://www.googletagmanager.com/gtag/js?id=G-N5RVN34736'
+
     /// #endif
     Sentry.init({
         app,

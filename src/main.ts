@@ -48,6 +48,8 @@ declare global {
             currentUser: typeof currentUser
             sw: ServiceWorker
         }
+        dataLayer: unknown[]
+        gtag: (...args: unknown[]) => void
     }
 }
 

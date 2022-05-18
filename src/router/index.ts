@@ -188,6 +188,10 @@ router.afterEach((to) => {
     try {
         window._hmt.push(['_trackPageview', to.fullPath])
     } catch (e) {}
+    try {
+        window.gtag('set', { page_path: to.fullPath })
+        window.gtag('event', 'page_view')
+    } catch (e) {}
 })
 export default router
 export function getUrl(name: string) {

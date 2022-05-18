@@ -105,7 +105,6 @@ export default defineComponent({
         position: fixed;
         right: 0;
         bottom: 70px;
-        left: 15px;
         display: flex;
         align-items: center;
         justify-content: flex-end;

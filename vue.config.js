@@ -17,7 +17,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const isCI = !!process.env.SENTRY_KEY
 const useCDN = !process.argv.includes('--no-cdn')
 const useSWC = isCI
-    ? 'compile'
+    ? 'false'
     : process.argv.includes('--no-swc')
     ? 'false'
     : process.argv.includes('--no-swc-minify')

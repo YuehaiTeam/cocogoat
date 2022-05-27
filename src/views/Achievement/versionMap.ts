@@ -641,6 +641,16 @@ const versionMap = {
     84061: 2.6,
     84062: 2.6,
     84063: 2.6,
+    84064: 2.7,
+    84065: 2.7,
+    84066: 2.7,
+    84134: 2.7,
+    84135: 2.7,
+    84136: 2.7,
 } as Record<number, number>
+export const versionDateMap = {
+    2.7: new Date('2022-05-31'),
+    2.6: new Date('2022-03-30'),
+} as Record<number, Date>
 export default versionMap
 export const allVersions = uniq(Object.values(versionMap)).sort((a, b) => b - a)

@@ -143,11 +143,20 @@
                                     placeholder="所有版本"
                                 >
                                     <el-option
-                                        v-for="i in allVersions"
-                                        :key="i"
-                                        :value="i"
-                                        :label="i.toFixed(1)"
-                                    ></el-option>
+                                        v-if="publishedInfo.hasUnpublishedVersion"
+                                        :value="999"
+                                        @click.capture.prevent.stop="clickUnpublishedVersion"
+                                    >
+                                        {{ publishedInfo.latestPublishedVersion === 999 ? '隐藏' : '显示' }}未发布版本
+                                    </el-option>
+                                    <template v-for="i in allVersions">
+                                        <el-option
+                                            v-if="i <= publishedInfo.latestPublishedVersion"
+                                            :key="i"
+                                            :value="i"
+                                            :label="i.toFixed(1)"
+                                        ></el-option>
+                                    </template>
                                 </el-select>
                                 <el-select
                                     v-model="statusQuest"
@@ -241,7 +250,7 @@ library.add(faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan, faEllipsis,
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 
 import { i18n } from '@/i18n'
-import { store } from '@/store'
+import { store, options } from '@/store'
 import { Achievement, AchievementCategory, IAchievementStore } from '@/typings/Achievement'
 import type { IAScannerData } from '../AchievementScanner/scanner/scanner'
 import dayjs from 'dayjs'
@@ -258,7 +267,7 @@ import AchievementItem from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
 import AchievementDetail from './AchievementDetail.vue'
 import ImportDialog from './ImportDialog.vue'
-import versionMap, { allVersions } from './versionMap'
+import versionMap, { allVersions, versionDateMap } from './versionMap'
 import { uniqBy, cloneDeep } from 'lodash-es'
 import bus from '@/bus'
 import { getUrl } from '@/router'
@@ -291,15 +300,68 @@ export default defineComponent({
             >,
         )
         const sortByStatus = ref(true)
-        const totalCount = ref(0)
         const totalFin = ref({ count: 0, reward: 0 } as {
             count: number
             reward: number
         })
+        const nowDate = new Date()
+
+        const publishedInfo = computed(() => {
+            let latestPublishedVersion = 999
+            let hasUnpublishedVersion = false
+            for (const version of Object.keys(versionDateMap)) {
+                const date = versionDateMap[Number(version)]
+                if (date <= nowDate) {
+                    latestPublishedVersion = Number(version)
+                    break
+                } else {
+                    hasUnpublishedVersion = true
+                }
+            }
+            if (options.value.achievements_show_unpublished) {
+                latestPublishedVersion = 999
+            }
+            return {
+                latestPublishedVersion,
+                hasUnpublishedVersion,
+            }
+        })
+        const clickUnpublishedVersion = () => {
+            options.value.achievements_show_unpublished = !options.value.achievements_show_unpublished
+            if (!options.value.achievements_show_unpublished) {
+                statusVersion.value = statusVersion.value.filter((v) => v <= publishedInfo.value.latestPublishedVersion)
+            }
+        }
         const achievementCat = computed(() => {
-            const ach = achevementsAmos.concat([]).sort((a, b) => a.order - b.order)
+            const ach = achevementsAmos
+                .map((e) => {
+                    if (publishedInfo.value.latestPublishedVersion === 999) {
+                        return e
+                    } else {
+                        let desReward = 0
+                        const computedAch = e.achievements.filter((e) => {
+                            if (versionMap[e.id] <= publishedInfo.value.latestPublishedVersion) {
+                                return true
+                            }
+                            desReward += e.reward
+                            return false
+                        })
+                        return {
+                            ...e,
+                            totalReward: e.totalReward - desReward,
+                            achievements: computedAch,
+                        }
+                    }
+                })
+                .sort((a, b) => a.order - b.order)
+                .filter((e) => e.achievements.length > 0)
             return ach
         })
+
+        const totalCount = computed(() => {
+            return achievementCat.value.reduce((acc, e) => acc + e.achievements.length, 0)
+        })
+
         const totalReward = computed(() => {
             return achievementCat.value.reduce((acc, cur) => {
                 return acc + cur.totalReward
@@ -348,7 +410,6 @@ export default defineComponent({
             })
             achievementFinStat.value = newCount
             achievementFin.value = newFin
-            totalCount.value = totalCount.value || achevementsAmos.reduce((a, b) => a + b.achievements.length, 0)
             totalFin.value = totalFin_
         }
         watch(store, calcFin, { deep: true, immediate: true })
@@ -602,6 +663,7 @@ export default defineComponent({
         const contributed = useContributedAchievements()
         const detail = ref(undefined as Achievement | undefined)
         return {
+            options,
             store,
             search,
             showScanner,
@@ -637,6 +699,8 @@ export default defineComponent({
             closeImport,
             sendOops,
             achPartialAmos,
+            publishedInfo,
+            clickUnpublishedVersion,
         }
     },
 })

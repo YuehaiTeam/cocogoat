@@ -21,7 +21,7 @@
                         <div class="ntxt" @click="$emit('click-title')">
                             {{ amos[i.name] }}
                             <sup class="version">
-                                {{ versionMap[i.id].toFixed(1) || '' }}
+                                {{ version }}
                             </sup>
                         </div>
                     </div>
@@ -130,6 +130,13 @@ export default defineComponent({
             isFin: computed(() => {
                 return props.fin && !Array.isArray(props.fin.partial)
             }),
+            version: computed(() => {
+                if (!versionMap[props.i.id]) {
+                    console.log(props.i.id, 'has no version')
+                    return 'BETA'
+                }
+                return versionMap[props.i.id].toFixed(1) || ''
+            }),
             formatDate(datestr: string) {
                 try {
                     const d = new Date(datestr)
@@ -203,7 +210,6 @@ export default defineComponent({
                 })
                 return nameArr.join('')
             },
-            versionMap,
         }
     },
 })

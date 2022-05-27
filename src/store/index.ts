@@ -20,6 +20,7 @@ export function createEmptyOptions() {
     return {
         lang: navigator.language.toLowerCase(),
         achievements_recent_export: 'paimon',
+        achievements_show_unpublished: false,
         reporting: true,
         showads: true,
     }

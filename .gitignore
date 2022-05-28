@@ -24,3 +24,5 @@ pnpm-debug.log*
 .cache
 
 src/plugins/amos
+
+/*.txt

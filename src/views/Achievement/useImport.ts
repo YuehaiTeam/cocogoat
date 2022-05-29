@@ -81,9 +81,9 @@ export function hasUIAF(data: Record<string, any>): data is UIAF {
     if (!data.list) return false
     if (!Array.isArray(data.list)) return false
     if (data.list.length === 0) return false
-    if (!data.list[0].id) return false
-    if (data.list[0].current !== null && !data.list[0].current) return false
-    if (!data.list[0].timestamp) return false
+    if (!data.list[0].id && data.list[0].id !== 0) return false
+    if (typeof data.list[0].current === 'undefined') return false
+    if (!data.list[0].timestamp && data.list[0].timestamp !== 0) return false
     return true
 }
 export function convertUIAF(data: UIAF): { achievements: IAchievementStore[]; source: string } {

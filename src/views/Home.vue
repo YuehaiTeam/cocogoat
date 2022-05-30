@@ -21,6 +21,19 @@
                             </div>
                             <div class="text">PC端<br />更新包列表</div>
                         </router-link>
+
+                        <router-link :class="$style.extraOne" style="color: #009892" :to="{ name: 'zhiqiong' }">
+                            <div class="circle">
+                                <div class="img" style="border-color: #009892">
+                                    <fa-icon icon="map-location-dot" />
+                                </div>
+                                <div class="svg-w" style="background: #009892">
+                                    <icon-cocogoat style="fill: #fff" />
+                                </div>
+                            </div>
+                            <div class="text">志琼<br />米游社地图插件</div>
+                        </router-link>
+
                         <router-link
                             :class="$style.extraOne"
                             style="color: var(--c-text)"
@@ -69,7 +82,11 @@
                     <h4>接入文档</h4>
                     <div>本工具中各类扫描器组件均提供接口，可以嵌入到任何项目中</div>
                 </a>
-                <a :class="$style.card" href="http://77.cocogoat.work/web/" target="_blank">
+                <a
+                    :class="$style.card"
+                    href="https://github.com/YuehaiTeam/cocogoat/actions/workflows/build-singlefile.yml"
+                    target="_blank"
+                >
                     <fa-icon icon="folder-tree" />
                     <h4>本地使用</h4>
                     <div>如需离线使用，请点这里下载本地专用版。</div>
@@ -88,9 +105,9 @@
 <script lang="ts">
 import { ref, defineComponent, watch } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faInfinity, faFolderTree, faTerminal, faBoxOpen } from '@fortawesome/free-solid-svg-icons'
+import { faInfinity, faFolderTree, faTerminal, faBoxOpen, faMapLocationDot } from '@fortawesome/free-solid-svg-icons'
 import { faGithubAlt, faQq } from '@fortawesome/free-brands-svg-icons'
-library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen)
+library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen, faMapLocationDot)
 
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import BuildInfo from '@/components/BuildInfo.vue'

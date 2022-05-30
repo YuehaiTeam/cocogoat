@@ -86,7 +86,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowPointer, faAngleRight, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { CocogoatWebControl } from '@/modules/webcontrol'
 import { versionCompare } from '@/utils/versionCompare'
-import latest from '@yuehaiteam/shuanghua-last-version'
+import DlUpdate from '@/utils/dlUpdate'
+const latest = new DlUpdate('frostflake')
 library.add(faArrowPointer, faAngleRight, faCheck)
 export default defineComponent({
     props: {
@@ -159,7 +160,7 @@ export default defineComponent({
             gameNotFound,
             needUpdate,
             version,
-            cVersion: latest.ver,
+            cVersion: latest.version,
         }
     },
 })

@@ -173,6 +173,17 @@ const routes: Array<RouteRecordRaw> = [
             },
         ],
     },
+    {
+        path: '/zhiqiong',
+        component: () => import('@/views/Layout.vue'),
+        children: [
+            {
+                path: '',
+                name: 'zhiqiong',
+                component: () => import('@/views/Zhiqiong.vue'),
+            },
+        ],
+    },
 ]
 
 const router = createRouter({

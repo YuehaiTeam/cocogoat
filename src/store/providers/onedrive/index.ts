@@ -25,6 +25,9 @@ class OneDriveSyncProvider implements SyncProvider {
         this.name = idTokenData.name
         this.user = idTokenData.preferred_username
     }
+    async enabled() {
+        return { enabled: true, reason: '' }
+    }
     async refreshToken() {
         if (Date.now() - this.data.last_updated < this.data.expires_in * 1000) {
             return

@@ -1,8 +1,12 @@
+import { ref } from 'vue'
+
 const apis = {
     global: process.env.VUE_APP_APIBASE,
     cn: process.env.VUE_APP_APIBASECN,
 } as Record<string, string>
+
 export let apiregion = navigator.language.startsWith('zh') ? 'cn' : 'global'
+export const apistatus = ref('')
 export let regionchecked: Promise<string> | undefined
 export const apibase = async (path = '', region = 'default') => {
     if (!regionchecked) {
@@ -13,13 +17,14 @@ export const apibase = async (path = '', region = 'default') => {
     return apis[region === 'default' ? apiregion : region] + path
 }
 export const checkRegion = async (apiregion: string) => {
-    const url = (await apis[apiregion]) + '/v1/utils/api-region'
+    const url = (await apis[apiregion]) + '/v1/utils/status'
     try {
         const res = await fetch(url)
         if (res.ok) {
-            const apistr = await res.text()
-            if (apis[apistr]) {
-                return apistr
+            const rjson = await res.json()
+            apistatus.value = rjson.msg
+            if (apis[rjson.region]) {
+                return rjson.region
             }
         }
     } catch (e) {

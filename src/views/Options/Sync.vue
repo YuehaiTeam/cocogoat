@@ -225,6 +225,7 @@ export default defineComponent({
             conflict: '同步冲突',
             offline: '网络错误',
             auth: '登录失效',
+            disabled: '暂停服务',
         } as Record<string, string>
         return {
             syncProviders,

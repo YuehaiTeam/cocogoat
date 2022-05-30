@@ -1,4 +1,5 @@
 export interface SyncProvider {
+    enabled(): Promise<{ enabled: boolean; reason: string }>
     info(): Promise<{ user: string; name: string; avatar: string; storage: number[] }>
     set(
         key: string,

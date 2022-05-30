@@ -14,6 +14,8 @@ class CocogoatSyncProvider implements SyncProvider {
     token = ''
     user = ''
     email = ''
+    cachedEnabled = -1
+    notice = ref('')
     component = markRaw(Manage)
     status = ref({
         status: SYNCSTAT.WAITING,
@@ -35,6 +37,22 @@ class CocogoatSyncProvider implements SyncProvider {
             this.status.value.status = SYNCSTAT.OFFLINE
             this.status.value.error = err
             throw err
+        }
+    }
+    async enabled() {
+        if (this.cachedEnabled >= 0) return { enabled: !!this.cachedEnabled, reason: this.notice.value }
+        try {
+            const req = await fetch(await apibase(pathbase), {
+                method: 'GET',
+            })
+            const data = await req.json()
+            this.notice.value = data.msg || '无法连接服务器'
+            this.cachedEnabled = req.ok ? 1 : 0
+            return { enabled: req.ok, reason: this.notice.value }
+        } catch (e) {
+            this.notice.value = (e as Error).message
+            this.cachedEnabled = 0
+            return { enabled: false, reason: this.notice.value }
         }
     }
     async info(): Promise<{ user: string; name: string; avatar: string; storage: number[] }> {

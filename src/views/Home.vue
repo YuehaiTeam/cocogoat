@@ -6,6 +6,9 @@
                 椰羊cocogoat
                 <small>纯网页圣遗物管理·成就扫描·更多功能开发中</small>
             </h1>
+            <div v-if="apistatus" :class="$style.apistatus">
+                <el-alert type="warning" :title="apistatus" :show-icon="true" :closable="false" />
+            </div>
             <div>
                 <div :class="$style.card">
                     <div class="card-title">额外工具</div>
@@ -112,6 +115,7 @@ library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen, 
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import BuildInfo from '@/components/BuildInfo.vue'
 import { options } from '@/store'
+import { apibase, apistatus } from '@/utils/apibase'
 
 export default defineComponent({
     name: 'HomeView',
@@ -122,6 +126,7 @@ export default defineComponent({
     setup() {
         const ad = ref(null as HTMLElement | null)
         const please = ref(false)
+        apibase('/')
         watch(
             () => ad.value,
             () => {
@@ -133,7 +138,7 @@ export default defineComponent({
                 }
             },
         )
-        return { ad, please, options }
+        return { ad, please, options, apistatus }
     },
 })
 </script>
@@ -143,6 +148,10 @@ export default defineComponent({
 }
 .root {
     padding: 20px;
+}
+.apistatus {
+    padding: 0 10px;
+    margin-bottom: 10px;
 }
 :global(.m) {
     .root {

@@ -17,6 +17,7 @@ export enum SYNCERR {
     OFFLINE = 'offline',
     OTHER = 'other',
     AUTH = 'auth',
+    DISABLED = 'disabled',
 }
 export interface IProviderStorage {
     class: string
@@ -25,6 +26,7 @@ export interface IProviderStorage {
 export interface IProviderItem {
     id: string
     provider: SyncProvider
+    enabled: Promise<{ enabled: boolean; reason: string }>
     class: string
     data: Ref<unknown>
     unwatch: ReturnType<typeof watch>
@@ -84,6 +86,7 @@ export const initSync = async () => {
                         class: data.class,
                         data: refdata,
                         provider,
+                        enabled: provider.enabled(),
                         unwatch,
                     }
                 })()
@@ -100,8 +103,12 @@ export const initSync = async () => {
     }
 }
 export const getAll = async () => {
-    const promises = syncProviders.value.map((provider) => {
-        return provider.provider.loadAll()
+    const promises = syncProviders.value.map(async (provider) => {
+        const e = await provider.enabled
+        if (!e.enabled) {
+            throw new SyncError(SYNCERR.DISABLED, e.reason, provider)
+        }
+        return await provider.provider.loadAll()
     })
     const result = (await Promise.allSettled(promises)).map((e, i) => {
         return {
@@ -200,8 +207,16 @@ export const singleSync = async ({
     last: Date
     force?: true
 }) => {
-    const promises = syncProviders.value.map((provider) => {
-        return provider.provider.set(user, data, { localLast: last, localNow: now, forceOverride: force || undefined })
+    const promises = syncProviders.value.map(async (provider) => {
+        const e = await provider.enabled
+        if (!e.enabled) {
+            throw new SyncError(SYNCERR.DISABLED, e.reason, provider)
+        }
+        return await provider.provider.set(user, data, {
+            localLast: last,
+            localNow: now,
+            forceOverride: force || undefined,
+        })
     })
     const result = (await Promise.allSettled(promises)).map((e, i) => {
         return {

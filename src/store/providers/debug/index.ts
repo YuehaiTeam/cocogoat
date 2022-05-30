@@ -4,6 +4,9 @@ class DebugSyncProvider {
     constructor() {
         console.info('DEBUG-SYNC: created')
     }
+    async enabled() {
+        return { enabled: true, reason: '' }
+    }
     async info(): Promise<{ user: string; name: string; avatar: string; storage: number[] }> {
         return {
             user: 'debug',

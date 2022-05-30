@@ -167,10 +167,6 @@ module.exports = defineConfig({
 
             config.externals({
                 'monaco-editor': 'var monaco',
-                '@yuehaiteam/shuanghua-last-version': [
-                    'data:application/javascript;base64,d2luZG93Ll9TSFVBTkdIVUFfTEFTVF9WRVJTSU9OID0gewogICAgdmVyOicxLjIuMicsCiAgICB1cmw6J2h0dHBzOi8vNzcuY29jb2dvYXQud29yay92MS9hc2NlbnNpb24vc2h1YW5naHVhL2NvY29nb2F0LWNvbnRyb2wtMS4yLjIuZXhlJwp9',
-                    '_SHUANGHUA_LAST_VERSION',
-                ],
             })
             config.resolve.alias.set('lodash-full', 'lodash-es')
         } else {
@@ -232,10 +228,6 @@ module.exports = defineConfig({
                 '@sentry/tracing': [
                     'https://npm.elemecdn.com/@sentry/tracing/build/bundle.tracing.es6.min.js',
                     'Sentry',
-                ],
-                '@yuehaiteam/shuanghua-last-version': [
-                    'https://cocogoat-1251105598.file.myqcloud.com/77/upgrade/shuanghua.js',
-                    '_SHUANGHUA_LAST_VERSION',
                 ],
             })
 

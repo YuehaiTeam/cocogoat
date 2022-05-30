@@ -30,14 +30,18 @@
 <script lang="ts">
 import { options } from '@/store'
 import { defineComponent, onMounted, ref, watch } from 'vue'
-import latest from '@yuehaiteam/shuanghua-last-version'
+import DlUpdate from '@/utils/dlUpdate'
+const latest = new DlUpdate('frostflake')
 export default defineComponent({
+    async beforeRouteEnter() {
+        await latest.ready
+    },
     setup() {
-        onMounted(() => {
+        onMounted(async () => {
             // iframe download
             const iframe = document.createElement('iframe')
             iframe.style.display = 'none'
-            iframe.src = latest.url
+            iframe.src = latest.url.value
             document.body.appendChild(iframe)
         })
         const ad = ref(null as HTMLElement | null)

@@ -2,7 +2,7 @@ import { apibase } from '@/utils/apibase'
 import { SyncProvider } from '../typing'
 import { SyncError, SYNCERR, SYNCSTAT } from '../../sync'
 import Manage from './Manage.vue'
-import { ref, markRaw } from 'vue'
+import { ref, reactive, markRaw } from 'vue'
 import { options } from '@/store'
 const pathbase = '/v1/qingxin'
 export interface ICocogoatSyncStatus {
@@ -17,7 +17,7 @@ class CocogoatSyncProvider implements SyncProvider {
     cachedEnabled = -1
     notice = ref('')
     component = markRaw(Manage)
-    status = ref({
+    status = reactive({
         status: SYNCSTAT.WAITING,
         error: null,
     } as ICocogoatSyncStatus)
@@ -34,8 +34,8 @@ class CocogoatSyncProvider implements SyncProvider {
             }
         } catch (e) {
             const err = new SyncError(SYNCERR.AUTH, 'Authorization required', null)
-            this.status.value.status = SYNCSTAT.OFFLINE
-            this.status.value.error = err
+            this.status.status = SYNCSTAT.OFFLINE
+            this.status.error = err
             throw err
         }
     }
@@ -91,15 +91,15 @@ class CocogoatSyncProvider implements SyncProvider {
                 remoteLast: new Date(req.headers.get('Last-Modified') || 0),
                 localNow,
             })
-            this.status.value.status = SYNCSTAT.FAILED
-            this.status.value.error = err
+            this.status.status = SYNCSTAT.FAILED
+            this.status.error = err
             throw err
         }
         // code 401: unauthorized
         if (req.status === 401) {
             const err = new SyncError(SYNCERR.AUTH, 'Authorization required', null)
-            this.status.value.status = SYNCSTAT.OFFLINE
-            this.status.value.error = err
+            this.status.status = SYNCSTAT.OFFLINE
+            this.status.error = err
             throw err
         }
         // server fault
@@ -116,8 +116,8 @@ class CocogoatSyncProvider implements SyncProvider {
                 } catch (e) {}
             } catch (e) {}
             const err = new SyncError(SYNCERR.OTHER, errMsg, req)
-            this.status.value.status = SYNCSTAT.FAILED
-            this.status.value.error = err
+            this.status.status = SYNCSTAT.FAILED
+            this.status.error = err
             throw err
         }
         await req.json()
@@ -142,8 +142,8 @@ class CocogoatSyncProvider implements SyncProvider {
         // code 401: unauthorized
         if (req.status === 401) {
             const err = new SyncError(SYNCERR.AUTH, 'Authorization required', null)
-            this.status.value.status = SYNCSTAT.OFFLINE
-            this.status.value.error = err
+            this.status.status = SYNCSTAT.OFFLINE
+            this.status.error = err
             throw err
         }
         // server fault
@@ -160,8 +160,8 @@ class CocogoatSyncProvider implements SyncProvider {
                 } catch (e) {}
             } catch (e) {}
             const err = new SyncError(SYNCERR.OTHER, errMsg, req)
-            this.status.value.status = SYNCSTAT.FAILED
-            this.status.value.error = err
+            this.status.status = SYNCSTAT.FAILED
+            this.status.error = err
             throw err
         }
         // done
@@ -191,8 +191,8 @@ class CocogoatSyncProvider implements SyncProvider {
                 } catch (e) {}
             } catch (e) {}
             const err = new SyncError(SYNCERR.OTHER, errMsg, req)
-            this.status.value.status = SYNCSTAT.FAILED
-            this.status.value.error = err
+            this.status.status = SYNCSTAT.FAILED
+            this.status.error = err
             throw err
         }
         const newToken = req.headers.get('authorization')

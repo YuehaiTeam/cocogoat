@@ -205,8 +205,8 @@ router.afterEach((to) => {
     } catch (e) {}
 })
 export default router
-export function getUrl(name: string) {
+export function getUrl(name: string, followTheme = true, query: Record<string, string> = {}): string {
     const dark = document.body.classList.contains('dark') ? 'dark' : ''
-    const h = router.resolve({ name, hash: '#theme=' + dark }).href
+    const h = router.resolve({ name, hash: followTheme ? '#theme=' + dark : '', query }).href
     return h
 }

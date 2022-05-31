@@ -1,5 +1,6 @@
+import { apibase } from './../../utils/apibase'
 import { i18n } from '@/i18n'
-import { ElNotification } from 'element-plus'
+import { ElMessageBox, ElNotification } from 'element-plus'
 import 'element-plus/theme-chalk/el-notification.css'
 import { ref } from 'vue'
 import { store, options } from '@/store'
@@ -8,6 +9,7 @@ import achevementsAmos from '@/plugins/amos/achievements'
 import { cloneDeep } from 'lodash-es'
 import copy from 'copy-to-clipboard'
 import { IAchievementStore, UIAF, UIAFMagicTime } from '@/typings/Achievement'
+import { getUrl } from '@/router'
 export function getV1Json() {
     let ach0 = cloneDeep(store.value.achievements)
     ach0 = ach0.filter((i) => !Array.isArray(i.partial))
@@ -25,10 +27,10 @@ export function useExportAchievements() {
         content: '',
     })
     const doExport = (
-        _to: 'paimon' | 'seelie' | 'cocogoat' | 'cocogoat.v2' | 'excel' | 'snapgenshin' | 'uiaf' | '',
+        _to: 'paimon' | 'seelie' | 'cocogoat' | 'cocogoat.v2' | 'excel' | 'snapgenshin' | 'uiaf' | 'share' | '',
     ) => {
         const to = _to || options.value.achievements_recent_export
-        options.value.achievements_recent_export = to
+        if (to !== 'share') options.value.achievements_recent_export = to
         if (to === 'cocogoat') {
             const ach0 = getV1Json()
             const data = {
@@ -68,6 +70,71 @@ export function useExportAchievements() {
             a.href = url
             a.download = '椰羊成就导出 ' + dayjs().format('YYYYMMDDHHmmss') + '.cocogoat-v2.json'
             a.click()
+            return
+        }
+        if (to === 'share') {
+            ;(async () => {
+                const msg = ElNotification({
+                    message: '正在创建分享，请稍候...',
+                    duration: 0,
+                    showClose: false,
+                    type: 'info',
+                })
+                const ach0 = cloneDeep(store.value.achievements)
+                ach0.forEach((e) => {
+                    e.images = undefined
+                })
+                const data = {
+                    achievements: ach0,
+                }
+                try {
+                    const res = await fetch(await apibase('/v1/memo?source=分享链接'), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    if (!res.ok) {
+                        throw new Error(res.statusText)
+                    }
+                    const rdata = await res.json()
+                    if (!rdata.key) {
+                        throw new Error('No key')
+                    }
+                    const link = new URL(
+                        getUrl('achievement.index', false, { memo: rdata.key }),
+                        location.href,
+                    ).toString()
+                    try {
+                        msg.close()
+                    } catch (e) {}
+                    try {
+                        await ElMessageBox.prompt(
+                            '打开以下分享链接，即可快速导入成就。注意：每个分享链接只能导入一次。',
+                            '分享链接创建成功',
+                            {
+                                confirmButtonText: '复制链接',
+                                cancelButtonText: '关闭',
+                                inputValue: link,
+                            },
+                        )
+                        copy(link)
+                        ElNotification({
+                            message: '分享链接已复制到剪贴板',
+                            type: 'success',
+                        })
+                    } catch (e) {
+                        console.log(e)
+                    }
+                } catch (e) {
+                    try {
+                        msg.close()
+                    } catch (e) {}
+                    console.error(e)
+                    return ElNotification.error('分享失败，请稍后再试')
+                }
+            })()
             return
         }
         if (to === 'uiaf') {

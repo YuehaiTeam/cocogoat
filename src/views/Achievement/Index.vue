@@ -45,11 +45,14 @@
                             导出
                             <template #dropdown>
                                 <el-dropdown-menu class="el-dropdown-menu--small">
-                                    <el-dropdown-item class="export-title" @click="doExport('cocogoat')">
+                                    <el-dropdown-item class="export-title" @click="doExport('cocogoat.v2')">
                                         椰羊JSON
                                     </el-dropdown-item>
-                                    <el-dropdown-item class="export-title" @click="doExport('cocogoat.v2')">
-                                        椰羊JSONv2
+                                    <el-dropdown-item class="export-title" @click="doExport('share')">
+                                        分享链接
+                                    </el-dropdown-item>
+                                    <el-dropdown-item class="export-title" @click="doExport('cocogoat')">
+                                        椰羊JSON(旧)
                                     </el-dropdown-item>
                                     <el-dropdown-item divided @click="doExport('snapgenshin')">
                                         Snap Genshin

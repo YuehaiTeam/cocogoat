@@ -24,3 +24,5 @@ export const isLocal = process.env.VUE_APP_LOCALRES === 'true'
 export const ocrCompatible = hasWasm && (isLocal ? hasSIMD : true)
 // 识别器需要OCR，且不是Safari、Android、iOS，
 export const scannerCompatible = hasGetDisplayMedia && !isSafari && !isAndroid && !isIOS && ocrCompatible
+// Edge 增强安全模式
+export const edgeStrictMode = /Edg\/\d+/.test(navigator.userAgent) && !hasWasm

@@ -9,6 +9,11 @@ export interface ICocogoatSyncStatus {
     status: SYNCSTAT
     error: SyncError<unknown> | null
 }
+declare global {
+    class CompressionStream extends TransformStream<Blob, Blob> {
+        constructor(type: string)
+    }
+}
 class CocogoatSyncProvider implements SyncProvider {
     data: { token: string; lastModified: number }
     token = ''
@@ -64,11 +69,20 @@ class CocogoatSyncProvider implements SyncProvider {
         })
         return await req.json()
     }
+    gzCompress(data: string) {
+        const inputBlob = new Blob([data], { type: 'application/json' })
+        const compstream = new CompressionStream('gzip') as TransformStream
+        return new Response(inputBlob.stream().pipeThrough(compstream)).blob()
+    }
+    noCompress(data: string) {
+        return data
+    }
     async set(
         key: string,
         value: unknown,
         { localLast, localNow, forceOverride }: { localLast: Date; localNow: Date; forceOverride?: true },
     ) {
+        const compress = 'CompressionStream' in window ? this.gzCompress : this.noCompress
         const req = await fetch(
             `${await apibase(pathbase)}/${this.user}/${key}${
                 forceOverride || localLast.getTime() === 0 ? '?override' : ''
@@ -80,8 +94,13 @@ class CocogoatSyncProvider implements SyncProvider {
                     'Content-Type': 'application/json',
                     'If-Unmodified-Since': localLast.toUTCString(),
                     'X-Last-Modified': localNow.toUTCString(),
+                    ...(compress === this.gzCompress
+                        ? {
+                              'Content-Encoding': 'gzip',
+                          }
+                        : {}),
                 },
-                body: value === null ? undefined : JSON.stringify(value),
+                body: value === null ? undefined : await compress(JSON.stringify(value)),
             },
         )
         // code 412: conflict

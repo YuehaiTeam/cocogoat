@@ -19,6 +19,7 @@ class CocogoatSyncProvider implements SyncProvider {
     token = ''
     user = ''
     email = ''
+    gzDisabled = false
     cachedEnabled = -1
     notice = ref('')
     component = markRaw(Manage)
@@ -81,8 +82,11 @@ class CocogoatSyncProvider implements SyncProvider {
         key: string,
         value: unknown,
         { localLast, localNow, forceOverride }: { localLast: Date; localNow: Date; forceOverride?: true },
-    ) {
-        const compress = 'CompressionStream' in window ? this.gzCompress : this.noCompress
+    ): Promise<{
+        value: unknown
+        lastModified: Date
+    }> {
+        const compress = !this.gzDisabled && 'CompressionStream' in window ? this.gzCompress : this.noCompress
         const req = await fetch(
             `${await apibase(pathbase)}/${this.user}/${key}${
                 forceOverride || localLast.getTime() === 0 ? '?override' : ''
@@ -103,6 +107,11 @@ class CocogoatSyncProvider implements SyncProvider {
                 body: value === null ? undefined : await compress(JSON.stringify(value)),
             },
         )
+        // code 415: gzip decode failed
+        if (req.status === 415) {
+            this.gzDisabled = true
+            return await this.set(key, value, { localLast, localNow, forceOverride })
+        }
         // code 412: conflict
         if (req.status === 412) {
             const err = new SyncError(SYNCERR.CONFLICT, 'conflict when saving [' + key + ']', {

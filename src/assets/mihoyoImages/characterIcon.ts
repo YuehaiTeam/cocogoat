@@ -51,6 +51,8 @@ const list = [
     'Zhongli',
     'PlayerGirl',
     'PlayerBoy',
+    'Shinobu',
+    'Yelan',
 ]
 const mapping = {
     traveler: 'PlayerGirl',

@@ -256,7 +256,7 @@ export async function splitUser(
         try {
             maybeUser.roi = await normalizeToYas(src.roi(maybeUser.rect), false)
         } catch (e) {
-            console.warn('Roi for user fielf faild')
+            console.warn('Roi for user field faild')
             return false
         }
         return maybeUser
@@ -309,7 +309,12 @@ export async function splitBottom(src: Mat) {
         if (index < 2) {
             el.type = el.rect.x < src.cols / 2 ? 'level' : 'lock'
             if (el.type === 'level') {
-                const roi = dst.roi(el.rect)
+                const roi = dst.roi({
+                    x: el.rect.x - 2,
+                    y: el.rect.y - 2,
+                    width: el.rect.width + 4,
+                    height: el.rect.height + 4,
+                })
                 cv.findContours(roi, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE)
                 let minL = 9999
                 let minT = 9999
@@ -334,7 +339,7 @@ export async function splitBottom(src: Mat) {
                         },
                     })
                 } catch (e) {
-                    throw new Error('Roi for level faild')
+                    throw new Error('Roi for level : ' + JSON.stringify(el))
                 }
             }
         } else if (!el.type) {
@@ -351,7 +356,7 @@ export async function splitBottom(src: Mat) {
         try {
             el.roi = el.roi || src.roi(el.rect)
         } catch (e) {
-            throw new Error('Roi for ' + el.type + ' faild')
+            throw new Error('Roi for ' + el.type + ': ' + JSON.stringify(el))
         }
         index++
     }

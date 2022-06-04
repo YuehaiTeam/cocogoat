@@ -39,6 +39,7 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                 height: 0,
             },
             blocks: null as { x: number; y: number }[] | null,
+            rawBlocks: null as { x: number[]; y: number[] } | null,
             rectx1: 0,
             recty1: 0,
             cols: 0,
@@ -51,6 +52,7 @@ export const useArstore = defineStore('artifact-capture-scanner', {
             duplicates: 0,
             cachedScroll: 0,
             last: false,
+            lastBeforPaged: null as ICVMat | null,
         }
     },
     getters: {
@@ -71,100 +73,64 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                 h: this.panelRect.height,
             })
         },
+        async scrollCheckBlocks(plast: ICVMat | null, pnow: ICVMat | null) {
+            if (!this.scanner) throw new Error('No scanner')
+            if (plast && pnow) {
+                const diff = await this.scanner.diffAB(
+                    {
+                        rows: plast.rows,
+                        cols: plast.cols,
+                        data: plast.data,
+                        type: plast.type,
+                    },
+                    {
+                        rows: pnow.rows,
+                        cols: pnow.cols,
+                        data: pnow.data,
+                        type: pnow.type,
+                    },
+                )
+                console.log('->drag-diff=' + diff)
+                if (diff < 100) {
+                    // 到底了
+                    this.last = true
+                    console.log('->paging-done')
+                    return true
+                }
+            } else {
+                console.log('->drag-diff=-1 (maybe first time)')
+            }
+            return false
+        },
         async scrollToNext() {
             if (!this.scanner || !this.cap) throw new Error('No scanner')
             if (this.cap.windowId <= 0) return
-            const cap = this.cap
-            const scanner = this.scanner
-            console.log('->scroll')
-            await delay(100)
-            cap.onFrame(() => {
-                // clear
-            })
-            const image = this.cap.capture({
-                x: this.centerRect.x,
-                y: this.centerRect.y,
-                w: this.rectx1 || this.centerRect.width / 4,
-                h: this.recty1 || this.centerRect.height / 2,
-            })
-            const b = await this.scanner.workerCV.analyzeY(image)
-            const orig = b.blocks[0]
-            let cachedScroll = 0
-            const sendTick = async (step: number) => {
-                switch (step) {
-                    case 3:
-                        cachedScroll = cachedScroll || cachedTimes
-                        this.cachedScroll = (this.cachedScroll + cachedTimes) / 2
-                        // await cap.control.mouse_event(cap.control.MOUSEEVENTF_WHEEL, 0, 0, 120, 1)
-                        break
-                    case 2:
-                    case 1:
-                        await cap.control.mouse_event(cap.control.MOUSEEVENTF_WHEEL, 0, 0, -120, 1)
-                        cachedTimes++
-                        break
-                    case 0: {
-                        const scrollTimes = Math.ceil(cachedScroll ? cachedScroll / 2 : 3)
-                        cachedTimes += scrollTimes
-                        await cap.control.mouse_event(cap.control.MOUSEEVENTF_WHEEL, 0, 0, -120, scrollTimes)
-                        break
-                    }
-                }
+            console.log('->drag-scroll')
+            // 从左下角的block开始
+            await this.getBlocks(true)
+            if (!this.rawBlocks) {
+                throw new Error('No blocks')
             }
-            let cachedTimes = 0
-            let cachedStep = 0 // 0:quickstart 1:start 2:middlepassed 3:done
-            for (let i = 0; i < this.rows && this.step === 4; i++) {
-                let fri = 0
-                cachedTimes = 0
-                let processing = false
-                await scanner.diffCached(false)
-                const waitForFinish = new Promise((resolve) => {
-                    cap.onFrame(async () => {
-                        fri++
-                        if (fri % 2 == 0) return
-                        if (processing) return
-                        const image = cap.capture({
-                            x: this.centerRect.x,
-                            y: this.centerRect.y,
-                            w: this.rectx1 || this.centerRect.width / 4,
-                            h: this.recty1 || this.centerRect.height / 2,
-                        })
-                        const diff = await scanner.diffCached(image)
-                        if (diff !== -1 && diff < 10) return
-                        processing = true
-                        const res = await scanner.workerCV.analyzeY(image)
-                        const curr = res.blocks[0]
-                        if (cachedStep < 2 && curr[1] <= orig[1] - (orig[1] - orig[0]) * 0.8) {
-                            cachedStep = 2
-                            console.log('->paging:middle', curr)
-                        } else if (cachedStep >= 2 && Math.abs(curr[1] - orig[1]) <= ((orig[1] - orig[0]) * 3) / 4) {
-                            console.log('->paging:passed', curr)
-                            cachedStep = 3
-                        } else if (this.cachedScroll > 0 && cachedTimes >= this.cachedScroll * 2) {
-                            // 2倍次数还没到，看来是到底了
-                            console.log('->paging:last', cachedTimes, this.cachedScroll)
-                            this.last = true
-                            resolve()
-                            return
-                        }
-                        await sendTick(cachedStep)
-                        processing = false
-                        cachedStep = cachedStep === 0 ? 1 : cachedStep
-                        if (cachedStep === 3) {
-                            cachedStep = 0
-                            cachedTimes = 0
-                            resolve()
-                        }
-                    })
-                }) as Promise<void>
-                await waitForFinish
-                cap.onFrame(() => {
-                    // clear
-                })
-                console.log('->scroll passed', i + 1, this.rows)
+            this.cap.onFrame(() => {
+                // clear onframe callback
+            })
+            const dragFr = {
+                x: this.centerRect.x + this.rawBlocks.x[0],
+                y: this.centerRect.y + this.rawBlocks.y[this.rawBlocks.y.length - 1],
             }
-            this.scanner.diffCached(false)
+            const dragTo = {
+                x: this.centerRect.x + this.rawBlocks.x[0],
+                y: 0,
+            }
+            await delay(50)
+            await this.cap.drag(dragFr, dragTo, 1500, 20, 400)
+            const plast = this.lastBeforPaged
+            await delay(600)
+            await this.getBlocks(true)
+            const pnow = this.lastBeforPaged
+            if (await this.scrollCheckBlocks(plast, pnow)) return
         },
-        async getBlocks() {
+        async getBlocks(store = false) {
             if (!this.cap) throw new Error('No video')
             if (!this.scanner) throw new Error('No scanner')
             const image = this.cap.capture({
@@ -173,7 +139,7 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                 w: this.centerRect.width,
                 h: this.centerRect.height,
             })
-            new Image().src = toCanvas(image).toDataURL()
+            if (store) this.lastBeforPaged = image
             const b = await this.scanner.workerCV.analyzeBlocks(image)
             const blocks = [] as { x: number; y: number }[]
             for (const y of b.y) {
@@ -181,12 +147,12 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                     blocks.push({ x, y })
                 }
             }
-            console.log(b)
             this.rectx1 = b.x[1]
             this.recty1 = b.y[2]
             this.rows = b.y.length
             this.cols = b.x.length
             this.blocks = blocks
+            this.rawBlocks = b
         },
         async getLatency() {
             if (!this.cap) throw new Error('No video')
@@ -327,7 +293,7 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                     this.duplicates++
                     console.log(`->${sid}dup`, data.artifact)
                 } else {
-                    console.log(`->${sid}got`, data.artifact)
+                    // console.log(`->${sid}got`, data.artifact)
                     this.results.push(data)
                     this.resultHashes.push(hash)
                 }

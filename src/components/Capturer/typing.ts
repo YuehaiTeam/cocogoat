@@ -11,4 +11,12 @@ export interface ICapturer {
     video: Ref<HTMLVideoElement>
     click: (x: number, y: number) => Promise<void>
     onFrame: (cb: () => unknown | Promise<unknown>) => void
+    // eslint-disable-next-line max-params
+    drag: (
+        fr: { x: number; y: number },
+        to: { x: number; y: number },
+        duration?: number,
+        step?: number,
+        end?: number,
+    ) => Promise<void>
 }

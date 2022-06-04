@@ -36,21 +36,21 @@ export async function recognize(data: ICVMat) {
         let count = 0
         let score = 0
         const str_res = []
+        let last_word = ''
         for (let n = 0; n < predict_shape[0]; n++) {
             const slice = output.slice(n * predict_shape[2], (n + 1) * predict_shape[2])
             const max_value = Math.max(...slice)
             const argmax_idx = slice.indexOf(max_value)
-            if (argmax_idx > 0) {
+            const word = ocrMap[argmax_idx]
+            if (argmax_idx > 0 && last_word !== word) {
                 score += 1 + max_value
                 count += 1
-                str_res.push(ocrMap[argmax_idx])
+                str_res.push(word)
             }
+            last_word = word
         }
         return {
-            text: str_res
-                .join('')
-                .replace(/(.)\1+/g, '$1')
-                .replace(/\0/g, ''),
+            text: str_res.join(''),
             confidence: parseFloat(((score / count) * 100).toFixed(2)),
         }
     } else {

@@ -126,6 +126,39 @@ export default defineComponent({
                 }
             }
         }
+        const drag = async (
+            fr: { x: number; y: number },
+            to: { x: number; y: number },
+            duration = 2000,
+            step = 10,
+            end = 500,
+            // eslint-disable-next-line max-params
+        ) => {
+            if (control && video.value) {
+                const absFr = await control.toAbsolute(windowId.value, fr.x, fr.y, {
+                    dx: video.value.videoWidth,
+                    dy: video.value.videoHeight,
+                    window: null,
+                })
+                const absTo = await control.toAbsolute(windowId.value, to.x, to.y, {
+                    dx: video.value.videoWidth,
+                    dy: video.value.videoHeight,
+                    window: absFr.win,
+                })
+                await control.SetCursorPos(absFr.x, absFr.y)
+                await delay(10)
+                await control.mouse_event(control.MOUSEEVENTF_LEFTDOWN, 0, 0, 0)
+                for (let i = 0; i < step; i++) {
+                    const x = absFr.x + ((absTo.x - absFr.x) * i) / step
+                    const y = absFr.y + ((absTo.y - absFr.y) * i) / step
+                    await control.SetCursorPos(x, y)
+                    await delay(duration / step)
+                }
+                await control.SetCursorPos(absTo.x, absTo.y)
+                await delay(end)
+                await control.mouse_event(control.MOUSEEVENTF_LEFTUP, 0, 0, 0)
+            }
+        }
         const onFrameFun = {
             cb: () => {
                 // do nothing
@@ -172,6 +205,7 @@ export default defineComponent({
             reset,
             hasPictureInPicture,
             click,
+            drag,
             onFrame,
         }
     },

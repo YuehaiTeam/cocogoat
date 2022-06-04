@@ -121,7 +121,7 @@ export async function analyzeBag(_src: Mat | ICVMat) {
     return { panelRect, centerRect, countRect }
 }
 
-function axisPoint(mat: Mat, ignore = 0) {
+export function axisPoint(mat: Mat, ignore = 20) {
     let last = mat.data[0]
     const changePoints = [0]
     mat.data.forEach((e, i) => {
@@ -156,7 +156,7 @@ function axisPoint(mat: Mat, ignore = 0) {
         } else {
             if (changePoints[i + 1]) {
                 const height = changePoints[i + 1] - changePoints[i]
-                if (height < 20) continue
+                if (height < ignore) continue
                 results.push(Math.round((changePoints[i] + changePoints[i + 1]) / 2))
                 blocks.push([changePoints[i], changePoints[i + 1]])
             }
@@ -175,17 +175,17 @@ export async function analyzeBlocks(_src: Mat | ICVMat) {
     const dst = new cv.Mat()
     const dst2 = new cv.Mat()
     cv.cvtColor(center, dst, cv.COLOR_RGBA2GRAY, 0)
-    cv.Canny(dst, dst, 120, 80, 3, false)
+    cv.Laplacian(dst, dst, cv.CV_8U, 1, 1, 0, cv.BORDER_DEFAULT)
 
     cv.reduce(dst, dst2, 0, cv.CV_REDUCE_SUM, cv.CV_32S)
-    dst2.convertTo(dst2, cv.CV_8U)
-    cv.threshold(dst2, dst2, 160, 255, cv.THRESH_BINARY_INV)
+    dst2.convertTo(dst2, cv.CV_8U, 1 / 10)
+    cv.threshold(dst2, dst2, 180, 255, cv.THRESH_BINARY_INV)
     const { results: x } = axisPoint(dst2)
 
     cv.reduce(dst, dst2, 1, cv.CV_REDUCE_SUM, cv.CV_32S)
-    dst2.convertTo(dst2, cv.CV_8U)
-    cv.threshold(dst2, dst2, 160, 255, cv.THRESH_BINARY_INV)
-    const { results: y } = axisPoint(dst2, 20)
+    dst2.convertTo(dst2, cv.CV_8U, 1 / 10)
+    cv.threshold(dst2, dst2, 180, 255, cv.THRESH_BINARY_INV)
+    const { results: y } = axisPoint(dst2)
 
     dst.delete()
     dst2.delete()

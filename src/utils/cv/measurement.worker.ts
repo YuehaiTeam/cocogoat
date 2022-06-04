@@ -2,6 +2,20 @@ import { fromIMat, getCV, ICVMat, cvTranslateError } from '../cv'
 import { Mat } from '../opencv'
 let imageCache: Mat | null
 
+export async function diffAB(a: ICVMat, b: ICVMat): Promise<number> {
+    const cv = await getCV()
+    const aMat = fromIMat(cv, a)
+    const bMat = fromIMat(cv, b)
+    cv.cvtColor(aMat, aMat, cv.COLOR_RGBA2GRAY, 0)
+    cv.cvtColor(bMat, bMat, cv.COLOR_RGBA2GRAY, 0)
+    cv.absdiff(aMat, bMat, bMat)
+    cv.threshold(bMat, bMat, 130, 255, cv.THRESH_BINARY)
+    const res = cv.countNonZero(bMat)
+    bMat.delete()
+    aMat.delete()
+    return res
+}
+
 export async function diffCached(image: ICVMat | false): Promise<number> {
     const cv = await getCV()
     try {

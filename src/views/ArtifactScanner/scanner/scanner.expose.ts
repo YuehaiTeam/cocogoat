@@ -5,7 +5,7 @@ import * as cvUtil from './cvUtil'
 import * as scanner from './scanner'
 import { recognize } from '@/modules/yas'
 import { setResources } from '@/resources'
-import { diffCached, diffCachedA } from '@/utils/cv/measurement.worker'
+import { diffCached, diffCachedA, diffAB } from '@/utils/cv/measurement.worker'
 
 export const W = {
     recognize,
@@ -15,5 +15,6 @@ export const W = {
     initMap,
     diffCached,
     diffCachedA,
+    diffAB,
 }
 expose(W)

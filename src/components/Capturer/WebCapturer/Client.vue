@@ -17,7 +17,7 @@
                 <div class="content">
                     由于浏览器限制，自动操作无法在网页完成
                     <a class="dlink" href="/extra/client" target="_blank">
-                        点击此处下载辅助插件<small>(v{{ cVersion }} 300kB)</small>
+                        如果插件没有自动启动，请点击此处下载辅助插件<small>(v{{ cVersion }} 300kB)</small>
                     </a>
                     <div class="absolute-area">
                         <el-button class="start-btn start-gray" @click="enable(false)">
@@ -26,7 +26,7 @@
                             </div>
                             <div class="m">
                                 <div class="t">
-                                    {{ needUpdate ? '我已更新并重新运行客户端' : '我已下载并运行客户端' }}
+                                    {{ needUpdate ? '我已更新并重新运行客户端' : '我已运行辅助插件' }}
                                 </div>
                                 <div class="d">记得同意控制键鼠的权限申请</div>
                             </div>
@@ -114,6 +114,7 @@ export default defineComponent({
                 notFound.value = true
                 loading.value = false
                 needUpdate.value = false
+                w.value.launch()
                 return
             } else if (versionCompare(w.value.version, process.env.VUE_APP_CLIENT_MIN_VER || '') < 0) {
                 needUpdate.value = true

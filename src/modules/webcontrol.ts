@@ -54,6 +54,18 @@ export class CocogoatWebControl {
             return e
         })
     }
+    async launch() {
+        // protocol launch
+        const launchUrl = 'cocogoat-control://launch'
+        // in iframe
+        const iframe = document.createElement('iframe')
+        iframe.src = launchUrl
+        iframe.style.display = 'none'
+        document.body.appendChild(iframe)
+        setTimeout(() => {
+            document.body.removeChild(iframe)
+        }, 1000)
+    }
     async check(): Promise<boolean> {
         try {
             const { data } = await this.client.get(

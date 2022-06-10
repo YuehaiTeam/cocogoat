@@ -1,11 +1,23 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { apibase } from './apibase'
+
+export const formatSize = (size: number) => {
+    if (size < 1024) {
+        return size + 'B'
+    } else if (size < 1024 * 1024) {
+        return (size / 1024).toFixed(0) + 'KB'
+    } else if (size < 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024).toFixed(1) + 'MB'
+    } else {
+        return (size / 1024 / 1024 / 1024).toFixed(2) + 'GB'
+    }
+}
 
 export default class DlUpdate {
     name = ref('')
     url = ref('')
     md5 = ref('')
-    size = ref('')
+    size = ref(0)
     version = ref('')
     ready: Promise<this>
     constructor(name: string) {
@@ -27,4 +39,5 @@ export default class DlUpdate {
     updator(name: string) {
         return apibase(`/upgrade/${name}.json`)
     }
+    formattedSize = computed(() => formatSize(this.size.value))
 }

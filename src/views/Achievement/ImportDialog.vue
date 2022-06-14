@@ -17,7 +17,7 @@
                     >
                     </el-input>
                     <el-button class="file-button" @click="fileEl?.click()">选择文件</el-button>
-                    <input ref="fileEl" type="file" @change="onSelectFile" />
+                    <input ref="fileEl" type="file" accept="text/plain,.json" @change="onSelectFile" />
                 </div>
             </el-tab-pane>
             <el-tab-pane label="分享导入" name="memo">

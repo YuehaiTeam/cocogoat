@@ -17,13 +17,17 @@
                         <div class="text">电脑定位，手机同步</div>
                         <el-input
                             v-model="zqCode"
+                            style="overflow: hidden"
                             size="large"
                             placeholder="九位连接码"
                             maxlength="9"
                             @keyup="toUpperInput"
                         >
                             <template #suffix>
-                                <el-button :class="$style.suffixBtn" native-type="submit">
+                                <el-button
+                                    :class="[$style.suffixBtn, zqCode.length === 9 ? 'show' : 'hide']"
+                                    native-type="submit"
+                                >
                                     <fa-icon icon="angle-right" />
                                 </el-button>
                             </template>
@@ -151,6 +155,10 @@ export default defineComponent({
     height: 30px !important;
     margin: 0 !important;
     margin-right: -8px !important;
+    transition: all 0.2s;
+    &:global(.hide) {
+        margin-right: -62px !important;
+    }
 }
 .m-text {
     color: var(--c-text);

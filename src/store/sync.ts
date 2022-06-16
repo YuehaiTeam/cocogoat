@@ -37,7 +37,7 @@ export class SyncError<T> extends Error {
     data: T
     provider?: string
     constructor(public readonly err: SYNCERR, public readonly errmsg: string, data: T) {
-        super(errmsg)
+        super(errmsg + `(${JSON.stringify(data)})`)
         this.code = err
         this.data = data
     }

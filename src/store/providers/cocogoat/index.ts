@@ -1,10 +1,10 @@
-import { apibase } from '@/utils/apibase'
+import { apibase, syncstatus } from '@/utils/apibase'
 import { SyncProvider } from '../typing'
 import { SyncError, SYNCERR, SYNCSTAT } from '../../sync'
 import Manage from './Manage.vue'
 import { ref, reactive, markRaw } from 'vue'
 import { options } from '@/store'
-const pathbase = '/v1/qingxin'
+const pathbase = '/v2/qingxin'
 export interface ICocogoatSyncStatus {
     status: SYNCSTAT
     error: SyncError<unknown> | null
@@ -20,7 +20,6 @@ class CocogoatSyncProvider implements SyncProvider {
     user = ''
     email = ''
     gzDisabled = false
-    cachedEnabled = -1
     notice = ref('')
     component = markRaw(Manage)
     status = reactive({
@@ -46,20 +45,8 @@ class CocogoatSyncProvider implements SyncProvider {
         }
     }
     async enabled() {
-        if (this.cachedEnabled >= 0) return { enabled: !!this.cachedEnabled, reason: this.notice.value }
-        try {
-            const req = await fetch(await apibase(pathbase), {
-                method: 'GET',
-            })
-            const data = await req.json()
-            this.notice.value = data.msg || '无法连接服务器'
-            this.cachedEnabled = req.ok ? 1 : 0
-            return { enabled: req.ok, reason: this.notice.value }
-        } catch (e) {
-            this.notice.value = (e as Error).message
-            this.cachedEnabled = 0
-            return { enabled: false, reason: this.notice.value }
-        }
+        await apibase()
+        return { enabled: syncstatus.value === '', reason: syncstatus.value }
     }
     async info(): Promise<{ user: string; name: string; avatar: string; storage: number[] }> {
         const req = await fetch(`${await apibase(pathbase)}/${this.user}`, {
@@ -86,7 +73,8 @@ class CocogoatSyncProvider implements SyncProvider {
         value: unknown
         lastModified: Date
     }> {
-        const compress = !this.gzDisabled && 'CompressionStream' in window ? this.gzCompress : this.noCompress
+        const compress =
+            value !== null && !this.gzDisabled && 'CompressionStream' in window ? this.gzCompress : this.noCompress
         const req = await fetch(
             `${await apibase(pathbase)}/${this.user}/${key}${
                 forceOverride || localLast.getTime() === 0 ? '?override' : ''
@@ -148,7 +136,7 @@ class CocogoatSyncProvider implements SyncProvider {
             this.status.error = err
             throw err
         }
-        await req.json()
+        const res: { afterLastModified: string } = await req.json()
         const newToken = req.headers.get('authorization')
         if (newToken) {
             this.data.token = newToken.replace('Bearer ', '')
@@ -157,7 +145,7 @@ class CocogoatSyncProvider implements SyncProvider {
         // done
         return {
             value,
-            lastModified: new Date(req.headers.get('Last-Modified') || 0),
+            lastModified: new Date(res.afterLastModified),
         }
     }
     async get(key: string) {

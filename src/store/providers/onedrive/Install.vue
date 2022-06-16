@@ -58,7 +58,7 @@ export default defineComponent({
                 new Date().getTime()
         }
         const tokenMsft = async () => {
-            const res = await fetch(await apibase('/oauth/v1/microsoft'), {
+            const res = await fetch(await apibase('/v2/aether/microsoft'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

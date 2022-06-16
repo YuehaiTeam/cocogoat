@@ -158,7 +158,7 @@ export function useScannerFrame({
             metadata: metadata.value,
             results: results.value.faildImages.filter((e) => !e.data.success),
         })
-        const endpoint = await apibase('/v1/oops', 'global')
+        const endpoint = await apibase('/v2/oops', 'global')
         loading = true
         try {
             const res = await fetch(endpoint, {

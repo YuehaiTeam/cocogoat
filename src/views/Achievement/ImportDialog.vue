@@ -86,7 +86,7 @@ export default defineComponent({
                     if (!jcontent.id) return
                     if (jcontent.id !== inputMemoId.value) return
                     ;(async () => {
-                        fetch(await apibase('/v1/memo/' + inputMemoId.value), {
+                        fetch(await apibase('/v2/memo/' + inputMemoId.value), {
                             method: 'DELETE',
                         })
                     })()
@@ -107,7 +107,7 @@ export default defineComponent({
             }
             memoLoading.value = true
             try {
-                const res = await fetch(await apibase('/v1/memo/' + val))
+                const res = await fetch(await apibase('/v2/memo/' + val))
                 if (res.ok) {
                     const data = await res.json()
                     if (data.id && data.id === val) {
@@ -135,7 +135,7 @@ export default defineComponent({
                 if (!jcontent.id) return
                 if (jcontent.id !== inputMemoId.value) return
                 ;(async () => {
-                    fetch(await apibase('/v1/memo/' + inputMemoId.value), {
+                    fetch(await apibase('/v2/memo/' + inputMemoId.value), {
                         method: 'DELETE',
                     })
                 })()

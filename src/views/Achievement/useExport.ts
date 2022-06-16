@@ -88,7 +88,7 @@ export function useExportAchievements() {
                     achievements: ach0,
                 }
                 try {
-                    const res = await fetch(await apibase('/v1/memo?source=分享链接'), {
+                    const res = await fetch(await apibase('/v2/memo?source=分享链接'), {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -96,7 +96,11 @@ export function useExportAchievements() {
                         body: JSON.stringify(data),
                     })
                     if (!res.ok) {
-                        throw new Error(res.statusText)
+                        let err = res.statusText
+                        try {
+                            err = await res.text()
+                        } catch (e) {}
+                        throw new Error(err)
                     }
                     const rdata = await res.json()
                     if (!rdata.key) {

@@ -7,6 +7,8 @@ const apis = {
 
 export let apiregion = navigator.language.startsWith('zh') ? 'cn' : 'global'
 export const apistatus = ref('')
+export const apicolor = ref('info')
+export const syncstatus = ref('')
 export let regionchecked: Promise<string> | undefined
 export const apibase = async (path = '', region = 'default') => {
     if (!regionchecked) {
@@ -17,12 +19,14 @@ export const apibase = async (path = '', region = 'default') => {
     return apis[region === 'default' ? apiregion : region] + path
 }
 export const checkRegion = async (apiregion: string) => {
-    const url = (await apis[apiregion]) + '/v1/utils/status'
+    const url = (await apis[apiregion]) + '/status'
     try {
         const res = await fetch(url)
         if (res.ok) {
             const rjson = await res.json()
             apistatus.value = rjson.msg
+            apicolor.value = rjson.typ
+            syncstatus.value = rjson.smsg
             if (apis[rjson.region]) {
                 return rjson.region
             }

@@ -66,6 +66,10 @@ export default defineComponent({
     },
     emits: ['submit'],
     setup(props, { emit }) {
+        let intervalId = 0 as unknown as ReturnType<typeof setTimeout>
+        onBeforeUnmount(() => {
+            intervalId && clearTimeout(intervalId)
+        })
         let destroyed = false
         onBeforeUnmount(() => {
             destroyed = true
@@ -84,17 +88,16 @@ export default defineComponent({
         const submitMail = async () => {
             if (!isMail.value) return
             step.value = 2
-            const res = await fetch(await apibase('/v1/traveler'), {
+            const res = await fetch(await apibase('/v2/lumine'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    mail: mail.value,
-                    token: dtoken,
+                    email: mail.value,
                 }),
             })
-            if (res.status !== 200 || res.headers.get('content-type') !== 'application/json') {
+            if (!res.ok || res.headers.get('content-type') !== 'application/json') {
                 step.value = 1
                 let errorText = await res.text()
                 try {
@@ -105,9 +108,9 @@ export default defineComponent({
                 return
             }
             const data = (await res.json()) as {
-                token: string
+                ticket: string
             }
-            dtoken = data.token
+            dtoken = data.ticket
 
             timer.value = 180
             const dec = () => {
@@ -118,16 +121,16 @@ export default defineComponent({
             }
             setTimeout(dec, 1000)
             step.value = 3
-            setTimeout(checkLoginStatus, 3000)
+            intervalId = setTimeout(checkLoginStatus, 3000)
         }
         const checkLoginStatus = async () => {
             if (destroyed) return
             try {
-                const res = await fetch(await apibase('/v1/traveler/' + dtoken), {
-                    method: 'GET',
+                const res = await fetch(await apibase('/v2/lumine/' + dtoken), {
+                    method: 'DELETE',
                 })
                 if (res.status === 404) {
-                    setTimeout(checkLoginStatus, 2000)
+                    intervalId = setTimeout(checkLoginStatus, 2000)
                 } else if (res.status === 200) {
                     const data = (await res.json()) as {
                         token: string
@@ -146,7 +149,7 @@ export default defineComponent({
                     ElMessageBox.alert(errorText, '出错了！')
                 }
             } catch (e) {
-                setTimeout(checkLoginStatus, 2000)
+                intervalId = setTimeout(checkLoginStatus, 2000)
             }
         }
         return {

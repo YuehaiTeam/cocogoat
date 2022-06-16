@@ -32,7 +32,7 @@ class OneDriveSyncProvider implements SyncProvider {
         if (Date.now() - this.data.last_updated < this.data.expires_in * 1000) {
             return
         }
-        const res = await fetch(await apibase('/oauth/v1/microsoft'), {
+        const res = await fetch(await apibase('/v2/aether/microsoft'), {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

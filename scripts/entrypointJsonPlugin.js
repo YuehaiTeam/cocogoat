@@ -41,7 +41,7 @@ module.exports = class EntrypointJsonPlugin {
             const assetsJson = JSON.stringify(assetList)
             // get md5 of assetsJson
             const assetsMd5 = crypto.createHash('md5').update(assetsJson).digest('hex')
-            const fn = `sw/${assetsMd5.substring(0, 8)}.json`
+            const fn = `static/sw/${assetsMd5.substring(0, 8)}.json`
             compilation.assets[fn] = {
                 source: () => assetsJson,
                 size: () => assetsJson.length,

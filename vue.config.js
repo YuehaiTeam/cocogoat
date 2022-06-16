@@ -31,11 +31,12 @@ process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
 process.env.VUE_APP_LOCALRES = singleFile || process.env.NODE_ENV === 'development' ? 'true' : 'false'
 process.env.VUE_APP_TIMESTAMP = Date.now()
 process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
-process.env.VUE_APP_GIT_MSG = gitInfo.commitMessage
+process.env.VUE_APP_GIT_MSG =
+    (gitInfo.commitMessage || '').split('-----END PGP SIGNATURE-----')[1].trim() || gitInfo.commitMessage || ''
 console.log(`[cocogoat-web] Build ${process.env.NODE_ENV} ${process.env.VUE_APP_GIT_SHA}/${process.env.VUE_APP_BUILD}`)
 console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, SWC: ${useSWC}, Sentry: ${useSentry}`)
 console.log('')
-console.log(gitInfo.commitMessage)
+console.log(process.env.VUE_APP_GIT_MSG)
 console.log('')
 module.exports = defineConfig({
     publicPath: singleFile

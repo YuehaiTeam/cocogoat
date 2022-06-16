@@ -10,7 +10,10 @@ const ortWasm = hasSIMD ? 'ort-wasm-simd.wasm' : 'ort-wasm.wasm'
 const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
 const resourcesArr = { [ortWasm]: '1.10.0', [ocvWasm]: '1.0.5', 'ppocr.ort': '1.0.5', 'yas.ort': '1.0.5' }
 export const sw = new ServiceWorker(
-    new URL(/* webpackChunkName: "sw" */ /* webpackEntryOptions: { filename: "sw.js" } */ '@/sw.ts', import.meta.url),
+    new URL(
+        /* webpackChunkName: "sw" */ /* webpackEntryOptions: { filename: "static/sw.js" } */ '@/sw.ts',
+        import.meta.url,
+    ),
     {
         fallback: '/sw.js',
         manifest: window.$cocogoat.manifest || '',

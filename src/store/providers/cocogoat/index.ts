@@ -136,6 +136,9 @@ class CocogoatSyncProvider implements SyncProvider {
             this.status.error = err
             throw err
         }
+        if (req.status === 204) {
+            return { value: null, lastModified: localNow }
+        }
         const res: { afterLastModified: string } = await req.json()
         const newToken = req.headers.get('authorization')
         if (newToken) {

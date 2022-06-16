@@ -39,11 +39,7 @@ console.log('')
 console.log(process.env.VUE_APP_GIT_MSG)
 console.log('')
 module.exports = defineConfig({
-    publicPath: singleFile
-        ? '.'
-        : process.env.NODE_ENV === 'production' && useCDN
-        ? 'https://cocogoat-1251105598.file.myqcloud.com/'
-        : '/',
+    publicPath: singleFile ? '.' : process.env.NODE_ENV === 'production' && useCDN ? 'https://77.xyget.cn/' : '/',
     assetsDir: 'static',
     transpileDependencies: true,
     productionSourceMap: true,

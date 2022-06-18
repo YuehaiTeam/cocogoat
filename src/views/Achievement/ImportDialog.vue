@@ -142,6 +142,14 @@ export default defineComponent({
             } catch (e) {}
         }
         const onFile = async (e: File) => {
+            // ensure file is json
+            if (e.type.includes('image/') || e.type.includes('video/') || e.type.includes('audio/')) {
+                ElNotification.error({
+                    title: '似乎找错了位置',
+                    message: '如需扫描图片或者视频中的成就，请使用【扫描】功能',
+                })
+                return
+            }
             // read to content
             const reader = new FileReader()
             reader.onload = (e) => {

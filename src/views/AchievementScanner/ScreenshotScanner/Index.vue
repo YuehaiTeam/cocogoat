@@ -101,7 +101,13 @@ export default defineComponent({
         const step = ref(1)
         if (!ocrCompatible) {
             return {
+                step: -1,
+                images: [],
                 load,
+                recognized: {
+                    success: 0,
+                    fail: 0,
+                },
             }
         }
         const { scannerOnLine, scannerOnLine2, scannerOnImage } = getScannerInstance()
@@ -130,17 +136,18 @@ export default defineComponent({
             loading.value = true
             const imagePromises = Array.from(files).map((file, index) => {
                 const reader = new FileReader()
-                reader.readAsDataURL(file)
-                return new Promise((resolve) => {
+                let p = new Promise((resolve) => {
                     reader.onload = () => {
                         const img = new Image()
-                        img.src = reader.result as string
                         img.id = 'rcycle-img-' + index
                         img.onload = () => {
                             resolve(img)
                         }
+                        img.src = reader.result as string
                     }
                 }) as Promise<HTMLImageElement>
+                reader.readAsDataURL(file)
+                return p
             })
             images.value = await Promise.all(imagePromises)
             loading.value = false

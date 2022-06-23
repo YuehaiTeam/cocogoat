@@ -265,14 +265,14 @@ export function useImport(
             const dv = importData.value as IAchievementStore[]
             for (const ach of dv) {
                 if (!ach.id) continue
+                if (ach.categoryId === -1) {
+                    ach.categoryId = cMap[ach.id]
+                }
                 const find = store.value.achievements.find((a) => a.id === ach.id)
                 if (find) {
                     // replace original
                     Object.assign(find, ach)
                     continue
-                }
-                if (ach.categoryId === -1) {
-                    ach.categoryId = cMap[ach.id]
                 }
                 store.value.achievements.push(ach)
             }

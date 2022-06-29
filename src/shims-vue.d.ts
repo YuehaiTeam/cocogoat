@@ -6,7 +6,7 @@ declare module '*.vue' {
 }
 
 declare module 'lodash-full' {
-    import type _ from 'lodash'
+    import type _ from 'lodash-es'
     export default _
 }
 

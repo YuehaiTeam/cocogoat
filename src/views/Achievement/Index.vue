@@ -236,7 +236,7 @@
 <script lang="ts">
 import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, toRef, defineComponent, computed, watch, onMounted } from 'vue'
+import { ref, toRef, defineComponent, computed, watch, onMounted, Ref } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import achPartialAmos from '@/plugins/amos/achievements/partial'
 
@@ -379,7 +379,7 @@ export default defineComponent({
                 }
             >
             const newFin = {} as Record<number, IAchievementStore>
-            let totalFin_ = { count: 0, reward: 0 } as {
+            const totalFin_ = { count: 0, reward: 0 } as {
                 count: number
                 reward: number
             }
@@ -449,7 +449,7 @@ export default defineComponent({
             }
             if (sortByStatus.value)
                 data = data.sort((a, b) => {
-                    let ret = 0
+                    const ret = 0
                     let fa = achievementFin.value[a.id] as IAchievementStore | undefined
                     let fb = achievementFin.value[b.id] as IAchievementStore | undefined
                     if (a.postStage) {
@@ -630,7 +630,7 @@ export default defineComponent({
             faildImages: [] as { image: string; data: IAScannerData }[],
         })
         const { sendOops } = useScannerFrame({
-            scannerFrame,
+            scannerFrame: scannerFrame as Ref<HTMLIFrameElement | null>,
             results: scannerResult,
             achievementFin,
             showScanner,

@@ -73,6 +73,7 @@ export default defineComponent({
         const capture = ({ x = 0, y = 0, w = 0, h = 0 }) => {
             if (!video.value) throw new Error('No video')
             if (!tempCtx) throw new Error('No canvas context')
+            const vi = video.value as HTMLVideoElement
             let imageData = null as ImageData | null
             if (w > 0 && h > 0) {
                 if (tempCanvas.width !== w || tempCanvas.height !== h) {
@@ -80,16 +81,16 @@ export default defineComponent({
                     tempCanvas.height = h
                 }
             } else {
-                if (tempCanvas.width !== video.value.videoWidth || tempCanvas.height !== video.value.videoHeight) {
-                    tempCanvas.width = video.value.videoWidth
-                    tempCanvas.height = video.value.videoHeight
+                if (tempCanvas.width !== vi.videoWidth || tempCanvas.height !== vi.videoHeight) {
+                    tempCanvas.width = vi.videoWidth
+                    tempCanvas.height = vi.videoHeight
                 }
             }
             while (!imageData) {
                 if (w > 0 && h > 0) {
-                    tempCtx.drawImage(video.value, x, y, w, h, 0, 0, tempCanvas.width, tempCanvas.height)
+                    tempCtx.drawImage(vi, x, y, w, h, 0, 0, tempCanvas.width, tempCanvas.height)
                 } else {
-                    tempCtx.drawImage(video.value, 0, 0, tempCanvas.width, tempCanvas.height)
+                    tempCtx.drawImage(vi, 0, 0, tempCanvas.width, tempCanvas.height)
                 }
                 imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
                 if (!imageData) {

@@ -50,5 +50,5 @@
 
 ## 参与开发 
 本项目基于 `typescript`和`vue.js`开发，我们欢迎一切有关的讨论、帮助和Pull Requests。  
- - 本地运行: `yarn serve`
- - 本地打包: `yarn build`
+ - 本地运行: `pnpm serve`
+ - 本地打包: `pnpm build`

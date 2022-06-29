@@ -167,7 +167,7 @@ export default defineComponent({
             return providerInstallerList.find((i) => i.class === addType.value)?.component
         })
         const addSave = ({ key, data }: { key: string; data: unknown }) => {
-            let ckey = key
+            const ckey = key
                 ? `${addType.value}_${key}`
                 : new Date().getTime().toString(16).split('').reverse().join('').substring(0, 8)
             localStorage.setItem(

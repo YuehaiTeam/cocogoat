@@ -154,7 +154,7 @@ export default defineComponent({
                 }
             },
             updateDate(datestr: string) {
-                let d = datestr.trim()
+                const d = datestr.trim()
                 if (d === '') {
                     emit('input-date', new Date(0).toISOString())
                     return

@@ -1,5 +1,7 @@
-const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+const { createRequire } = require('module')
+const requireDependency = createRequire(require.resolve('@vue/cli-service'))
+const webpack = requireDependency('webpack')
+const HtmlWebpackPlugin = requireDependency('html-webpack-plugin')
 const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
 const InlineChunkHtmlPlugin = require('./scripts/InlineChunkHtmlPlugin')
 const DeleteSourceMapPlugin = require('./scripts/deleteSourceMapPlugin')
@@ -32,7 +34,7 @@ process.env.VUE_APP_LOCALRES = singleFile || process.env.NODE_ENV === 'developme
 process.env.VUE_APP_TIMESTAMP = Date.now()
 process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
 process.env.VUE_APP_GIT_MSG =
-    (gitInfo.commitMessage || '').split('-----END PGP SIGNATURE-----')[1].trim() || gitInfo.commitMessage || ''
+    ((gitInfo.commitMessage || '').split('-----END PGP SIGNATURE-----')[1] || '').trim() || gitInfo.commitMessage || ''
 console.log(`[cocogoat-web] Build ${process.env.NODE_ENV} ${process.env.VUE_APP_GIT_SHA}/${process.env.VUE_APP_BUILD}`)
 console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, SWC: ${useSWC}, Sentry: ${useSentry}`)
 console.log('')
@@ -91,7 +93,7 @@ module.exports = defineConfig({
             '@genshin-data': require('path').resolve(__dirname, 'src', 'plugins', 'genshin-data', 'data'),
         })
         config.resolve.alias.set('lodash', 'lodash-es')
-        config.plugin('corsWorkerPlugin').use(corsWorkerPlugin)
+        config.plugin('corsWorkerPlugin').use(corsWorkerPlugin, [webpack])
         config.module.rule('ts').use('ifdef-loader').loader('ifdef-loader').options({
             SINGLEFILE: singleFile,
         })

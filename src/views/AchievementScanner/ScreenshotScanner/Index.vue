@@ -48,7 +48,7 @@
                 <el-progress
                     type="circle"
                     :percentage="progress || 0"
-                    :format="(percent) => percent.toFixed(2) + '%'"
+                    :format="(percent:number) => percent.toFixed(2) + '%'"
                 />
                 <div class="inline-status">
                     <float-content
@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { ref, watch, defineComponent, computed } from 'vue'
+import { ref, watch, defineComponent, computed, Ref } from 'vue'
 import Loader from '../Common/Loader.vue'
 import { ocrCompatible } from '@/utils/compatibility'
 import { getScannerInstance } from '../scanner/scanner.worker'
@@ -136,7 +136,7 @@ export default defineComponent({
             loading.value = true
             const imagePromises = Array.from(files).map((file, index) => {
                 const reader = new FileReader()
-                let p = new Promise((resolve) => {
+                const p = new Promise((resolve) => {
                     reader.onload = () => {
                         const img = new Image()
                         img.id = 'rcycle-img-' + index
@@ -149,7 +149,7 @@ export default defineComponent({
                 reader.readAsDataURL(file)
                 return p
             })
-            images.value = await Promise.all(imagePromises)
+            ;(images as Ref<HTMLImageElement[]>).value = await Promise.all(imagePromises)
             loading.value = false
         }
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
@@ -224,7 +224,7 @@ export default defineComponent({
             ocrQueue.pause()
             let last = Promise.resolve() as Promise<void>
             images.value.forEach((element) => {
-                last = cvQueue.push(element)
+                last = cvQueue.push(element as HTMLImageElement)
             })
             ocrQueue.resume()
             await last

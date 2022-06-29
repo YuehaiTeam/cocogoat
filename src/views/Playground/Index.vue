@@ -87,7 +87,7 @@ import achevementsAmos from '@/plugins/amos/achievements'
 import charactersAmos from '@/plugins/amos/characters'
 import { initAchievementMap } from '../AchievementScanner/scanner/achievementsList'
 import { i18n } from '@/i18n'
-import { cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash-es'
 MonacoEditor.render = () => h('div')
 export default defineComponent({
     components: {

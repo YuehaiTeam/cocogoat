@@ -9,7 +9,7 @@ export function get(user: string) {
 export function last(user: string) {
     const item = localStorage.getItem(`cocogoat.v1-t.${user}`)
     try {
-        return new Date(item as string) || new Date(0)
+        return item ? new Date(item as string) : new Date(0)
     } catch (e) {
         return new Date(0)
     }

@@ -47,7 +47,11 @@
                 </div>
             </div>
             <div v-if="step === 2" class="step2">
-                <el-progress type="circle" :percentage="progress" :format="(percent) => percent.toFixed(2) + '%'" />
+                <el-progress
+                    type="circle"
+                    :percentage="progress"
+                    :format="(percent:number) => percent.toFixed(2) + '%'"
+                />
                 <div class="inline-status">
                     <float-content
                         :in-float="false"
@@ -65,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { ref, watch, defineComponent, computed } from 'vue'
+import { ref, watch, defineComponent, computed, Ref } from 'vue'
 import Loader from '../Common/Loader.vue'
 import { ocrCompatible } from '@/utils/compatibility'
 import { getScannerInstance } from '../scanner/scanner.worker'
@@ -105,10 +109,16 @@ export default defineComponent({
         if (!ocrCompatible) {
             return {
                 load,
+                step: 0,
+                recognized: {
+                    success: 0,
+                    fail: 0,
+                },
+                images: [],
             }
         }
         const fileInput = ref(null as HTMLInputElement | null)
-        const images = ref([] as HTMLImageElement[])
+        const images = ref<HTMLImageElement[]>([])
         const dragOver = ref(false)
         const dropzoneClick = () => {
             if (fileInput.value) {
@@ -144,7 +154,7 @@ export default defineComponent({
                     }
                 }) as Promise<HTMLImageElement>
             })
-            images.value = await Promise.all(imagePromises)
+            ;(images as Ref<HTMLImageElement[]>).value = await Promise.all(imagePromises)
             loading.value = false
         }
         const results = ref([] as (IAScannerData | IAScannerFaild)[])
@@ -205,7 +215,7 @@ export default defineComponent({
             let last = Promise.resolve() as Promise<void>
             images.value.forEach((element, index) => {
                 last = ocrQueue.push({
-                    image: element,
+                    image: element as HTMLImageElement,
                     thread: index % 2 === 0,
                 })
             })

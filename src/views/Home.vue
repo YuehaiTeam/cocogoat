@@ -7,7 +7,7 @@
                 <small>纯网页圣遗物管理·成就扫描·更多功能开发中</small>
             </h1>
             <div v-if="apistatus" :class="$style.apistatus">
-                <el-alert type="warning" :title="apistatus" :show-icon="true" :closable="false" />
+                <el-alert type="warning" :title="apistatus" show-icon :closable="false" />
             </div>
             <div>
                 <div :class="$style.card">

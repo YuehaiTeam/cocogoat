@@ -5,8 +5,8 @@ module.exports = {
     },
     extends: [
         'alloy',
-        'alloy/vue',
         'plugin:vue/vue3-essential',
+        'alloy/vue',
         'eslint:recommended',
         '@vue/typescript/recommended',
         'plugin:prettier/recommended',
@@ -28,5 +28,6 @@ module.exports = {
                 allowCoexistStyle: true,
             },
         ],
+        'vue/custom-event-name-casing': 'off',
     },
 }

@@ -64,7 +64,7 @@
                             <el-progress
                                 type="circle"
                                 :percentage="progress || 0"
-                                :format="(percent) => percent.toFixed(2) + '%'"
+                                :format="(percent:number) => percent.toFixed(2) + '%'"
                             />
                         </div>
                     </div>
@@ -263,7 +263,8 @@ export default defineComponent({
                 if (!videoEl.value) return
                 if (!tmpCtx) return
                 if (splitEnded.value) return
-                tmpCtx.drawImage(videoEl.value, 0, 0, videoEl.value.videoWidth, videoEl.value.videoHeight)
+                const vi = videoEl.value as HTMLVideoElement
+                tmpCtx.drawImage(vi, 0, 0, vi.videoWidth, vi.videoHeight)
                 const imat = IMatFromCanvasElement(tmpCanvas)
                 cvQueue.push(imat)
             }

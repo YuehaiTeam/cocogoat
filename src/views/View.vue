@@ -31,7 +31,7 @@
 </template>
 <script lang="ts">
 import bus from '@/bus'
-import { defineComponent, ref, toRef } from 'vue'
+import { defineComponent, Ref, ref, toRef } from 'vue'
 import { useElementSize } from '@vueuse/core'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
@@ -45,8 +45,8 @@ export default defineComponent({
     },
     setup() {
         const actionsOpen = ref(false)
-        const actionsEl = ref(null as HTMLElement | null)
-        const { width } = useElementSize(actionsEl)
+        const actionsEl = ref<HTMLElement | null>(null)
+        const { width } = useElementSize(actionsEl as Ref<HTMLElement | null>)
         return {
             actionsOpen,
             actionsEl,

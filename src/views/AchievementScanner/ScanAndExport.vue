@@ -99,7 +99,7 @@ export default defineComponent({
                         if (e.achievement.preStage && e.achievement.preStage > 0) {
                             const cat = achevementsAmos.find((x) => x.id === e.achievement.categoryId)
                             if (cat) {
-                                let preStage = cat.achievements.find((x) => x.id === e.achievement.preStage)
+                                const preStage = cat.achievements.find((x) => x.id === e.achievement.preStage)
                                 if (preStage) {
                                     const p = {
                                         ...e,

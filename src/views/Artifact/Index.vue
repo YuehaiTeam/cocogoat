@@ -19,18 +19,18 @@
                             <template #dropdown>
                                 <el-dropdown-menu class="el-dropdown-menu--small">
                                     <el-dropdown-item disabled class="export-title"> 莫娜占卜铺 </el-dropdown-item>
-                                    <el-dropdown-item @click="doExport('Mona')">复制</el-dropdown-item>
-                                    <el-dropdown-item @click="doExportToFile('Mona')">到文件</el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('Mona', false)">复制</el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('Mona', true)">到文件</el-dropdown-item>
                                     <el-dropdown-item divided disabled class="export-title">
                                         Mingyulab
                                     </el-dropdown-item>
-                                    <el-dropdown-item @click="doExport('Mingyulab')">复制</el-dropdown-item>
-                                    <el-dropdown-item @click="doExportToFile('Mingyulab')">到文件</el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('Mingyulab', false)">复制</el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('Mingyulab', true)">到文件</el-dropdown-item>
                                     <el-dropdown-item divided disabled class="export-title">
                                         Genshin Optimizer
                                     </el-dropdown-item>
-                                    <el-dropdown-item @click="doExport('GO')">复制</el-dropdown-item>
-                                    <el-dropdown-item @click="doExportToFile('GO')">到文件</el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('GO', false)">复制</el-dropdown-item>
+                                    <el-dropdown-item @click="doExport('GO', true)">到文件</el-dropdown-item>
                                 </el-dropdown-menu>
                             </template>
                         </el-dropdown>
@@ -62,6 +62,13 @@ export default defineComponent({
         return {
             isFiltering,
             selectedIds,
+            openImport() {
+                console.log('openImport')
+            },
+            doExport(to: string, file: boolean) {
+                console.log(to, file)
+                // do nothing
+            },
         }
     },
 })

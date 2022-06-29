@@ -1,14 +1,7 @@
+import { IArtifactType } from '@yuehaiteam/amos/dist/artifact/typing'
 export enum IStatType {
     static = 'static',
     percent = 'percent',
-}
-
-export enum ISlotType {
-    flower = 'flower',
-    plume = 'plume',
-    sands = 'sands',
-    goblet = 'goblet',
-    circlet = 'circlet',
 }
 
 export enum IStatType {
@@ -42,9 +35,9 @@ export interface IArtifact {
     // UUID
     hash: string
     //  套装
-    set: string
+    set: number
     //  位置
-    slot: ISlotType
+    slot: IArtifactType
     //  等级
     level: number
     //  星级

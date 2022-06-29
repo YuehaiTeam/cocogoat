@@ -17,7 +17,6 @@
         "types": ["webpack-env", "element-plus/global", "serviceworker"],
         "paths": {
             "@/*": ["src/*"],
-            "@genshin-data/*": ["src/plugins/genshin-data/data/*"],
             "lodash": ["lodash-es"]
         },
         "lib": ["esnext", "dom", "dom.iterable", "scripthost"]

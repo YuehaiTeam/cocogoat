@@ -1,9 +1,10 @@
+import { IArtifactType } from '@yuehaiteam/amos/dist/artifact/typing'
 import { cvTranslateError, fromIMat, getCV, ICVMat, toIMat } from '@/utils/cv'
 import { recognize, init as getYas } from '@/modules/yas'
 import { analyzeBag, normalizeToYas } from './cvUtil'
 import { Mat, Rect } from '@/utils/opencv'
 import { closest } from 'color-diff'
-import { IArtifact, ISlotType, IStatType } from '@/typings/Artifact'
+import { IArtifact, IStatType } from '@/typings/Artifact'
 import { artifactCharacters, artifactNames, artifactParams } from './map'
 import { textBestmatch } from '@/utils/textMatch'
 import { isIMat } from '@/utils/IMat'
@@ -72,8 +73,8 @@ export async function recognizeArtifact(img: ICVMat | Mat) {
     const artifact = {
         id: Date.now().toString(16),
         hash: '',
-        set: '',
-        slot: ISlotType.plume,
+        set: -1,
+        slot: IArtifactType.BRACER,
         level: 0,
         stars: 0,
         mainstat: {
@@ -106,8 +107,8 @@ export async function recognizeArtifact(img: ICVMat | Mat) {
             case 'name':
                 matched = textBestmatch('str', i.text, artifactNames, i.text.length / 3)
                 if (matched) {
-                    artifact.set = matched.obj[0]
-                    artifact.slot = matched.obj[1] as ISlotType
+                    artifact.set = matched.obj.id
+                    artifact.slot = matched.obj.type
                 }
                 break
             case 'main':

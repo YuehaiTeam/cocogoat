@@ -31,23 +31,6 @@ declare module 'onnxruntime-web/dist/ort.wasm-core.min.js' {
     export * from 'onnxruntime-web'
 }
 
-declare module '@genshin-data/*/achievements.json' {
-    import { AchievementCategory } from '@/typings/Achievement'
-    const t: AchievementCategory[]
-    export default t
-}
-declare module '@genshin-data/*/characters.json' {
-    import { ICharacter } from '@/typings/Character'
-    const t: ICharacter[]
-    export default t
-}
-
-declare module '@genshin-data/*/artifacts.json' {
-    import { IArtifactDesc } from '@/typings/Artifact'
-    const t: IArtifactDesc[]
-    export default t
-}
-
 declare module '@/plugins/decomposed-achievements/DecomposedAchievements.json' {
     import { IDecomposedAchievement } from '@/typings/Achievement'
     const t: IDecomposedAchievement[]

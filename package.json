@@ -8,7 +8,7 @@
     "build": "vue-cli-service build",
     "build:singlefile": "vue-cli-service build --singlefile",
     "lint": "vue-cli-service lint",
-    "postinstall": "git submodule update --init --remote --depth 1 && node scripts/genereate-json && node scripts/amos"
+    "postinstall": "git submodule update --init --remote --depth 1 && node scripts/amos"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.1",
@@ -24,7 +24,7 @@
     "@sentry/vue": "^6.17.9",
     "@types/serviceworker": "^0.0.43",
     "@vue/shared": "3.2.37",
-    "@yuehaiteam/amos": "https://github.com/YuehaiTeam/amos.git",
+    "@yuehaiteam/amos": "github:YuehaiTeam/amos",
     "color-diff": "^1.2.0",
     "comlink": "^4.3.1",
     "copy-to-clipboard": "^3.3.1",

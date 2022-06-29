@@ -1,10 +1,8 @@
 import { options } from '@/store'
-import { IArtifactDesc } from '@/typings/Artifact'
 import { watch } from 'vue'
 import { defineStore } from 'pinia'
 
 const createEmptyI18n = () => ({
-    artifacts: [] as IArtifactDesc[],
     atifactParams: {} as Record<string, string>,
     amos: [] as string[],
 })

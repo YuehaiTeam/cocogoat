@@ -6,6 +6,7 @@ import { Worker, installToWindow } from '@/utils/corsWorker'
 import { hasSIMD } from '@/utils/compatibility'
 import { i18n } from '@/i18n'
 import charactersAmos from '@/plugins/amos/characters/index'
+import artifactAmos from '@/plugins/amos/artifacts/index'
 import { IMatFromImageElement } from '@/utils/IMat'
 import { cloneDeep } from 'lodash-es'
 export function createWorker() {
@@ -48,10 +49,10 @@ export function initScanner() {
             await race
             await requireAsBlob([ortWasm, ocvWasm, 'yas.ort'], (e) => progressHandler(e), all)
             const map = {
-                map: cloneDeep(i18n.artifacts),
-                params: cloneDeep(i18n.atifactParams),
+                map: artifactAmos,
                 characters: charactersAmos,
                 amos: cloneDeep(i18n.amos),
+                params: cloneDeep(i18n.atifactParams),
             }
             await Promise.all([
                 workerCV.setResources(resources),

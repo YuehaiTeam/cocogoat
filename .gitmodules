@@ -1,8 +1,3 @@
-[submodule "genshin-data"]
-	path = src/plugins/genshin-data
-	url = https://github.com/dvaJi/genshin-data.git
-    branch = master
-	shallow = true
 [submodule ".cache/GenshinData"]
 	path = .cache/GenshinData
 	url = https://github.com/Dimbreath/GenshinData

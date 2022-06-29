@@ -90,7 +90,6 @@ module.exports = defineConfig({
         config.module.rule('txt').type('asset/source').set('resourceQuery', /txt/)
         config.resolve.set('fallback', {
             util: require.resolve('util'),
-            '@genshin-data': require('path').resolve(__dirname, 'src', 'plugins', 'genshin-data', 'data'),
         })
         config.resolve.alias.set('lodash', 'lodash-es')
         config.plugin('corsWorkerPlugin').use(corsWorkerPlugin, [webpack])

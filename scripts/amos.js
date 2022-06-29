@@ -19,6 +19,10 @@ amosSources.writeFileHook = (file, data) => {
             importTxt = `import {Character} from '@yuehaiteam/amos/dist/character/typing';`
             type = 'Character[]'
         }
+        if (file.includes('artifact' + path.sep + 'index')) {
+            importTxt = `import {IArtifactSet} from '@yuehaiteam/amos/dist/artifact/typing';`
+            type = 'IArtifactSet[]'
+        }
         if (file.includes('TextMap-')) {
             type = 'string[]'
         }

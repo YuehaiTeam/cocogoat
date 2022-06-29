@@ -39,7 +39,7 @@ specifiers:
   '@vue/eslint-config-typescript': ^11.0.0
   '@vue/shared': 3.2.37
   '@vueuse/core': ^8.7.5
-  '@yuehaiteam/amos': https://github.com/YuehaiTeam/amos.git
+  '@yuehaiteam/amos': github:YuehaiTeam/amos
   clean-webpack-plugin: ^4.0.0
   color-diff: ^1.2.0
   comlink: ^4.3.1
@@ -104,7 +104,7 @@ dependencies:
   '@sentry/vue': 6.19.7_vue@3.2.37
   '@types/serviceworker': 0.0.43
   '@vue/shared': 3.2.37
-  '@yuehaiteam/amos': github.com/YuehaiTeam/amos/f1929c8c8b070e235bc5986f0367c5dc4cec4cb8
+  '@yuehaiteam/amos': github.com/YuehaiTeam/amos/0f44e963678de0b31ab96cb993a88e5ed1f223b6
   color-diff: 1.2.0
   comlink: 4.3.1
   copy-to-clipboard: 3.3.1
@@ -9244,8 +9244,8 @@ packages:
       readable-stream: 3.6.0
     dev: false
 
-  github.com/YuehaiTeam/amos/f1929c8c8b070e235bc5986f0367c5dc4cec4cb8:
-    resolution: {tarball: https://codeload.github.com/YuehaiTeam/amos/tar.gz/f1929c8c8b070e235bc5986f0367c5dc4cec4cb8}
+  github.com/YuehaiTeam/amos/0f44e963678de0b31ab96cb993a88e5ed1f223b6:
+    resolution: {commit: 0f44e963678de0b31ab96cb993a88e5ed1f223b6, repo: git+ssh://git@github.com/YuehaiTeam/amos.git, type: git}
     name: '@yuehaiteam/amos'
     version: 1.0.0
     hasBin: true

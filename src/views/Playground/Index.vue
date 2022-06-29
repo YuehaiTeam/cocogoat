@@ -85,6 +85,7 @@ import _ from 'lodash-full'
 import { initMap } from '../ArtifactScanner/scanner/map'
 import achevementsAmos from '@/plugins/amos/achievements'
 import charactersAmos from '@/plugins/amos/characters'
+import artifactAmos from '@/plugins/amos/artifacts'
 import { initAchievementMap } from '../AchievementScanner/scanner/achievementsList'
 import { i18n } from '@/i18n'
 import { cloneDeep } from 'lodash-es'
@@ -163,7 +164,7 @@ src.delete()`)
             window._ = _
             const i18nAmos = cloneDeep(i18n.amos)
             initMap({
-                map: i18n.artifacts,
+                map: artifactAmos,
                 params: i18n.atifactParams,
                 characters: charactersAmos,
                 amos: i18nAmos,

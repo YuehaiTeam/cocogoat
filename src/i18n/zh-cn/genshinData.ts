@@ -1,5 +1,3 @@
-import _artifactMap from '@genshin-data/chinese-simplified/artifacts.json'
-export const artifacts = _artifactMap
 export const atifactParams = {
     crit: '暴击率',
     crit_dmg: '暴击伤害',

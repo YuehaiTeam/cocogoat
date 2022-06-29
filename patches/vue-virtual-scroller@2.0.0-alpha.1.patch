@@ -1,7 +1,7 @@
-diff --git a/node_modules/vue-virtual-scroller/src/components/RecycleScroller.vue b/node_modules/vue-virtual-scroller/src/components/RecycleScroller.vue
-index 64fe216..1e75f67 100644
---- a/node_modules/vue-virtual-scroller/src/components/RecycleScroller.vue
-+++ b/node_modules/vue-virtual-scroller/src/components/RecycleScroller.vue
+diff --git a/src/components/RecycleScroller.vue b/src/components/RecycleScroller.vue
+index 64fe21606cc69c7abb5d083b1dcb5380dae0f718..31c348691bc197f779b49a63ae6bf6e7b190f9c8 100644
+--- a/src/components/RecycleScroller.vue
++++ b/src/components/RecycleScroller.vue
 @@ -1,4 +1,5 @@
  <template>
 +<component :is="customScrollbar" ref="customScrollbar" @custom-scroll="handleScroll">
@@ -49,10 +49,10 @@ index 64fe216..1e75f67 100644
      addListeners () {
        this.listenerTarget = this.getListenerTarget()
        this.listenerTarget.addEventListener('scroll', this.handleScroll, supportsPassive
-diff --git a/node_modules/vue-virtual-scroller/src/index.js b/node_modules/vue-virtual-scroller/src/index.js
-index 6400a50..96f5f17 100644
---- a/node_modules/vue-virtual-scroller/src/index.js
-+++ b/node_modules/vue-virtual-scroller/src/index.js
+diff --git a/src/index.js b/src/index.js
+index 6400a50d74c378fb03047451811ca7b661680091..674d6cb29845e96aacd9e63971215f698dbc3f7b 100644
+--- a/src/index.js
++++ b/src/index.js
 @@ -23,7 +23,7 @@ function registerComponents (app, prefix) {
  
  const plugin = {

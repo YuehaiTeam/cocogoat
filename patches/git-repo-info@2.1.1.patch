@@ -1,7 +1,7 @@
-diff --git a/node_modules/git-repo-info/index.js b/node_modules/git-repo-info/index.js
-index 6202cab..7b5f367 100644
---- a/node_modules/git-repo-info/index.js
-+++ b/node_modules/git-repo-info/index.js
+diff --git a/index.js b/index.js
+index 6202cab2438db3de7eeb173406c3d0e82662a0e5..d22b4e1e3be5d72166e6afb3fc18c73804a6e786 100644
+--- a/index.js
++++ b/index.js
 @@ -215,7 +215,7 @@ module.exports = function(gitPath) {
      committerDate: null,
      author: null,

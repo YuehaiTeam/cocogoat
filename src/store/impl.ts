@@ -3,15 +3,15 @@ import { debouncedSingleSync } from './sync'
 export function get(user: string) {
     return localStorageImpl.get(user)
 }
-export function set(user: string, data: unknown) {
+export function set(user: string, data: unknown, sync = true) {
     const now = new Date()
     const last = localStorageImpl.set(user, data, now)
-    debouncedSingleSync({ user, data, now, last })
+    if (sync) debouncedSingleSync({ user, data, now, last })
 }
-export function del(user: string) {
+export function del(user: string, sync = true) {
     const now = new Date()
     const last = localStorageImpl.del(user)
-    debouncedSingleSync({ user, data: null, now, last })
+    if (sync) debouncedSingleSync({ user, data: null, now, last })
 }
 export function list() {
     return localStorageImpl.list()

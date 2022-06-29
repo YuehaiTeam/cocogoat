@@ -125,7 +125,7 @@
                     ></el-option>
                 </el-select>
                 <el-divider></el-divider>
-                <component :is="addComp" @submit="addSave" />
+                <component :is="addComp" @submit="addSave($event)" />
             </div>
         </el-drawer>
     </section>
@@ -217,7 +217,7 @@ export default defineComponent({
             await nextTick()
             const keys = list().concat(['options', 'currentUser'])
             keys.forEach((key) => {
-                del(key)
+                del(key, false)
             })
             location.reload()
         }

@@ -65,7 +65,7 @@ specifiers:
   lodash-es: ^4.17.21
   mitt: ^3.0.0
   murmurhash-js: ^1.0.0
-  onnxruntime-web: ^1.10.0
+  onnxruntime-web: 1.10.0
   pinia: ^2.0.9
   postinstall-postinstall: ^2.1.0
   prettier: ^2.4.1
@@ -121,7 +121,7 @@ dependencies:
   lodash-es: 4.17.21
   mitt: 3.0.0
   murmurhash-js: 1.0.0
-  onnxruntime-web: 1.11.0
+  onnxruntime-web: 1.10.0
   pinia: 2.0.14_j6bzmzd4ujpabbp5objtwxyjp4
   qs: 6.11.0
   util: 0.12.4
@@ -6681,18 +6681,18 @@ packages:
       protobufjs: 6.11.3
     dev: false
 
-  /onnxruntime-common/1.11.0:
-    resolution: {integrity: sha512-nXcGm2zutRfpIUDmESXZDWX07VFOZ+0KcDW/H86kMLv3o1RBcGFfPPOLSRP0ohoJtBQj3uV3dB/fQOqI6fqjiA==}
+  /onnxruntime-common/1.10.0:
+    resolution: {integrity: sha512-nZDfMnnD1c5Q7iXu743Mjz10Fuct0hLZmRP848pyQhSoOrof44Z2KknBBTo9Y26zVQgZkzRmQAIRYqfhefBzgQ==}
     dev: false
 
-  /onnxruntime-web/1.11.0:
-    resolution: {integrity: sha512-9b1luHvpDGL7R1TygGHG7PTWoPWFmIs5qoe8fNSjjyVT4HtvdmDM7yiSIty/IlApTt8qhnRLRrlVywGNeXGNxw==}
+  /onnxruntime-web/1.10.0:
+    resolution: {integrity: sha512-9qlhP84AFZRzRxnxh22Q+ynLI7vs2cC6HeovUDc4J+3kU2wFwOYZD3craANMJbbQV+Il0eAH5DbFjJ+symomWQ==}
     dependencies:
       flatbuffers: 1.12.0
       guid-typescript: 1.0.9
       long: 4.0.0
       onnx-proto: 4.0.4
-      onnxruntime-common: 1.11.0
+      onnxruntime-common: 1.10.0
       platform: 1.3.6
     dev: false
 

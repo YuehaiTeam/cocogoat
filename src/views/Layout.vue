@@ -21,10 +21,10 @@
                     </span>
                 </span>
             </router-link>
-            <router-link :to="{ name: 'artifact.index' }">
+            <!--router-link :to="{ name: 'artifact.index' }">
                 <icon-artifact class="v-icon artifact" />
                 <span class="txt">圣遗物</span>
-            </router-link>
+            </router-link-->
             <router-link :to="{ name: 'achievement.index' }">
                 <icon-achievement class="v-icon achievement" />
                 <span class="txt">成就</span>

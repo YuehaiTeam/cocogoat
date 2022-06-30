@@ -38,13 +38,13 @@
                 </h2>
             </router-link>
         </div>
-        <FooterComponent />
+        <FooterComponent name="圣遗物" />
     </div>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue'
-import Footer from './Common/Footer.vue'
+import Footer from '@/components/Scanner/Footer.vue'
 import { scannerCompatible } from '@/utils/compatibility'
 
 import { library } from '@fortawesome/fontawesome-svg-core'

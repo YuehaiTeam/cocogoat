@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Loader v-if="!load" @done="load = true" />
+        <Loader v-if="!load" source="achievement" :instance="getScannerInstance" @done="load = true" />
         <div v-else :class="$style.scannerEntrance">
             <h1>
                 椰羊·成就扫描
@@ -66,19 +66,20 @@
                     <small>导入第三方扫描器的图片结果</small>
                 </router-link>
             </div>
-            <FooterComponent />
+            <FooterComponent name="成就" />
         </div>
     </div>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent } from 'vue'
-import Loader from './Common/Loader.vue'
-import Footer from './Common/Footer.vue'
+import Loader from '@/components/Scanner/Loader.vue'
+import Footer from '@/components/Scanner/Footer.vue'
 import { scannerCompatible, hasRequestVideoFrameCallback, isIOS } from '@/utils/compatibility'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faDesktop, faCropSimple, faClipboardList, faPhotoFilm } from '@fortawesome/free-solid-svg-icons'
+import { getScannerInstance } from './scanner/scanner.worker'
 library.add(faDesktop, faCropSimple, faClipboardList, faPhotoFilm)
 
 export default defineComponent({
@@ -92,6 +93,7 @@ export default defineComponent({
             load,
             isIOS,
             scannerCompatible,
+            getScannerInstance,
             hasRequestVideoFrameCallback,
         }
     },

@@ -26,7 +26,7 @@ import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { faInternetExplorer } from '@fortawesome/free-brands-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 library.add(faTriangleExclamation, faInternetExplorer)
-import Loader from '../Common/Loader.vue'
+import Loader from '@/components/Scanner/Loader.vue'
 import type { ICVMat } from '@/utils/cv'
 import { measureLatency, tillChanged } from '@/utils/cv/measurement'
 import WebCapturer from '@/components/Capturer/WebCapturer/Index.vue'
@@ -339,6 +339,7 @@ export default defineComponent({
             webControlEnabled,
             cap,
             capKey,
+            getScannerInstance,
         }
     },
 })
@@ -346,7 +347,7 @@ export default defineComponent({
 <template>
     <main>
         <section v-if="state === S.Init">
-            <Loader @done="state++" />
+            <Loader source="achievement" :instance="getScannerInstance" @done="state++" />
         </section>
         <section v-else style="padding-top: 20px">
             <web-capturer

@@ -7,7 +7,8 @@
                     <fa-icon icon="triangle-exclamation" />
                 </span>
             </span>
-            <div class="text">当前浏览器不支持此功能<br />请升级或更换浏览器</div>
+            <div v-if="!edgeStrictMode" class="text">当前浏览器不支持此功能<br />请升级或更换浏览器</div>
+            <div v-else class="text">请对本站禁用Edge浏览器的“增强安全模式”以使用此功能</div>
         </div>
         <div v-else class="scanner-loading">
             <div :class="$style.loader">
@@ -27,10 +28,9 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted } from 'vue'
-import { ocrCompatible } from '@/utils/compatibility'
-import { getScannerInstance } from '../scanner/scanner.client'
-import { send } from '../utils'
+import { ref, defineComponent, onMounted, PropType } from 'vue'
+import { ocrCompatible, edgeStrictMode } from '@/utils/compatibility'
+import { send } from './utils'
 import IconLoading from '@/components/Icons/loading.vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
@@ -41,6 +41,21 @@ export default defineComponent({
     components: {
         IconLoading,
     },
+    props: {
+        source: {
+            type: String,
+            required: true,
+        },
+        instance: {
+            type: Function as PropType<
+                () => {
+                    initPromise: Promise<unknown>
+                    onProgress: (handler: (progress: number) => unknown) => void
+                }
+            >,
+            required: true,
+        },
+    },
     emits: ['done'],
     setup(props, { emit }) {
         const progress = ref(0)
@@ -49,23 +64,20 @@ export default defineComponent({
             if (!ocrCompatible) {
                 return
             }
-            const instance = getScannerInstance()
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            window.$cocogoat.artifact_scanner_instance = instance
+            const instance = props.instance()
             instance.onProgress((pvalue) => {
                 if (progress.value < 0) {
                     return
                 }
-                send('load', pvalue)
+                send('load', pvalue, props.source)
                 progress.value = pvalue
                 if (pvalue < -90) {
-                    send('load', false)
+                    send('load', false, props.source)
                     progressText.value = '应用初始化失败, 请联系开发者'
                     return
                 }
                 if (pvalue < 0) {
-                    send('load', false)
+                    send('load', false, props.source)
                     progressText.value = '加载失败, 请刷新重试或联系开发者'
                     return
                 }
@@ -73,7 +85,7 @@ export default defineComponent({
                 if (pvalue >= 100) {
                     progressText.value = '校验完整性'
                     setTimeout(() => {
-                        send('load', true)
+                        send('load', true, props.source)
                         progressText.value = '应用初始化'
                     }, 140)
                 }
@@ -86,6 +98,7 @@ export default defineComponent({
             ocrCompatible,
             progress,
             progressText,
+            edgeStrictMode,
         }
     },
 })

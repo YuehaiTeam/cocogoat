@@ -1,7 +1,6 @@
 <template>
     <div>
-        <Loader v-if="!load" @done="load = true" />
-        <div v-else :class="$style.listContainer">
+        <div :class="$style.listContainer">
             <el-alert
                 type="warning"
                 title="录屏识别为未经完全验证的测试功能"
@@ -79,7 +78,6 @@
 
 <script lang="ts">
 import { ref, watch, defineComponent, computed } from 'vue'
-import Loader from '../Common/Loader.vue'
 import { ocrCompatible } from '@/utils/compatibility'
 import { getScannerInstance } from '../scanner/scanner.worker'
 import type { IAScannerData, IAScannerFaild } from '../scanner/scanner'
@@ -100,7 +98,6 @@ library.add(faInbox)
 
 export default defineComponent({
     components: {
-        Loader,
         FloatContent,
     },
     directives: {

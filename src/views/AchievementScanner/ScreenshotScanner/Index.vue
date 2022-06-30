@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Loader v-if="!load" @done="load = true" />
+        <Loader v-if="!load" source="achievement" :instance="getScannerInstance" @done="load = true" />
         <div v-else :class="$style.listContainer">
             <div v-if="step === 1" class="step1">
                 <div class="top" :style="images.length > 0 ? {} : { padding: 0 }">
@@ -68,7 +68,7 @@
 
 <script lang="ts">
 import { ref, watch, defineComponent, computed, Ref } from 'vue'
-import Loader from '../Common/Loader.vue'
+import Loader from '@/components/Scanner/Loader.vue'
 import { ocrCompatible } from '@/utils/compatibility'
 import { getScannerInstance } from '../scanner/scanner.worker'
 import type { IAScannerData, IAScannerFaild } from '../scanner/scanner'
@@ -108,6 +108,7 @@ export default defineComponent({
                     success: 0,
                     fail: 0,
                 },
+                getScannerInstance,
             }
         }
         const { scannerOnLine, scannerOnLine2, scannerOnImage } = getScannerInstance()
@@ -269,6 +270,7 @@ export default defineComponent({
             results,
             dup,
             scanned,
+            getScannerInstance,
         }
     },
 })

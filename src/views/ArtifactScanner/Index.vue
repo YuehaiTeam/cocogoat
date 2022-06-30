@@ -1,18 +1,19 @@
 <template>
-    <router-view v-if="done" />
-    <Loader v-else @done="done = true" />
+    <Router source="artifact" :instance="getScannerInstance" />
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from 'vue'
-import Loader from './Common/Loader.vue'
+import { defineComponent } from 'vue'
+
+import Router from '@/components/Scanner/Router.vue'
+import { getScannerInstance } from './scanner/scanner.client'
 export default defineComponent({
     components: {
-        Loader,
+        Router,
     },
     setup() {
         return {
-            done: ref(false),
+            getScannerInstance,
         }
     },
 })

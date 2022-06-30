@@ -1,7 +1,7 @@
 <template>
     <div :class="$style.opensource">
-        椰羊·圣遗物扫描 | <a href="https://github.com/YuehaiTeam/cocogoat" target="_blank">Github</a> |
-        <a href="https://github.com/YuehaiTeam/cocogoat/tree/main/docs" target="_blank">集成文档</a> |
+        椰羊·{{ name }}扫描 | <a href="https://github.com/YuehaiTeam/cocogoat-web" target="_blank">Github</a> |
+        <a href="https://github.com/YuehaiTeam/cocogoat-web/tree/main/docs" target="_blank">集成文档</a> |
         <build-info />
     </div>
 </template>
@@ -11,6 +11,12 @@ import BuildInfo from '@/components/BuildInfo.vue'
 export default {
     components: {
         BuildInfo,
+    },
+    props: {
+        name: {
+            type: String,
+            required: true,
+        },
     },
 }
 </script>

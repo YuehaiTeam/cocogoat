@@ -1,7 +1,6 @@
 <template>
     <div>
-        <Loader v-if="load === false" @done="load = true" />
-        <div v-else :class="$style.scannerUi">
+        <div :class="$style.scannerUi">
             <c-ready v-if="step === 3" />
             <c-progress v-else-if="step > 3" />
             <web-capturer
@@ -27,14 +26,12 @@
 <script lang="ts">
 import { ref, computed, toRef, defineComponent } from 'vue'
 import { useArstore } from './state'
-import Loader from '../Common/Loader.vue'
 import CReady from './Ready.vue'
 import CProgress from './Progress.vue'
 import FloatContentB from './Float.vue'
 import WebCapturer from '@/components/Capturer/WebCapturer/Index.vue'
 export default defineComponent({
     components: {
-        Loader,
         CReady,
         CProgress,
         FloatContentB,

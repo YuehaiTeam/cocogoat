@@ -1,0 +1,9 @@
+{
+    "extends": "../tsconfig.json",
+    "files": ["index.ts"],
+
+    "compilerOptions": {
+        "types": ["webpack-env", "serviceworker"],
+        "lib": ["esnext"]
+    }
+}

@@ -11,7 +11,7 @@ const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
 const resourcesArr = { [ortWasm]: '1.10.0', [ocvWasm]: '1.0.5', 'ppocr.ort': '1.0.5', 'yas.ort': '1.0.5' }
 export const sw = new ServiceWorker(
     new URL(
-        /* webpackChunkName: "sw" */ /* webpackEntryOptions: { filename: "static/sw.js" } */ '@/sw.ts',
+        /* webpackChunkName: "sw" */ /* webpackEntryOptions: { filename: "static/sw.js" } */ '@/../sw/index.ts',
         import.meta.url,
     ),
     {

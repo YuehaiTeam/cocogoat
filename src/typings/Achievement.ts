@@ -1,7 +1,7 @@
 import {
     AchievementCategory as AmosAchievementCategory,
     Achievement as AmosAchievement,
-} from '@yuehaiteam/amos/dist/achievement/typing'
+} from 'cocogoat-amos/dist/achievement/typing'
 export interface Achievement extends AmosAchievement {
     sub?: Achievement[]
 }

@@ -1,4 +1,4 @@
-import { IArtifactType } from '@yuehaiteam/amos/dist/artifact/typing'
+import { IArtifactType } from 'cocogoat-amos/dist/artifact/typing'
 import { cvTranslateError, fromIMat, getCV, ICVMat, toIMat } from '@/utils/cv'
 import { recognize, init as getYas } from '@/modules/yas'
 import { analyzeBag, normalizeToYas } from './cvUtil'

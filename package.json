@@ -24,7 +24,7 @@
     "@sentry/vue": "^6.17.9",
     "@types/serviceworker": "^0.0.43",
     "@vue/shared": "3.2.37",
-    "@yuehaiteam/amos": "github:YuehaiTeam/amos",
+    "cocogoat-amos": "^1.0.0",
     "color-diff": "^1.2.0",
     "comlink": "^4.3.1",
     "copy-to-clipboard": "^3.3.1",
@@ -52,7 +52,6 @@
     "vue-router": "^4.0.3",
     "vue-scriptx": "^0.2.5",
     "vue-virtual-scroller": "^2.0.0-alpha.1",
-    "workbox-precaching": "^6.5.3",
     "workbox-routing": "^6.5.3",
     "workbox-strategies": "^6.5.3"
   },
@@ -98,6 +97,13 @@
     "patchedDependencies": {
       "git-repo-info@2.1.1": "patches/git-repo-info@2.1.1.patch",
       "vue-virtual-scroller@2.0.0-alpha.1": "patches/vue-virtual-scroller@2.0.0-alpha.1.patch"
+    },
+    "peerDependencyRules": {
+      "ignoreMissing": ["webpack","@babel/core"]
+    },
+    "overrides":{
+      "@types/node": "link:.cache/empty",
+      "flyio>request": "link:.cache/empty"
     }
   }
 }

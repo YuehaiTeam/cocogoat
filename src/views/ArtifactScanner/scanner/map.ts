@@ -1,5 +1,5 @@
-import { Character } from '@yuehaiteam/amos/dist/character/typing'
-import { IArtifactSet, IArtifactType } from '@yuehaiteam/amos/dist/artifact/typing'
+import { Character } from 'cocogoat-amos/dist/character/typing'
+import { IArtifactSet, IArtifactType } from 'cocogoat-amos/dist/artifact/typing'
 export let artifactNames: { str: string; obj: { id: number; type: IArtifactType } }[] = []
 export let artifactParams: { str: string; obj: string }[] = []
 export let artifactCharacters: { str: string; obj: string }[] = []

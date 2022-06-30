@@ -1,4 +1,4 @@
-import { IArtifactType } from '@yuehaiteam/amos/dist/artifact/typing'
+import { IArtifactType } from 'cocogoat-amos/dist/artifact/typing'
 export enum IStatType {
     static = 'static',
     percent = 'percent',

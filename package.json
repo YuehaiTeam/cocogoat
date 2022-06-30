@@ -93,6 +93,7 @@
     "webpack-bundle-analyzer": "^4.5.0",
     "worker-loader": "^3.0.8"
   },
+  "packageManager": "pnpm@7.4.0",
   "pnpm": {
     "patchedDependencies": {
       "git-repo-info@2.1.1": "patches/git-repo-info@2.1.1.patch",

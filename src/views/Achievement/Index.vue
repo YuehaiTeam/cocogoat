@@ -4,13 +4,21 @@
             <div class="teleport-title">
                 <span style="font-family: genshin">
                     成就
-                    <small :class="$style.totalPercent">
-                        <div class="count">{{ totalFin.count }} / {{ totalCount }}</div>
-                        <div class="reward">
-                            {{ totalFin.reward }} / {{ totalReward }}
-                            <img src="@/assets/images/yuanshi.png" alt="原石" />
-                        </div>
-                    </small>
+                    <el-tooltip placement="bottom">
+                        <template #content>
+                            <div style="text-align: center">
+                                剩余{{ totalCount - totalFin.count }}个成就 <br />
+                                可获取{{ totalReward - totalFin.reward }}原石
+                            </div>
+                        </template>
+                        <small :class="$style.totalPercent">
+                            <div class="count">{{ totalFin.count }} / {{ totalCount }}</div>
+                            <div class="reward">
+                                {{ totalFin.reward }} / {{ totalReward }}
+                                <img src="@/assets/images/yuanshi.png" alt="原石" />
+                            </div>
+                        </small>
+                    </el-tooltip>
                 </span>
             </div>
         </template>

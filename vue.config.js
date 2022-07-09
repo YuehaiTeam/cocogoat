@@ -19,13 +19,13 @@ const SentryPlugin = require('@sentry/webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const isCI = !!process.env.SENTRY_KEY
 const useCDN = process.argv.includes('--cdn') || isCI
-const useESBuild = isCI
+const useSWC = isCI
     ? 'false'
-    : process.argv.includes('--no-esbuild')
+    : process.argv.includes('--no-swc')
     ? 'false'
-    : process.argv.includes('--esbuild-minify')
-    ? 'true'
-    : 'compile'
+    : process.argv.includes('--no-swc-minify')
+    ? 'compile'
+    : 'true'
 const useSentry =
     !process.argv.includes('--no-sentry') && process.env.NODE_ENV === 'production' && !!process.env.SENTRY_KEY
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
@@ -37,7 +37,7 @@ process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
 process.env.VUE_APP_GIT_MSG =
     ((gitInfo.commitMessage || '').split('-----END PGP SIGNATURE-----')[1] || '').trim() || gitInfo.commitMessage || ''
 console.log(`[cocogoat-web] Build ${process.env.NODE_ENV} ${process.env.VUE_APP_GIT_SHA}/${process.env.VUE_APP_BUILD}`)
-console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, ESBuild: ${useESBuild}, Sentry: ${useSentry}`)
+console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, SWC: ${useSWC}, Sentry: ${useSentry}`)
 console.log('')
 console.log(process.env.VUE_APP_GIT_MSG)
 console.log('')
@@ -66,13 +66,12 @@ module.exports = defineConfig({
         },
     },
     terser: {
-        minify: useESBuild === 'true' ? 'esbuild' : 'terser',
-        terserOptions:
-            useESBuild === 'true'
-                ? {
-                      charset: 'utf8',
-                  }
-                : {},
+        minify: useSWC === 'true' ? 'swc' : 'terser',
+        terserOptions: {
+            format: {
+                ascii_only: false,
+            },
+        },
     },
     configureWebpack: {
         plugins: [
@@ -199,19 +198,8 @@ module.exports = defineConfig({
                         chunks: 'initial',
                         reuseExistingChunk: true,
                     },
-                    sw: {
-                        name: 'sw',
-                        test: /sw[\\/]/,
-                        chunks: 'all',
-                        enforce: true,
-                    },
                 },
             })
-            config.output.chunkFilename((e) => {
-                if (e.chunk.name === 'sw') return 'static/sw.js'
-                return 'static/js/[name].[contenthash:8].js'
-            })
-
             config.module
                 .rule('asset-url')
                 .type('asset')
@@ -285,28 +273,31 @@ module.exports = defineConfig({
             })
 
             // swc
-            if (useESBuild !== 'false') {
+            if (useSWC !== 'false') {
                 config.module
                     .rule('js')
                     .uses.delete('babel-loader')
                     .end()
-                    .use('esbuild-loader')
-                    .loader('esbuild-loader')
+                    .use('swc-loader')
+                    .loader('swc-loader')
                     .options({
-                        loader: 'js',
-                        target: 'esnext',
+                        sync: false,
                     })
                 config.module
                     .rule('ts')
                     .uses.delete('babel-loader')
                     .delete('ts-loader')
                     .end()
-                    .use('esbuild-loader')
+                    .use('swc-loader')
                     .before('ifdef-loader')
-                    .loader('esbuild-loader')
+                    .loader('swc-loader')
                     .options({
-                        loader: 'ts',
-                        target: 'esnext',
+                        sync: false,
+                        jsc: {
+                            parser: {
+                                syntax: 'typescript',
+                            },
+                        },
                     })
             }
         }

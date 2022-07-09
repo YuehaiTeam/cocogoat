@@ -1,3 +1,4 @@
+/* eslint-disable no-invalid-this */
 const workerMacro = (mode, code) => {
     if (!code.includes('@worker')) return code
     let preImports = ``

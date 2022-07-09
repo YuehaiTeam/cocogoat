@@ -2,7 +2,6 @@
 import { CocogoatWebControl } from '@/modules/webcontrol'
 import { IMatFromImageData, toCanvas } from '@/utils/IMat'
 import { getScannerInstance } from '../scanner/scanner.worker'
-const { scannerOnLine, scannerOnLine2, scannerOnImage, initPromise, workerCV, workerOCR } = getScannerInstance()
 enum S {
     Fail = -1,
     Init = 0,
@@ -42,6 +41,7 @@ export default defineComponent({
         WebCapturer,
     },
     setup() {
+        const { scannerOnLine, scannerOnLine2, scannerOnImage, initPromise, workerCV, workerOCR } = getScannerInstance()
         const metadata = {
             scanner: 'CaptureScanner',
             capturer: 'WebCapturer',

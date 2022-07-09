@@ -18,7 +18,7 @@ function fakeLocation() {
     }
     return location
 }
-;(function () {
+export default function () {
     var h = {},
         mt = {},
         c = {
@@ -2203,5 +2203,5 @@ function fakeLocation() {
     var B = h.D,
         C = h.load
     c.pt && C([B.protocol, '//ada.baidu.com/phone-tracker/insert_bdtj?sid=', c.pt].join(''))
-})()
-_hmt.push(['_setAutoPageview', false]);
+    _hmt.push(['_setAutoPageview', false])
+}

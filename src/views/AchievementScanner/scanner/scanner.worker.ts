@@ -2,22 +2,13 @@ import { Remote, wrap } from 'comlink'
 import type { W } from './scanner.worker.expose'
 import resources from '@/resources'
 import { requireAsBlob, speedTest } from '@/resource-main'
-import { Worker, installToWindow } from '@/utils/corsWorker'
+import { WorkerMacro } from '@/utils/corsWorker'
 import { hasSIMD } from '@/utils/compatibility'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import { i18n } from '@/i18n'
 import { cloneDeep } from 'lodash-es'
 export function createWorker() {
-    let _worker: Worker
-    /// #if SINGLEFILE
-    installToWindow()
-    const Worker = require('./scanner.worker.expose.ts').default
-    _worker = new Worker() as Worker
-    console.log('Worker created using worker-loader')
-    /// #else
-    _worker = new Worker(new URL('./scanner.worker.expose.ts', import.meta.url)) as Worker
-    console.log('Worker created using worker-plugin')
-    /// #endif
+    const _worker = WorkerMacro(/* @worker './scanner.worker.expose.ts' */)
     const worker = wrap(_worker) as Remote<typeof W>
     return { worker, _worker }
 }

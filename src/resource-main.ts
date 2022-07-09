@@ -1,13 +1,13 @@
-import ortWasm from 'onnxruntime-web/dist/ort-wasm.wasm?rawnolocal'
-import ortWasmMT from 'onnxruntime-web/dist/ort-wasm-threaded.wasm?rawnolocal'
-import ortWasmSIMD from 'onnxruntime-web/dist/ort-wasm-simd.wasm?raw'
-import ortWasmSIMDMT from 'onnxruntime-web/dist/ort-wasm-simd-threaded.wasm?rawnolocal'
+import ortWasm from 'onnxruntime-web/dist/ort-wasm.wasm?url&nolocal'
+import ortWasmMT from 'onnxruntime-web/dist/ort-wasm-threaded.wasm?url&nolocal'
+import ortWasmSIMD from 'onnxruntime-web/dist/ort-wasm-simd.wasm?url&gzip'
+import ortWasmSIMDMT from 'onnxruntime-web/dist/ort-wasm-simd-threaded.wasm?url&nolocal'
 
-import cvWasmNormal from '@/plugins/opencv/opencv-normal.wasm?rawnolocal'
-import cvWasmSimd from '@/plugins/opencv/opencv-simd.wasm?raw'
+import cvWasmNormal from '@/plugins/opencv/opencv-normal.wasm?url&nolocal'
+import cvWasmSimd from '@/plugins/opencv/opencv-simd.wasm?url&gzip'
 
-import ocrModel from '@/plugins/ocr/ppocr.ort?raw'
-import yasModel from '@/plugins/yas/yas.ort?raw'
+import ocrModel from '@/plugins/ocr/ppocr.ort?url&gzip'
+import yasModel from '@/plugins/yas/yas.ort?url&gzip'
 
 import resources, { IResourceItem, resourceInfo, setResources } from '@/resources'
 import testResources from '@/../resources.json'
@@ -17,7 +17,7 @@ import 'element-plus/theme-chalk/el-message-box.css'
 
 function absoluteify(url: string) {
     if (url.startsWith('data:') || url.startsWith('blob:')) return url
-    return new URL(url, location.href).href.replace('?raw', '').replace('?rawnolocal', '')
+    return new URL(url, location.href).href.replace('?url', '').replace('?url&nolocal', '')
 }
 
 export const defaultResources = {

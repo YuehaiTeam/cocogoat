@@ -13,9 +13,11 @@ declare module 'lodash-full' {
 declare module '@/plugins/ocr/*'
 declare module '@/plugins/yas/*'
 
+declare module '*?url'
 declare module '*?raw'
-declare module '*?txt'
-declare module '*?rawnolocal'
+declare module '*?raw&dictcompress'
+declare module '*?url&nolocal'
+declare module '*?url&gzip'
 
 declare module 'vue-monaco'
 

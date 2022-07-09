@@ -62,10 +62,10 @@ addEventListener('install', (event: ExtendableEvent) => {
     event.waitUntil(
         Promise.all([
             caches.open(cacheName + '-manifest').then(async (cache) => {
-                if (await cache.match(__webpack_public_path__ + 'index.json')) {
+                if (await cache.match(process.env.BASE_URL + 'index.json')) {
                     return
                 }
-                await cache.add(__webpack_public_path__ + 'index.json')
+                await cache.add(process.env.BASE_URL + 'index.json')
             }),
             fetch(new Request(new URL('/', location.href).toString())).then(async (response) => {
                 const cache = await caches.open(cacheName)
@@ -127,7 +127,7 @@ registerRoute(/\/_sw\/resources\/(.*?)/, async ({ url, request }): Promise<Respo
 
 // offlinefirst for cache
 registerRoute(
-    new RegExp(`${__webpack_public_path__}static/(.*)`),
+    new RegExp(`${process.env.BASE_URL}static/(.*)`),
     new CacheFirst({
         cacheName: cacheName,
     }),
@@ -168,7 +168,7 @@ registerRoute(
 )
 
 // network-only for api
-registerRoute(new RegExp(`${__webpack_public_path__}77/(.*)`), new NetworkOnly())
+registerRoute(new RegExp(`${process.env.BASE_URL}77/(.*)`), new NetworkOnly())
 
 // networkfirst for pages
 registerRoute(

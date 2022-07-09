@@ -1,20 +1,9 @@
 <template>
     <router-view />
-    <uncompatible-dialog v-if="showUncompatible" />
 </template>
 <script>
 import '@/style/theme.scss'
-import { defineAsyncComponent } from 'vue'
-export default {
-    components: {
-        UncompatibleDialog: defineAsyncComponent(() => import('@/components/UncompatibleDialog')),
-    },
-    setup() {
-        return {
-            showUncompatible: false, // parent === window && showUncompatible,
-        }
-    },
-}
+export default {}
 </script>
 <style lang="scss">
 html,
@@ -32,7 +21,7 @@ body {
 }
 @font-face {
     font-family: genshin;
-    src: url(~@/assets/genshin.woff) format('woff');
+    src: url(./assets/genshin.woff) format('woff');
 }
 .el-message-box {
     max-width: 90%;

@@ -132,8 +132,6 @@
 </template>
 
 <script lang="ts">
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faPlus, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { forceSyncAll, initSync, IProviderItem, syncProviders, syncStatus } from '@/store/sync'
 import { ref, computed, defineComponent, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -142,15 +140,9 @@ import { last } from '@/store/impl/localStorage'
 import dayjs from 'dayjs'
 import { ElMessageBox } from 'element-plus'
 import { disableAutoSave } from '@/store'
-const providerInstaller = require.context('@/store/providers', true, /\.\/(.*?)\/Install\.vue$/)
-const providerInstallerList = providerInstaller.keys().map((key) => {
-    const module = providerInstaller(key)
-    return {
-        class: key.replace(/\.\/(.*?)\/Install\.vue$/, '$1'),
-        name: module.name,
-        component: module.default,
-    }
-})
+import providerInstallerList from '@/store/syncInstaller'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPlus, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 library.add(faPlus, faPenToSquare, faTrashCan)
 export default defineComponent({
     setup() {

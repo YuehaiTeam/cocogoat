@@ -10,13 +10,24 @@ export const usei18n = defineStore('i18n', {
     state: createEmptyI18n,
     getters: {},
 })
-export const i18n = usei18n()
+export let i18n: ReturnType<typeof usei18n>
 
-const langEntrance = require.context('./', true, /\.\/(.*?)\/index\.ts$/, 'lazy')
 const langLoader = {} as Record<string, () => Promise<ReturnType<typeof createEmptyI18n>>>
-langEntrance.keys().forEach((key) => {
-    langLoader[key.replace(/^\.\/(.*?)\/index\.ts$/, '$1')] = () => langEntrance(key)
+/// #if WEBPACK
+// for webpack
+const webpackEntrance = require.context('./', true, /\.\/(.*?)\/index\.ts$/, 'lazy')
+webpackEntrance.keys().forEach((key) => {
+    langLoader[key.replace(/^\.\/(.*?)\/index\.ts$/, '$1')] = () => webpackEntrance(key)
 })
+/// #else
+// for vite
+const viteEntrance = import.meta.glob('./**/index.ts')
+Object.keys(viteEntrance).forEach((key) => {
+    langLoader[key.replace(/^\.\/(.*?)\/index\.ts$/, '$1')] = viteEntrance[key] as () => Promise<
+        ReturnType<typeof createEmptyI18n>
+    >
+})
+/// #endif
 export const langNames = {
     'zh-cn': '简体中文',
     'en-us': 'English',
@@ -38,6 +49,7 @@ export async function loadi18n() {
     }
 }
 export async function initi18n() {
+    i18n = usei18n()
     await loadi18n()
     watch(() => options.value.lang, loadi18n)
 }

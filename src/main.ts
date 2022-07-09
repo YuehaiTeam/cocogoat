@@ -6,13 +6,18 @@ import { defaultResources } from './resource-main'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import View from '@/views/View.vue'
 import { store, currentUser, options } from './store'
-import type { i18n } from '@/i18n'
 import { initSync } from './store/sync'
 import { createPinia } from 'pinia'
 import ScriptX from 'vue-scriptx'
 import '@/utils/darkmode'
+import { i18n, initi18n } from '@/i18n'
 import Adsense from 'vue-google-adsense/dist/Adsense.min.js'
-import { ServiceWorker } from './utils/serviceWorker'
+
+import type { CocogoatGlobal } from '@/typings/global'
+
+/// #if !SINGLEFILE
+import { loadSW } from '@/utils/serviceWorkerEntrance'
+/// #endif
 
 const app = createApp(App)
 app.use(createPinia())
@@ -34,27 +39,13 @@ if (!notInSameoriginFrame) {
 setResourcesAndUpdateInfo(defaultResources)
 declare global {
     interface Window {
-        $cocogoat: {
-            endpoint: string
-            build: string
-            route: 'history' | 'hash'
-            manifest: string
-            onload?: () => void
-            app: TypeApp
-            store: typeof store
-            options: typeof options
-            i18n: typeof i18n
-            resources: typeof resources
-            currentUser: typeof currentUser
-            sw: ServiceWorker
-        }
+        $cocogoat: CocogoatGlobal<TypeApp>
         dataLayer: unknown[]
         gtag: (...args: unknown[]) => void
     }
 }
 
 ;(async () => {
-    const { initi18n, i18n } = await import(/* webpackMode: "eager" */ '@/i18n')
     await initi18n()
     if (options.value.reporting && process.env.NODE_ENV === 'production') {
         const { init } = await import('@/utils/reporting')
@@ -83,7 +74,7 @@ declare global {
     window.$cocogoat = c
     window.$cocogoat.onload && window.$cocogoat.onload()
     /// #if !SINGLEFILE
-    import(/* webpackMode: "eager" */ '@/utils/serviceWorkerEntrance')
+    loadSW()
     /// #endif
 })()
 

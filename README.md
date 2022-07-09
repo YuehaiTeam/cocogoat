@@ -50,5 +50,8 @@
 
 ## 参与开发 
 本项目基于 `typescript`和`vue.js`开发，我们欢迎一切有关的讨论、帮助和Pull Requests。  
- - 本地运行: `pnpm serve`
- - 本地打包: `pnpm build`
+推荐的开发环境：  
+ - 本地运行: `pnpm serve`（vite）
+ - 本地打包: `pnpm build`（webpack）
+ - 单文件打包: `pnpm build:singlefile`（vite）
+ - 以上命令都可以手动通过`:vite`或`:webpack`切换工具链。我们推荐使用`vite`进行开发，在`webpack`下测试后部署。

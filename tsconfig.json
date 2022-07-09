@@ -12,9 +12,10 @@
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
         "useDefineForClassFields": true,
+        "isolatedModules": true,
         "sourceMap": true,
         "baseUrl": ".",
-        "types": ["webpack-env", "element-plus/global"],
+        "types": ["webpack-env", "vite/client", "element-plus/global"],
         "paths": {
             "@/*": ["src/*"],
             "lodash": ["lodash-es"]

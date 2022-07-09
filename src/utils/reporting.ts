@@ -15,6 +15,9 @@ export function init(app: App, router: Router) {
     /// #if SINGLEFILE
     checkHm()
         .then(() => import('@/plugins/tongji'))
+        .then((module) => {
+            module.default()
+        })
         .catch(() => {
             // ignore hm failure
         })

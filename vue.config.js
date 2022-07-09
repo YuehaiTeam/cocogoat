@@ -1,6 +1,7 @@
 const { createRequire } = require('module')
 const requireDependency = createRequire(require.resolve('@vue/cli-service'))
 const webpack = requireDependency('webpack')
+const { resolve } = require('path')
 const HtmlWebpackPlugin = requireDependency('html-webpack-plugin')
 const corsWorkerPlugin = require('./scripts/corsWorkerPlugin')
 const InlineChunkHtmlPlugin = require('./scripts/InlineChunkHtmlPlugin')
@@ -18,13 +19,13 @@ const SentryPlugin = require('@sentry/webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const isCI = !!process.env.SENTRY_KEY
 const useCDN = !process.argv.includes('--no-cdn')
-const useSWC = isCI
+const useESBuild = isCI
     ? 'false'
-    : process.argv.includes('--no-swc')
+    : process.argv.includes('--no-esbuild')
     ? 'false'
-    : process.argv.includes('--no-swc-minify')
-    ? 'compile'
-    : 'true'
+    : process.argv.includes('--esbuild-minify')
+    ? 'true'
+    : 'compile'
 const useSentry =
     !process.argv.includes('--no-sentry') && process.env.NODE_ENV === 'production' && !!process.env.SENTRY_KEY
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
@@ -36,7 +37,7 @@ process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
 process.env.VUE_APP_GIT_MSG =
     ((gitInfo.commitMessage || '').split('-----END PGP SIGNATURE-----')[1] || '').trim() || gitInfo.commitMessage || ''
 console.log(`[cocogoat-web] Build ${process.env.NODE_ENV} ${process.env.VUE_APP_GIT_SHA}/${process.env.VUE_APP_BUILD}`)
-console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, SWC: ${useSWC}, Sentry: ${useSentry}`)
+console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, ESBuild: ${useESBuild}, Sentry: ${useSentry}`)
 console.log('')
 console.log(process.env.VUE_APP_GIT_MSG)
 console.log('')
@@ -47,7 +48,7 @@ module.exports = defineConfig({
     productionSourceMap: true,
     parallel: false,
     // worker-loader、sentry-plugin都和thread-loader冲突
-    // swc下thread-loader降低速度
+    // swc/esbuild下thread-loader降低速度
     css: {
         extract: singleFile
             ? false
@@ -65,12 +66,13 @@ module.exports = defineConfig({
         },
     },
     terser: {
-        minify: useSWC === 'true' ? 'swc' : 'terser',
-        terserOptions: {
-            format: {
-                ascii_only: false,
-            },
-        },
+        minify: useESBuild === 'true' ? 'esbuild' : 'terser',
+        terserOptions:
+            useESBuild === 'true'
+                ? {
+                      charset: 'utf8',
+                  }
+                : {},
     },
     configureWebpack: {
         plugins: [
@@ -84,10 +86,14 @@ module.exports = defineConfig({
         ],
     },
     chainWebpack: (config) => {
+        config.plugin('html').tap((args) => {
+            args[0].template = resolve(__dirname, 'index.html')
+            return args
+        })
         config.output.set('chunkLoadingGlobal', 'define')
         config.plugins.delete('prefetch')
         config.plugins.delete('preload')
-        config.module.rule('txt').type('asset/source').set('resourceQuery', /txt/)
+        config.module.rule('asset-raw').type('asset/source').set('resourceQuery', /raw/)
         config.resolve.set('fallback', {
             util: require.resolve('util'),
         })
@@ -95,7 +101,17 @@ module.exports = defineConfig({
         config.plugin('corsWorkerPlugin').use(corsWorkerPlugin, [webpack])
         config.module.rule('ts').use('ifdef-loader').loader('ifdef-loader').options({
             SINGLEFILE: singleFile,
+            WEBPACK: true,
+            VITE: false,
+            VITE_DEV: false,
         })
+        config.module
+            .rule('ts')
+            .use('workermacro-loader')
+            .loader('./scripts/workermacro')
+            .options({
+                mode: singleFile ? 'webpack-singlefile' : 'webpack',
+            })
         config.set('externalsType', 'script')
         if (singleFile) {
             config.output.filename((pathData) => {
@@ -133,16 +149,16 @@ module.exports = defineConfig({
             config.plugin('InlineFaviconHtmlPlugin').after('copy').use(new InlineFaviconHtmlPlugin(HtmlWebpackPlugin))
             config.module
                 .rule('worker')
-                .test(/\.worker\.expose\.ts$/)
+                .test(/\\.expose\.ts$/)
                 .use('worker')
                 .loader('worker-loader')
                 .options({
                     inline: 'no-fallback',
                 })
             config.module
-                .rule('raw')
+                .rule('asset-url')
                 .type('asset/inline')
-                .set('resourceQuery', /raw/)
+                .set('resourceQuery', /url/)
                 .set('generator', {
                     dataUrl: (content, { filename }) => {
                         // gzip it
@@ -156,9 +172,9 @@ module.exports = defineConfig({
                     },
                 })
             config.module
-                .rule('raw-ignore-local')
+                .rule('asset-nolocal')
                 .type('asset')
-                .set('resourceQuery', /rawnolocal/)
+                .set('resourceQuery', /nolocal/)
                 .set('generator', { filename: 'assets/[name].[contenthash:8][ext]' })
             config.module.rule('images').type('asset/inline').set('generator', {})
             config.module.rule('fonts').type('asset/inline').set('generator', {})
@@ -169,16 +185,28 @@ module.exports = defineConfig({
             config.resolve.alias.set('lodash-full', 'lodash-es')
         } else {
             config.module
-                .rule('raw')
+                .rule('asset-url')
                 .type('asset')
-                .set('resourceQuery', /raw/)
+                .set('resourceQuery', /url/)
                 .set('generator', { filename: 'assets/[name].[contenthash:8][ext]' })
             config.module.set('parser', {
                 'javascript/auto': {
-                    worker: ['Worker from @/utils/corsWorker', 'ServiceWorker from @/utils/serviceWorker', '...'],
+                    worker: [
+                        'Worker from @/utils/corsWorker',
+                        'WorkerUrl from @/utils/corsWorker',
+                        'WorkerMacro from @/utils/corsWorker',
+                        'ServiceWorker from @/utils/serviceWorker',
+                        '...',
+                    ],
                 },
                 'javascript/esm': {
-                    worker: ['Worker from @/utils/corsWorker', 'ServiceWorker from @/utils/serviceWorker', '...'],
+                    worker: [
+                        'Worker from @/utils/corsWorker',
+                        'WorkerUrl from @/utils/corsWorker',
+                        'WorkerMacro from @/utils/corsWorker',
+                        'ServiceWorker from @/utils/serviceWorker',
+                        '...',
+                    ],
                 },
             })
             config
@@ -218,7 +246,6 @@ module.exports = defineConfig({
                 'monaco-editor': 'var monaco',
                 exceljs: ['https://s2.pstatp.com/cdn/expire-1-y/exceljs/4.3.0/exceljs.min.js', 'ExcelJS'],
                 jszip: ['https://s2.pstatp.com/cdn/expire-1-y/jszip/3.7.0/jszip.min.js', 'JSZip'],
-                'lodash-full': ['https://s2.pstatp.com/cdn/expire-1-y/lodash.js/4.17.21/lodash.min.js', '_'],
                 '@sentry/browser': [
                     'https://npm.elemecdn.com/@sentry/tracing/build/bundle.tracing.es6.min.js',
                     'Sentry',
@@ -230,31 +257,28 @@ module.exports = defineConfig({
             })
 
             // swc
-            if (useSWC !== 'false') {
+            if (useESBuild !== 'false') {
                 config.module
                     .rule('js')
                     .uses.delete('babel-loader')
                     .end()
-                    .use('swc-loader')
-                    .loader('swc-loader')
+                    .use('esbuild-loader')
+                    .loader('esbuild-loader')
                     .options({
-                        sync: false,
+                        loader: 'js',
+                        target: 'esnext',
                     })
                 config.module
                     .rule('ts')
                     .uses.delete('babel-loader')
                     .delete('ts-loader')
                     .end()
-                    .use('swc-loader')
+                    .use('esbuild-loader')
                     .before('ifdef-loader')
-                    .loader('swc-loader')
+                    .loader('esbuild-loader')
                     .options({
-                        sync: false,
-                        jsc: {
-                            parser: {
-                                syntax: 'typescript',
-                            },
-                        },
+                        loader: 'ts',
+                        target: 'esnext',
                     })
             }
         }

@@ -1,11 +1,11 @@
 import * as ort from 'onnxruntime-web/dist/ort.wasm-core.min.js'
-import ocrString from '@/plugins/yas/yas.txt?txt'
+import ocrString from '@/plugins/yas/yas.txt?raw&dictcompress'
 
 import resources from '@/resources'
 
 import { ICVMat } from '@/utils/cv'
 
-const ocrMap: string[] = ocrString.toString().trim().replace(/\r/g, '').split('\n')
+const ocrMap: string[] = ocrString.trim().split('')
 
 ort.env.wasm.wasmPaths = resources
 // disable MultiThreading

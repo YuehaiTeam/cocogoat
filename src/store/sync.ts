@@ -3,7 +3,11 @@ import { ref, reactive, watch, Ref, nextTick } from 'vue'
 import { reloadAllUsers, currentUser, store, disableAutoSave } from '.'
 import * as localStorageImpl from './impl/localStorage'
 import { SyncProvider } from './providers/typing'
+/// #if WEBPACK
 const providersEntrance = require.context('./providers', true, /\.\/(.*?)\/index\.ts$/, 'lazy')
+/// #else
+const viteProvidersEntrance = import.meta.glob('./providers/**/index.ts')
+/// #endif
 export enum SYNCSTAT {
     OFFLINE = 'offline',
     WAITING = 'waitng',
@@ -49,12 +53,22 @@ export const syncStatus = ref({
 })
 export const initSync = async () => {
     const availableProviders = {} as Record<string, (data: unknown) => Promise<SyncProvider>>
+    /// #if WEBPACK
     providersEntrance.keys().forEach((key) => {
         availableProviders[key.replace(/^\.\/(.*?)\/index\.ts$/, '$1')] = async (data: unknown) => {
             const Module = (await providersEntrance(key)).default
             return new Module(data)
         }
     })
+    /// #else
+    Object.keys(viteProvidersEntrance).forEach((key) => {
+        availableProviders[key.replace(/^\.\/providers\/(.*?)\/index\.ts$/, '$1')] = async (data: unknown) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const Module = ((await viteProvidersEntrance[key]()) as any).default
+            return new Module(data)
+        }
+    })
+    /// #endif
     const keys = Object.keys(localStorage)
         .filter((key) => key.startsWith('cocogoat.sync.v1.'))
         .map((key) => [key.replace('cocogoat.sync.v1.', ''), localStorage.getItem(key)])

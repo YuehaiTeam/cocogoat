@@ -2,7 +2,7 @@ import { Remote, wrap } from 'comlink'
 import type { W } from './scanner.expose'
 import resources from '@/resources'
 import { requireAsBlob, speedTest } from '@/resource-main'
-import { Worker, installToWindow } from '@/utils/corsWorker'
+import { WorkerMacro } from '@/utils/corsWorker'
 import { hasSIMD } from '@/utils/compatibility'
 import { i18n } from '@/i18n'
 import charactersAmos from '@/plugins/amos/characters/index'
@@ -10,16 +10,7 @@ import artifactAmos from '@/plugins/amos/artifacts/index'
 import { IMatFromImageElement } from '@/utils/IMat'
 import { cloneDeep } from 'lodash-es'
 export function createWorker() {
-    let _worker: Worker
-    /// #if SINGLEFILE
-    installToWindow()
-    const Worker = require('./scanner.expose.ts').default
-    _worker = new Worker() as Worker
-    console.log('Worker created using worker-loader')
-    /// #else
-    _worker = new Worker(new URL('./scanner.expose.ts', import.meta.url)) as Worker
-    console.log('Worker created using worker-plugin')
-    /// #endif
+    const _worker = WorkerMacro(/* @worker './scanner.expose.ts' */)
     const worker = wrap(_worker) as Remote<typeof W>
     return { worker, _worker }
 }

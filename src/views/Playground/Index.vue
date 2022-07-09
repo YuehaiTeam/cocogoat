@@ -76,12 +76,11 @@ import { hasSIMD } from '@/utils/compatibility'
 import { getCV, cvTranslateError, toIMat, fromIMat } from '@/utils/cv'
 import { h, defineComponent, ref, watch, onMounted, onBeforeUnmount } from 'vue'
 import MonacoEditor from 'vue-monaco'
-import cvdts from './opencv.d.ts.txt?txt'
-import pldts from './playground.d.ts.txt?txt'
+import cvdts from './opencv.d.ts.txt?raw'
+import pldts from './playground.d.ts.txt?raw'
 import * as achievementScanner from '@/views/AchievementScanner/scanner/scanner.worker.expose'
 import * as artifactScanner from '@/views/ArtifactScanner/scanner/scanner.expose'
 import { IMatFromImageElement, toCanvas } from '@/utils/IMat'
-import _ from 'lodash-full'
 import { initMap } from '../ArtifactScanner/scanner/map'
 import achevementsAmos from '@/plugins/amos/achievements'
 import charactersAmos from '@/plugins/amos/characters'
@@ -138,7 +137,10 @@ src.delete()`)
                 window.require.reset()
             } catch (e) {}
             const monacoBase = 'https://s1.pstatp.com/cdn/expire-1-y/monaco-editor/0.31.1/min/vs'
-            await loadScript(monacoBase + '/loader.min.js')
+            await Promise.all([
+                loadScript(monacoBase + '/loader.min.js'),
+                loadScript('https://s2.pstatp.com/cdn/expire-1-y/lodash.js/4.17.21/lodash.min.js'),
+            ])
             // @ts-ignore
             window.define.push = webpackJsonp.push
             // @ts-ignore
@@ -160,8 +162,6 @@ src.delete()`)
             window.cv = cv
             // @ts-ignore
             window.cvTranslateError = cvTranslateError
-            // @ts-ignore
-            window._ = _
             const i18nAmos = cloneDeep(i18n.amos)
             initMap({
                 map: artifactAmos,
@@ -212,8 +212,8 @@ src.delete()`)
         const run = function () {
             let AsyncFunction
             try {
-                // eslint-disable-next-line no-eval
-                AsyncFunction = eval('Object.getPrototypeOf(async function () {}).constructor')
+                // eslint-disable-next-line no-new-func
+                AsyncFunction = Object.getPrototypeOf(new Function('return async function () {}')()).constructor
             } catch (e) {
                 AsyncFunction = Function
             }

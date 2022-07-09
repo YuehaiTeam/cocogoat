@@ -1,4 +1,5 @@
 import { isEqual, reduce } from 'lodash-es'
+export { WorkerUrl } from './corsWorker'
 
 export class ServiceWorker {
     url: string

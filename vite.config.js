@@ -17,7 +17,8 @@ import GitInfo from 'git-repo-info'
 import { resolve } from 'path'
 import dayjs from 'dayjs'
 const gitInfo = GitInfo()
-const useCDN = !process.argv.includes('--no-cdn')
+const isCI = !!process.env.SENTRY_KEY
+const useCDN = process.argv.includes('--cdn') || isCI
 const singleFile = process.argv.includes('--singlefile')
 const useSentry =
     !process.argv.includes('--no-sentry') && process.env.NODE_ENV === 'production' && !!process.env.SENTRY_KEY

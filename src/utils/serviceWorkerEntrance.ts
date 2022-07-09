@@ -1,6 +1,7 @@
 import { template } from '@/assets/mihoyoImages/characterIcon'
 import characterAmos from '@/plugins/amos/characters'
-import { ServiceWorker, WorkerUrl } from '@/utils/serviceWorker'
+import { ServiceWorker } from '@/utils/serviceWorker'
+import { WorkerUrl } from '@/utils/corsWorker'
 import ProgressNotf from '@/components/ProgressNotf.vue'
 import { h, VNode, ComponentInternalInstance } from 'vue'
 import { ElNotification, NotificationHandle } from 'element-plus'
@@ -10,7 +11,7 @@ const ortWasm = hasSIMD ? 'ort-wasm-simd.wasm' : 'ort-wasm.wasm'
 const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
 const resourcesArr = { [ortWasm]: '1.10.0', [ocvWasm]: '1.0.5', 'ppocr.ort': '1.0.5', 'yas.ort': '1.0.5' }
 export function loadSW() {
-    const sw = new ServiceWorker(WorkerUrl(/* @worker-url '../../sw/index.ts' 'static/sw.js' */), {
+    const sw = new ServiceWorker(WorkerUrl(/* @worker-url '../../sw/index.ts' 'sw static/sw.js' */), {
         fallback: '/sw.js',
         manifest: window.$cocogoat.manifest || '',
         additionalCachedUrls: [...characterAmos.map((c) => template.replace('#', c.key))],
@@ -55,6 +56,8 @@ export function loadSW() {
         sw.uninstall()
     } else if (process.env.NODE_ENV === 'production' || location.href.includes('force-sw')) {
         sw.install()
+    } else {
+        console.log('SW is in dev mode:', sw.url)
     }
     window.$cocogoat.sw = sw
     return sw

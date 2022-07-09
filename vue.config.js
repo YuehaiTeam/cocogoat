@@ -18,7 +18,7 @@ const singleFile = process.argv.includes('--singlefile') || singleFileDLL
 const SentryPlugin = require('@sentry/webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const isCI = !!process.env.SENTRY_KEY
-const useCDN = !process.argv.includes('--no-cdn')
+const useCDN = process.argv.includes('--cdn') || isCI
 const useESBuild = isCI
     ? 'false'
     : process.argv.includes('--no-esbuild')
@@ -184,6 +184,34 @@ module.exports = defineConfig({
             })
             config.resolve.alias.set('lodash-full', 'lodash-es')
         } else {
+            config.optimization.splitChunks({
+                cacheGroups: {
+                    defaultVendors: {
+                        name: 'vendors',
+                        test: /[\\/]node_modules[\\/]/,
+                        priority: -10,
+                        chunks: 'initial',
+                    },
+                    common: {
+                        name: 'common',
+                        minChunks: 2,
+                        priority: -20,
+                        chunks: 'initial',
+                        reuseExistingChunk: true,
+                    },
+                    sw: {
+                        name: 'sw',
+                        test: /sw[\\/]/,
+                        chunks: 'all',
+                        enforce: true,
+                    },
+                },
+            })
+            config.output.chunkFilename((e) => {
+                if (e.chunk.name === 'sw') return 'static/sw.js'
+                return 'static/js/[name].[contenthash:8].js'
+            })
+
             config.module
                 .rule('asset-url')
                 .type('asset')

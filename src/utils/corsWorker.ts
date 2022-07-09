@@ -50,7 +50,8 @@ export function WorkerExtract(wrapper: () => Worker): URL {
             window.Worker = function (url: string) {
                 return new URL(url)
             }
-            window.URL.revokeObjectURL = (url: string) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            window.URL.revokeObjectURL = (_url: string) => {
                 // do nothing
             }
             const tmpUrl = wrapper() as unknown as URL

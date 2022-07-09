@@ -8,7 +8,11 @@ const workerMacro = (mode, code) => {
                 .substring(0, 8)}__`
             const url = JSON.stringify(args[3])
             const worker = args[1]
-            const chunkname = args[4] ? `/* webpackEntryOptions: { filename: ${JSON.stringify(args[4])} } */ ` : ''
+            const fns = args[4] ? args[4].split(' ') : []
+            let chunkname = []
+            if (fns.length >= 1) chunkname.push(`/* webpackChunkName: ${JSON.stringify(fns[0])} */ `)
+            if (fns.length >= 2) chunkname.push(`/* webpackEntryOptions: { filename: ${JSON.stringify(fns[1])} } */ `)
+            chunkname = chunkname.join('')
             const wrapperStart = `${args[1]}(()=>{\nconsole.log('[worker-macro] ${mode}');\n`
             const wrapperEnd = `\n})`
             switch (mode) {

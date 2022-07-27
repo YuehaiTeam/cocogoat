@@ -6,6 +6,7 @@ import { WorkerMacro } from '@/utils/corsWorker'
 import { hasSIMD } from '@/utils/compatibility'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import { i18n } from '@/i18n'
+import { localOptions } from '@/store'
 import { cloneDeep } from 'lodash-es'
 export function createWorker() {
     const _worker = WorkerMacro(/* @worker './scanner.worker.expose.ts' */)
@@ -51,7 +52,7 @@ export function initScanner() {
         }
         w1.removeEventListener('error', workerErrorHandler)
         w2.removeEventListener('error', workerErrorHandler)
-        await Promise.all([workerCV.init(), workerOCR.init()])
+        await Promise.all([workerCV.init(localOptions.value.onnxWebgl), workerOCR.init(localOptions.value.onnxWebgl)])
     })()
     return {
         recognizeAchievement,

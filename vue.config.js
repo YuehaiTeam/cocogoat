@@ -97,6 +97,8 @@ module.exports = defineConfig({
             util: require.resolve('util'),
         })
         config.resolve.alias.set('lodash', 'lodash-es')
+        config.resolve.alias.set('onnxruntime-web', 'onnxruntime-web/dist/ort.wasm-core.min.js')
+        config.resolve.alias.set('onnxruntime-common', 'onnxruntime-web/dist/ort.wasm-core.min.js')
         config.plugin('corsWorkerPlugin').use(corsWorkerPlugin, [webpack])
         config.module.rule('ts').use('ifdef-loader').loader('ifdef-loader').options({
             SINGLEFILE: singleFile,

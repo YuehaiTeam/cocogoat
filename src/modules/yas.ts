@@ -1,4 +1,6 @@
-import * as ort from 'onnxruntime-web/dist/ort.wasm-core.min.js'
+import * as ort from 'onnxruntime-web'
+import { createInference } from '@/utils/onnx'
+
 import ocrString from '@/plugins/yas/yas.txt?raw&dictcompress'
 
 import resources from '@/resources'
@@ -17,8 +19,8 @@ export function transform(data: Uint8Array) {
     return Float32Array.from(data.map((x) => x / 255))
 }
 
-export async function init() {
-    session = await ort.InferenceSession.create(resources['yas.ort'])
+export async function init(webgl = false) {
+    session = await createInference(resources['yas.ort'], webgl)
     return session
 }
 

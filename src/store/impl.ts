@@ -6,6 +6,7 @@ export function get(user: string) {
 export function set(user: string, data: unknown, sync = true) {
     const now = new Date()
     const last = localStorageImpl.set(user, data, now)
+    if (user === 'localopt') return
     if (sync) debouncedSingleSync({ user, data, now, last })
 }
 export function del(user: string, sync = true) {

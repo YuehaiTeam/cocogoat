@@ -19,6 +19,7 @@ export type IStore = ReturnType<typeof createEmptyStore>
 export function createEmptyOptions() {
     return {
         lang: navigator.language.toLowerCase(),
+        modelLang: navigator.language.toLowerCase(),
         achievements_recent_export: 'paimon',
         achievements_show_unpublished: false,
         reporting: true,
@@ -26,6 +27,13 @@ export function createEmptyOptions() {
     }
 }
 export type IOptions = ReturnType<typeof createEmptyOptions>
+
+export function createEmptyLocalOptions() {
+    return {
+        onnxWebgl: false,
+    }
+}
+export type ILocalOptions = ReturnType<typeof createEmptyLocalOptions>
 
 export function loadStore(): IStore {
     const uid = storageCurrentUser()
@@ -35,6 +43,10 @@ export function loadStore(): IStore {
 export function loadOptions(): IOptions {
     const data = get('options') || {}
     return Object.assign(createEmptyOptions(), data)
+}
+export function loadLocalOptions(): ILocalOptions {
+    const data = get('localopt') || {}
+    return Object.assign(createEmptyLocalOptions(), data)
 }
 export function loadAllUsers() {
     const keys = list()
@@ -88,8 +100,12 @@ export function useAutoSave(currentUser: Ref<string>, store: Ref<IStore>, option
 export const currentUser = ref(storageCurrentUser())
 export const store = ref(loadStore())
 export const options = ref(loadOptions())
+export const localOptions = ref(loadLocalOptions())
 export const allUsers = ref(loadAllUsers())
 export function reloadAllUsers() {
     allUsers.value = loadAllUsers()
 }
 useAutoSave(currentUser, store, options)
+watch(localOptions, (options) => {
+    set('localopt', options)
+})

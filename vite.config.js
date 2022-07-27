@@ -56,6 +56,8 @@ export default defineConfig(({ command, mode }) => {
                 '@': resolve(__dirname, 'src'),
                 lodash: 'lodash-es',
                 util: require.resolve('util'),
+                'onnxruntime-web': 'onnxruntime-web/dist/ort.wasm-core.min.js',
+                'onnxruntime-common': 'onnxruntime-web/dist/ort.wasm-core.min.js',
             },
         },
         build: {

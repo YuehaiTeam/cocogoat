@@ -97,15 +97,15 @@
         "sass-loader": "^12.0.0",
         "swc-loader": "^0.2.3",
         "typescript": "latest",
-        "unplugin-auto-import": "^0.6.0",
-        "unplugin-vue-components": "^0.17.18",
-        "vite": "3.0.0-beta.7",
+        "unplugin-auto-import": "^0.10.1",
+        "unplugin-vue-components": "^0.21.2",
+        "vite": "3.0.3",
         "vite-plugin-ifdef": "^1.0.5",
-        "vite-plugin-singlefile": "^0.10.0",
+        "vite-plugin-singlefile": "^0.11.0",
         "webpack-bundle-analyzer": "^4.5.0",
         "worker-loader": "^3.0.8"
     },
-    "packageManager": "pnpm@7.5.0",
+    "packageManager": "pnpm@7.6.0",
     "pnpm": {
         "patchedDependencies": {
             "git-repo-info@2.1.1": "patches/git-repo-info@2.1.1.patch",

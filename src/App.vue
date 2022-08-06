@@ -3,6 +3,7 @@
 </template>
 <script>
 import '@/style/theme.scss'
+import '@/style/theme.element.scss'
 export default {}
 </script>
 <style lang="scss">

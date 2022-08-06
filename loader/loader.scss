@@ -1,0 +1,73 @@
+html,
+body {
+    margin: 0;
+}
+.noscript:before {
+    content: '噢我的老天爷，看起来你没有启用神奇的JavaScript！它实在是太不可思议了，以至于我们的应用没有它完全没办法工作。老伙计，我以上帝的名义发誓，如果你现在启用它，我们的应用会像石头堆里的黄金一样显眼！';
+}
+#vueload {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 8888;
+    transition: all 0.4s;
+    &.hide {
+        opacity: 0;
+        pointer-events: none;
+        transition-delay: 0.6s;
+    }
+    article {
+        min-height: 100vh;
+        padding-top: 50px;
+        padding-left: 80px;
+        box-sizing: border-box;
+        overflow: hidden;
+        background: var(--c-background);
+        .el-skeleton {
+            padding: 35px;
+            box-sizing: border-box;
+            --el-fill-color-darker: #e6e8eb;
+            --el-border-radius-base: 4px;
+            --el-skeleton-color: #ddd;
+            --el-skeleton-to-color: var(--el-fill-color-darker);
+        }
+        .vl-title {
+            height: 65px;
+        }
+    }
+    .vl-header-title {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 50px;
+        line-height: 50px;
+        font-size: 20px;
+        padding-left: 100px;
+    }
+}
+
+.m #vueload {
+    article {
+        box-sizing: border-box;
+        padding-bottom: 55px;
+        padding-left: 0;
+        .vl-title {
+            width: 100%;
+        }
+    }
+    .vl-header-title {
+        padding-left: 60px;
+    }
+}
+
+.dark #vueload {
+    background: #141414;
+    article {
+        .el-skeleton {
+            --el-skeleton-color: #444;
+            --el-skeleton-to-color: #222;
+        }
+    }
+}

@@ -6,6 +6,7 @@
         "clean": "rimraf node_modules/.cache",
         "serve": "vite --",
         "build": "vue-cli-service build",
+        "build:skel": "vite build -c vite.skel.config.js -- ",
         "build:singlefile": "vite build -- --singlefile",
         "serve:vite": "vite --",
         "build:vite": "vite build --",

@@ -39,7 +39,7 @@
                         {{ amos[i.desc] }}
                     </small>
                 </div>
-                <div v-if="fin && isFin" class="right">
+                <div v-if="fin" class="right">
                     <div class="status">
                         <input
                             :value="fin.status"
@@ -47,9 +47,9 @@
                             @input="$emit('input-status', ($event?.target as HTMLInputElement).value)"
                         />
                     </div>
-                    <div class="date">
+                    <div v-if="isFin" class="date">
                         <input
-                            :value="formatDate(fin.date)"
+                            :value="formatDate(fin.timestamp)"
                             type="text"
                             @blur="updateDate(($event?.target as HTMLInputElement).value)"
                             @keyup.enter="updateDate(($event?.target as HTMLInputElement).value)"
@@ -60,9 +60,7 @@
             <div v-show="partial.length > 0" class="partial">
                 <li v-for="i in partial" :key="i.id" class="partial-item" :class="partialClassMap[i.type] || i.type">
                     <el-checkbox
-                        :model-value="
-                            fin && !fin.partial ? true : !!(fin?.partialDetail || []).find((k) => k.id === i.id)
-                        "
+                        :model-value="fin && fin.partial[i.id] > 0"
                         @update:model-value="$emit('input-partial', [i.id, $event])"
                     >
                         <span class="partial-badge">
@@ -70,7 +68,7 @@
                         </span>
                         {{ getPartialName(i.name) }}
                     </el-checkbox>
-                    <span class="date">{{ getPartialDate(fin?.partialDetail || [], i.id) }}</span>
+                    <span class="date">{{ getPartialDate(fin, i.id) }}</span>
                 </li>
             </div>
         </div>
@@ -81,11 +79,12 @@
 import { i18n } from '@/i18n'
 import versionMap from './versionMap'
 import { toRef, PropType, defineComponent, computed } from 'vue'
-import { Achievement, IAchievementStore } from '@/typings/Achievement'
+import { Achievement, UIAFStatus } from '@/typings/Achievement'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 import dayjs from 'dayjs'
 import { IPartialAchievement } from 'cocogoat-amos/dist/achievement-partial/typing'
+import { AchievementItem } from '@/typings/Achievement/Achievement'
 library.add(faArrowUpRightFromSquare)
 export default defineComponent({
     props: {
@@ -94,11 +93,11 @@ export default defineComponent({
             required: true,
         },
         fin: {
-            type: Object as PropType<IAchievementStore | undefined>,
+            type: Object as PropType<AchievementItem | undefined>,
             required: false,
         },
         preFin: {
-            type: Object as PropType<IAchievementStore | undefined>,
+            type: Object as PropType<AchievementItem | undefined>,
             required: false,
         },
         contributed: {
@@ -128,7 +127,8 @@ export default defineComponent({
                 }
             }),
             isFin: computed(() => {
-                return props.fin && !Array.isArray(props.fin.partial)
+                if (props.fin) console.log(props.fin.status, UIAFStatus.ACHIEVEMENT_UNFINISHED)
+                return props.fin && props.fin.status > UIAFStatus.ACHIEVEMENT_UNFINISHED
             }),
             version: computed(() => {
                 if (!versionMap[props.i.id]) {
@@ -137,9 +137,9 @@ export default defineComponent({
                 }
                 return versionMap[props.i.id].toFixed(1) || ''
             }),
-            formatDate(datestr: string) {
+            formatDate(datestr: number) {
                 try {
-                    const d = new Date(datestr)
+                    const d = new Date(datestr * 1000)
                     // check 0
                     if (d.getTime() === 0) {
                         return ''
@@ -156,7 +156,7 @@ export default defineComponent({
             updateDate(datestr: string) {
                 const d = datestr.trim()
                 if (d === '') {
-                    emit('input-date', new Date(0).toISOString())
+                    emit('input-date', 0)
                     return
                 }
                 try {
@@ -164,7 +164,7 @@ export default defineComponent({
                     if (!d.includes(':') && dt.getHours() === 8 && dt.getMinutes() === 0 && dt.getSeconds() === 0) {
                         dt.setHours(0)
                     }
-                    emit('input-date', dt.toISOString())
+                    emit('input-date', Math.floor(dt.getTime() / 1000))
                 } catch (e) {}
             },
             partialTypeMap: {
@@ -181,12 +181,11 @@ export default defineComponent({
                 subtask: 'IQ',
                 achievement: 'AC',
             },
-            getPartialDate(partial: IAchievementStore['partialDetail'], id: number) {
-                const p = (partial || []).find((i) => i.id === id)
-                if (p && p.timestamp > 0) {
-                    return dayjs(p.timestamp).format('YYYY/MM/DD HH:mm:ss')
-                }
-                return ''
+            getPartialDate(fin: AchievementItem | undefined, id: number) {
+                if (!fin) return ''
+                const ts = fin.partial[id]
+                if (!ts) return ''
+                return dayjs(ts * 1000).format('YYYY/MM/DD HH:mm:ss')
             },
             getPartialName(namearr: (string | number)[]) {
                 const nameArr = namearr.map((i) => {

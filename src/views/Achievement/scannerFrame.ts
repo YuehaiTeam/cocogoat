@@ -1,11 +1,12 @@
 import { apibase } from '@/utils/apibase'
 import { store } from '@/store'
-import { IAchievementStore } from '@/typings/Achievement'
+import { UIAFStatus } from '@/typings/Achievement'
 import delay from 'delay'
 import { ElLoading, ElMessageBox, ElNotification } from 'element-plus'
 import { ref, Ref, watch, onBeforeUnmount } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import type { IAScannerData } from '../AchievementScanner/scanner/scanner'
+import { AchievementItem, IAchievementSource } from '@/typings/Achievement/Achievement'
 export interface IScannerFrameResult {
     show: boolean
     length: number
@@ -15,12 +16,10 @@ let loading = false
 export function useScannerFrame({
     scannerFrame,
     results,
-    achievementFin,
     showScanner,
 }: {
     scannerFrame: Ref<HTMLIFrameElement | null>
     results: Ref<IScannerFrameResult>
-    achievementFin: Ref<Record<number, IAchievementStore>>
     showScanner: Ref<boolean>
 }) {
     const metadata = ref(
@@ -89,17 +88,22 @@ export function useScannerFrame({
                         date = new Date(0).toISOString()
                         console.error('Faild to parse date:', e.date, er)
                     }
-                    return {
+                    return new AchievementItem({
                         id: e.achievement.id,
-                        date,
-                        status: e.status,
-                        categoryId: e.achievement.categoryId,
-                    } as IAchievementStore
+                        timestamp: Math.floor(new Date(date).getTime() / 1000),
+                        status: UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
+                        current: Number((e.status || '').split('/')[0]) || 0,
+                        partial: {},
+                        image: '',
+                        source: IAchievementSource.IMPORT,
+                    }).finishAllPartials()
                 })
-            r.forEach((e: IAchievementStore) => {
-                if (!achievementFin.value[e.id]) {
-                    store.value.achievements.push(e)
+            r.forEach((e: AchievementItem) => {
+                const orig = store.value.achievement2[e.id]
+                if (orig) {
+                    e.partial = orig.partial
                 }
+                store.value.achievement2[e.id] = e
             })
             const faildImages = faildData.map((e) => {
                 return {

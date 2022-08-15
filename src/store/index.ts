@@ -2,12 +2,14 @@ import { IAchievementStore } from '@/typings/Achievement'
 import { IArtifact } from '@/typings/Artifact'
 import { currentUser as storageCurrentUser, get, set, list } from './impl'
 import { Ref, ref, watch } from 'vue'
+import { AchievementItem } from '../typings/Achievement/Achievement'
 
 export const disableAutoSave = ref(false)
 
 export function createEmptyStore() {
     return {
         achievements: [] as IAchievementStore[],
+        achievement2: {} as Record<number, AchievementItem>,
         artifacts: [] as IArtifact[],
         user: {
             name: '默认',
@@ -29,8 +31,10 @@ export type IOptions = ReturnType<typeof createEmptyOptions>
 
 export function loadStore(): IStore {
     const uid = storageCurrentUser()
-    const data = get(uid) || {}
-    return Object.assign(createEmptyStore(), data)
+    const predata = get(uid) || {}
+    const data = Object.assign(createEmptyStore(), predata)
+    data.achievement2 = AchievementItem.fromObject(data.achievement2)
+    return data
 }
 export function loadOptions(): IOptions {
     const data = get('options') || {}

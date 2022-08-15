@@ -49,33 +49,7 @@
                         导入
                     </el-button>
                     <div v-show="!showScanner" class="dropdown">
-                        <el-dropdown class="header-plain-dropdown" split-button @click="doExport('')">
-                            导出
-                            <template #dropdown>
-                                <el-dropdown-menu class="el-dropdown-menu--small">
-                                    <el-dropdown-item class="export-title" @click="doExport('cocogoat.v2')">
-                                        椰羊JSON
-                                    </el-dropdown-item>
-                                    <el-dropdown-item class="export-title" @click="doExport('share')">
-                                        分享链接
-                                    </el-dropdown-item>
-                                    <el-dropdown-item class="export-title" @click="doExport('cocogoat')">
-                                        椰羊JSON(旧)
-                                    </el-dropdown-item>
-                                    <el-dropdown-item divided @click="doExport('snapgenshin')">
-                                        Snap Genshin
-                                    </el-dropdown-item>
-                                    <el-dropdown-item @click="doExport('paimon')"> Paimon.moe </el-dropdown-item>
-                                    <el-dropdown-item @click="doExport('seelie')"> Seelie.me </el-dropdown-item>
-                                    <el-dropdown-item divided class="export-title" @click="doExport('uiaf')">
-                                        UIAF JSON
-                                    </el-dropdown-item>
-                                    <el-dropdown-item divided class="export-title" @click="doExport('excel')">
-                                        Excel文件
-                                    </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </template>
-                        </el-dropdown>
+                        <export-dropdown />
                     </div>
                 </div>
                 <div class="a-line">
@@ -85,41 +59,9 @@
                 </div>
             </div>
         </template>
-        <div v-if="showScanner" :class="$style.scannerArea">
-            <iframe ref="scannerFrame" class="scanner-frame" :src="frameSrc"></iframe>
-            <div class="scanner-back">
-                <div class="scanner-box">
-                    <div class="scanner-title">成就识别</div>
-                </div>
-            </div>
-        </div>
-        <el-dialog
-            v-model="exportData.show"
-            :title="exportData.title"
-            :custom-class="$style.exportDialog"
-            destroy-on-close
-        >
-            <el-input type="textarea" :model-value="exportData.content"></el-input>
-        </el-dialog>
+        <scanner-dialog :showScanner="showScanner" />
         <el-dialog v-model="showImport" title="导入" :custom-class="$style.importDialog" destroy-on-close>
             <import-dialog :memo-id="autoImportId" @close="closeImport" />
-        </el-dialog>
-        <el-dialog
-            v-model="scannerResult.show"
-            :title="`成功扫描${scannerResult.length}个成就`"
-            :custom-class="$style.scannerResultDialog"
-            destroy-on-close
-        >
-            以下为失败和识别到的未完成成就列表，您可以自行检查确认后手动添加。
-            <div class="faildResults">
-                <div v-for="(image, index) in scannerResult.faildImages" :key="index">
-                    <img :src="image.image" />
-                    <div class="badge" :class="{ success: image.data.success }">
-                        {{ image.data.success ? '未完' : '错误' }}
-                    </div>
-                </div>
-            </div>
-            <el-button class="feedback-btn" @click="sendOops"> 反馈失败记录 </el-button>
         </el-dialog>
         <achievement-detail :achievement="detail" @close="detail = undefined" />
         <section :class="$style.achievementView">
@@ -209,7 +151,7 @@
                                 :contributed="contributed"
                                 :partial="achPartialAmos[i.id] || []"
                                 @check="updateFinished(i.id)"
-                                @input-date="achievementFin[i.id].date = $event"
+                                @input-date="achievementFin[i.id].timestamp = $event"
                                 @input-status="achievementFin[i.id].status = $event"
                                 @input-partial="updatePartial(i.id, $event[0], $event[1])"
                                 @click-title="detail = i"
@@ -244,7 +186,7 @@
 <script lang="ts">
 import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, toRef, defineComponent, computed, watch, onMounted, Ref } from 'vue'
+import { ref, toRef, defineComponent, computed, watch, onMounted } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import achPartialAmos from '@/plugins/amos/achievements/partial'
 
@@ -262,36 +204,34 @@ import IconCocogoat from '@/components/Icons/cocogoat.vue'
 
 import { i18n } from '@/i18n'
 import { store, options } from '@/store'
-import { Achievement, AchievementCategory, IAchievementStore } from '@/typings/Achievement'
-import type { IAScannerData } from '../AchievementScanner/scanner/scanner'
-import dayjs from 'dayjs'
+import { Achievement, AchievementCategory, UIAFStatus } from '@/typings/Achievement'
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import CustomElScrollVue from '@/components/ElCustomScroll.vue'
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller/src/index'
-
-import { useScannerFrame } from './scannerFrame'
-import { useExportAchievements } from './useExport'
 import { useContributedAchievements } from './useContributedAchievements'
 
-import AchievementItem from './AchivementItem.vue'
+import AchievementItemComp from './AchivementItem.vue'
 import AchievementSidebar from './AchievementSidebar.vue'
 import AchievementDetail from './AchievementDetail.vue'
+import ExportDropdown from './ExportDropdown.vue'
 import ImportDialog from './ImportDialog.vue'
+import ScannerDialog from './ScannerDialog.vue'
 import versionMap, { allVersions, versionDateMap } from './versionMap'
-import { uniqBy, cloneDeep } from 'lodash-es'
+import { uniqBy } from 'lodash-es'
 import bus from '@/bus'
-import { getUrl } from '@/router'
-import { runMigrate } from './runMigrate'
+import { AchievementItem } from '@/typings/Achievement/Achievement'
 
 export default defineComponent({
     name: 'ArtifactIndex',
     components: {
         IconCocogoat,
-        AchievementItem,
+        AchievementItem: AchievementItemComp,
         AchievementSidebar,
         AchievementDetail,
         ImportDialog,
+        ExportDropdown,
+        ScannerDialog,
         DynamicScroller,
         DynamicScrollerItem,
     },
@@ -299,8 +239,8 @@ export default defineComponent({
         const selectedIds = ref<string[]>([])
         const showScanner = ref(false)
         const search = ref('')
-        const frameSrc = getUrl('frames.achievement.scan')
-        const achievementFin = ref({} as Record<number, IAchievementStore>)
+        const achievementFin = toRef(store.value, 'achievement2')
+        console.log(store, achievementFin)
         const achievementFinStat = ref(
             {} as Record<
                 number,
@@ -378,52 +318,6 @@ export default defineComponent({
                 return acc + cur.totalReward
             }, 0)
         })
-        const calcFin = () => {
-            const newCount = {} as Record<
-                number,
-                {
-                    count: number
-                    reward: number
-                }
-            >
-            const newFin = {} as Record<number, IAchievementStore>
-            const totalFin_ = { count: 0, reward: 0 } as {
-                count: number
-                reward: number
-            }
-            let hasMigrated = 0
-            const migratedRes = store.value.achievements.map((ach) => {
-                const e = cloneDeep(ach)
-                e.categoryId = e.categoryId || 0
-                ach.categoryId = ach.categoryId || 0
-                hasMigrated += runMigrate(e) ? 1 : 0
-                if (e.id && !Array.isArray(e.partial)) {
-                    newCount[e.categoryId] = newCount[e.categoryId] || {
-                        count: 0,
-                        reward: 0,
-                    }
-                    const currentReward =
-                        achievementCat.value.find((k) => k.id === e.categoryId)?.achievements.find((k) => k.id === e.id)
-                            ?.reward || 0
-                    newCount[e.categoryId].count++
-                    newCount[e.categoryId].reward += currentReward
-                    totalFin_.count++
-                    totalFin_.reward += currentReward
-                }
-                return e
-            })
-            if (hasMigrated > 0) {
-                store.value.achievements = migratedRes
-                console.log(hasMigrated + ' migrate task finished')
-            }
-            store.value.achievements.forEach((e) => {
-                if (e.id) newFin[e.id] = e
-            })
-            achievementFinStat.value = newCount
-            achievementFin.value = newFin
-            totalFin.value = totalFin_
-        }
-        watch(store, calcFin, { deep: true, immediate: true })
         const route = useRoute()
         const currentCatId = computed(() => {
             return route.params.cat || 'wonders_of_the_world'
@@ -458,8 +352,8 @@ export default defineComponent({
             if (sortByStatus.value)
                 data = data.sort((a, b) => {
                     const ret = 0
-                    let fa = achievementFin.value[a.id] as IAchievementStore | undefined
-                    let fb = achievementFin.value[b.id] as IAchievementStore | undefined
+                    let fa = achievementFin.value[a.id] as AchievementItem | undefined
+                    let fb = achievementFin.value[b.id] as AchievementItem | undefined
                     if (a.postStage) {
                         let p = a
                         while (p.postStage) {
@@ -534,115 +428,55 @@ export default defineComponent({
         })
         const updateFinished = (id: number) => {
             if (achievementFin.value[id]) {
-                if (Array.isArray(achievementFin.value[id].partial)) {
-                    achievementFin.value[id].partial = undefined
-                    achievementFin.value[id].status = achievementFin.value[id].status || '手动勾选'
-                    const d = new Date(achievementFin.value[id].date)
-                    if (d.getTime() <= 0) achievementFin.value[id].date = new Date().toISOString()
-                    return
-                }
-                const ids = [id]
-                let ach: Achievement | undefined
-                while ((ach = currentAch.value.find((e) => e.id === ids[0])) && ach.postStage) {
-                    ids.unshift(ach.postStage)
-                }
-                store.value.achievements = store.value.achievements.filter((i) => !ids.includes(i.id))
-                return
-            }
-            const finishedData = {
-                id,
-                status: '手动勾选',
-                categoryId: currentCat.value.id,
-                date: dayjs().format('YYYY/MM/DD'),
-            } as IAchievementStore
-            store.value.achievements.push(finishedData)
-        }
-        const updatePartial = (id: number, index: number, state: boolean) => {
-            const d = achPartialAmos[id]
-            if (!d) return
-            if (achievementFin.value[id]) {
-                const a = achievementFin.value[id]
-                // has partial means already in partially finished state
-                if (!a.partialDetail) {
-                    // make partial full
-                    a.partialDetail = d.map((e) => ({
-                        id: e.id,
-                        timestamp: 0,
-                    }))
-                }
-                const p = a.partialDetail.find((e) => e.id === index)
-                if (state === false) {
-                    // remove it
-                    a.partialDetail = a.partialDetail.filter((e) => e.id !== index)
-                } else if (!p) {
-                    // add it
-                    a.partialDetail.push({
-                        id: index,
-                        timestamp: Date.now(),
-                    })
-                }
-                a.partial = a.partialDetail.map((e) => e.id)
-                if (a.partial.length === d.length) {
-                    a.partial = undefined
-                    const d = new Date(a.date)
-                    if (d.getTime() <= 0) a.date = new Date().toISOString()
-                    a.status = a.status || '手动勾选'
-                } else if (a.partial.length === 0) {
-                    a.partial = undefined
-                    updateFinished(id)
+                if (achievementFin.value[id].status > UIAFStatus.ACHIEVEMENT_UNFINISHED) {
+                    achievementFin.value[id].status = UIAFStatus.ACHIEVEMENT_UNFINISHED
+                    achievementFin.value[id].timestamp = 0
+                } else {
+                    achievementFin.value[id].status = UIAFStatus.ACHIEVEMENT_POINT_TAKEN
+                    achievementFin.value[id].timestamp = Math.floor(Date.now() / 1000)
                 }
             } else {
-                // push a placeholder
-                const finishedData = {
+                achievementFin.value[id] = AchievementItem.create(
                     id,
-                    status: '',
-                    categoryId: currentCat.value.id,
-                    date: new Date(0).toISOString(),
-                    partialDetail: [
-                        {
-                            id: index,
-                            timestamp: Date.now(),
-                        },
-                    ],
-                    partial: [index],
-                } as IAchievementStore
-                store.value.achievements.push(finishedData)
+                    UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
+                ).finishAllPartials()
+            }
+        }
+        const updatePartial = (id: number, pid: number, state: boolean) => {
+            const d = achPartialAmos[id]
+            if (!d) return
+            if (!achievementFin.value[id]) {
+                const d = AchievementItem.create(id, UIAFStatus.ACHIEVEMENT_UNFINISHED)
+                d.timestamp = 0
+                achievementFin.value[id] = d
+            }
+            const item = achievementFin.value[id]
+            if (state) {
+                item.finishPartial(pid)
+            } else {
+                item.removePartial(pid)
             }
         }
         const showClear = ref(false)
         const doClear = async (all: boolean) => {
             if (all) {
-                store.value.achievements = []
+                store.value.achievement2 = {}
             } else {
-                store.value.achievements = store.value.achievements.filter((i) => i.categoryId !== currentCat.value.id)
+                Object.keys(achievementFin.value).forEach((e) => {
+                    if (achievementFin.value[Number(e)].goalId === currentCat.value.id) {
+                        delete store.value.achievement2[Number(e)]
+                    }
+                })
             }
             showClear.value = false
         }
         const selectCat = (cat: AchievementCategory) => {
-            cat.achievements.forEach((i) => {
-                if (!achievementFin.value[i.id]) {
-                    const finishedData = {
-                        id: i.id,
-                        status: '全选添加',
-                        categoryId: cat.id,
-                        date: dayjs().format('YYYY/MM/DD'),
-                    } as IAchievementStore
-                    store.value.achievements.push(finishedData)
-                }
+            cat.achievements.forEach((item) => {
+                store.value.achievement2[item.id] =
+                    store.value.achievement2[item.id] ||
+                    AchievementItem.create(item.id, UIAFStatus.ACHIEVEMENT_POINT_TAKEN)
             })
         }
-        const scannerFrame = ref<HTMLIFrameElement | null>(null)
-        const scannerResult = ref({
-            show: false,
-            length: 0,
-            faildImages: [] as { image: string; data: IAScannerData }[],
-        })
-        const { sendOops } = useScannerFrame({
-            scannerFrame: scannerFrame as Ref<HTMLIFrameElement | null>,
-            results: scannerResult,
-            achievementFin,
-            showScanner,
-        })
         const autoImportId = computed(() => (route.query.memo ? route.query.memo.toString() : ''))
         const showImport = ref(!!autoImportId.value)
         watch(autoImportId, (v) => {
@@ -679,7 +513,6 @@ export default defineComponent({
             search,
             showScanner,
             selectedIds,
-            frameSrc,
             achievementCat,
             currentCatId,
             currentCat,
@@ -691,10 +524,7 @@ export default defineComponent({
             doClear,
             showClear,
             selectCat,
-            scannerFrame,
-            scannerResult,
             CustomElScrollVue,
-            ...useExportAchievements(),
             showImport,
             sortByStatus,
             totalCount,
@@ -708,7 +538,6 @@ export default defineComponent({
             allVersions,
             autoImportId,
             closeImport,
-            sendOops,
             achPartialAmos,
             publishedInfo,
             clickUnpublishedVersion,
@@ -765,66 +594,6 @@ export default defineComponent({
 .import-dialog {
     width: 500px !important;
     max-width: 90%;
-}
-.export-dialog {
-    width: 500px !important;
-    max-width: 90%;
-    textarea {
-        font-size: 12px;
-        height: 350px;
-        font-family: Consolas, monospace;
-    }
-}
-.scanner-result-dialog {
-    width: 600px !important;
-    max-width: 90%;
-    :global {
-        .feedback-btn {
-            position: absolute;
-            top: 12px;
-            right: 50px;
-        }
-        .faildResults {
-            margin-top: 20px;
-            width: 100%;
-            height: 300px;
-            border: 1px solid #ddd;
-            padding: 10px;
-            box-sizing: border-box;
-            display: block;
-            overflow-y: scroll;
-            overflow-x: hidden;
-            & > div {
-                width: 100%;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                display: block;
-                margin-bottom: 5px;
-                position: relative;
-                overflow: hidden;
-            }
-            img {
-                width: 100%;
-                height: 100%;
-                display: block;
-            }
-            .badge {
-                position: absolute;
-                top: 0;
-                left: 0;
-                font-size: 12px;
-                padding: 3px 5px;
-                border: aliceblue;
-                background: #fe6565;
-                color: #fff;
-                border-bottom-right-radius: 5px;
-            }
-            .badge.success {
-                background: var(--c-theme);
-                color: var(--c-white);
-            }
-        }
-    }
 }
 .achievement-view {
     position: relative;
@@ -964,66 +733,6 @@ export default defineComponent({
 
         .scroller {
             padding: 0 5px;
-        }
-    }
-}
-.scanner-area {
-    position: absolute;
-    top: 50px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-    z-index: 900;
-    :global {
-        .scanner-frame {
-            width: 100%;
-            height: 100%;
-            border: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 2;
-        }
-        .scanner-back {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1;
-            .scanner-box {
-                max-width: 100%;
-                width: 600px;
-                height: 650px;
-                background: var(--c-white);
-                border-radius: 5px;
-                margin: 0 auto;
-                margin-top: calc(10vh - 60px);
-                .scanner-title {
-                    height: 40px;
-                    line-height: 40px;
-                    font-size: 20px;
-                    padding-left: 20px;
-                    padding-top: 10px;
-                }
-            }
-        }
-    }
-}
-:global(.pc) .scanner-area {
-    left: 80px;
-}
-:global(.m) .scanner-area {
-    bottom: 50px;
-    :global {
-        .scanner-box {
-            margin-top: 0;
-            height: 100%;
-            border-radius: 0;
         }
     }
 }

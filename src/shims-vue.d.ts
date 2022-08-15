@@ -33,12 +33,6 @@ declare module 'onnxruntime-web/dist/ort.wasm-core.min.js' {
     export * from 'onnxruntime-web'
 }
 
-declare module '@/plugins/decomposed-achievements/DecomposedAchievements.json' {
-    import { IDecomposedAchievement } from '@/typings/Achievement'
-    const t: IDecomposedAchievement[]
-    export default t
-}
-
 declare module 'flyio/dist/npm/fly'
 declare module 'vue-virtual-scroller'
 declare module 'vue-virtual-scroller/src/index'

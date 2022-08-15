@@ -247,7 +247,7 @@ export function toUIAF(data: IAchievementStore[]): UIAF {
         uiaf.list.push({
             id: e.id,
             timestamp: Math.floor(dt > 0 ? dt / 1000 : UIAFMagicTime),
-            current: Number(val) || null,
+            current: Number(val) || 0,
         })
     })
     return uiaf

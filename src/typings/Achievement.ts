@@ -20,7 +20,7 @@ export interface IAchievementStore {
 }
 export interface UIAFItem {
     id: number
-    current: number | null
+    current: number
     timestamp: number
 }
 export interface UIAF {

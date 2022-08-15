@@ -1,3 +1,5 @@
+import '@/utils/glWorker'
+
 import { cvTranslateError, getCV, ICVMat, toIMat, fromIMat } from '@/utils/cv'
 import type { Mat, Rect } from '@/utils/opencv'
 import { cvDiffImage, cvGetRect, cvSplitAchievement, cvSplitImage } from './cvUtils'
@@ -287,6 +289,6 @@ export async function recognizeAchievement(line: IAScannerBlocks): Promise<IASca
     }
 }
 
-export async function init() {
-    await Promise.all([getOCR(), getCV()])
+export async function init(webgl = false) {
+    await Promise.all([getOCR(webgl), getCV()])
 }

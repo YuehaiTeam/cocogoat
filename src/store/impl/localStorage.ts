@@ -33,6 +33,7 @@ export function list() {
             (key) =>
                 key.startsWith('cocogoat.v1.') &&
                 !key.endsWith('.options') &&
+                !key.endsWith('.localopt') &&
                 !key.includes('.playground.') &&
                 !key.endsWith('.currentUser'),
         )

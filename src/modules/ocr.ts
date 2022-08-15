@@ -1,4 +1,6 @@
-import * as ort from 'onnxruntime-web/dist/ort.wasm-core.min.js'
+import * as ort from 'onnxruntime-common'
+import { createInference } from '@/utils/onnx'
+
 import ocrString from '@/plugins/ocr/ppocr.txt?raw&dictcompress'
 
 import resources from '@/resources'
@@ -13,8 +15,8 @@ ort.env.wasm.numThreads = 1
 
 let session: ort.InferenceSession | null = null
 
-export async function init() {
-    session = await ort.InferenceSession.create(resources['ppocr.ort'])
+export async function init(webgl = false) {
+    session = await createInference(resources['ppocr.ort'], webgl)
     return session
 }
 

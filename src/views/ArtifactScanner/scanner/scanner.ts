@@ -1,3 +1,4 @@
+import '@/utils/glWorker'
 import { IArtifactType } from 'cocogoat-amos/dist/artifact/typing'
 import { cvTranslateError, fromIMat, getCV, ICVMat, toIMat } from '@/utils/cv'
 import { recognize, init as getYas } from '@/modules/yas'
@@ -8,8 +9,8 @@ import { IArtifact, IStatType } from '@/typings/Artifact'
 import { artifactCharacters, artifactNames, artifactParams } from './map'
 import { textBestmatch } from '@/utils/textMatch'
 import { isIMat } from '@/utils/IMat'
-export async function init() {
-    await Promise.all([getCV(), getYas()])
+export async function init(webgl = false) {
+    await Promise.all([getCV(), getYas(webgl)])
 }
 export interface IArScannerLine {
     type: string

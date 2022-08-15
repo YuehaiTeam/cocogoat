@@ -30,6 +30,7 @@ specifiers:
   '@types/color-diff': ^1.2.1
   '@types/lodash-es': ^4.17.5
   '@types/murmurhash-js': ^1.0.3
+  '@types/offscreencanvas': ^2019.7.0
   '@types/qs': ^6.9.7
   '@types/serviceworker': ^0.0.43
   '@types/webpack-env': ^1.17.0
@@ -71,6 +72,7 @@ specifiers:
   lodash-es: ^4.17.21
   mitt: ^3.0.0
   murmurhash-js: ^1.0.0
+  onnxruntime-common: 1.10.0
   onnxruntime-web: 1.10.0
   pinia: ^2.0.9
   postinstall-postinstall: ^2.1.0
@@ -130,6 +132,7 @@ dependencies:
   lodash-es: 4.17.21
   mitt: 3.0.0
   murmurhash-js: 1.0.0
+  onnxruntime-common: 1.10.0
   onnxruntime-web: 1.10.0
   pinia: 2.0.14_j6bzmzd4ujpabbp5objtwxyjp4
   qs: 6.11.0
@@ -151,6 +154,7 @@ devDependencies:
   '@types/color-diff': 1.2.1
   '@types/lodash-es': 4.17.6
   '@types/murmurhash-js': 1.0.3
+  '@types/offscreencanvas': 2019.7.0
   '@types/qs': 6.9.7
   '@types/webpack-env': 1.17.0
   '@typescript-eslint/eslint-plugin': 5.30.0_5mtqsiui4sk53pmkx7i7ue45wm
@@ -2330,6 +2334,10 @@ packages:
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
+    dev: true
+
+  /@types/offscreencanvas/2019.7.0:
+    resolution: {integrity: sha512-PGcyveRIpL1XIqK8eBsmRBt76eFgtzuPiSTyKHZxnGemp2yzGzWpjYKAfK3wIMiU7eH+851yEpiuP8JZerTmWg==}
     dev: true
 
   /@types/parse-json/4.0.0:

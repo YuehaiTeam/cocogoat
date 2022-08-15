@@ -32,6 +32,9 @@ declare module '@/../resources.json' {
 declare module 'onnxruntime-web/dist/ort.wasm-core.min.js' {
     export * from 'onnxruntime-web'
 }
+declare module 'onnxruntime-web/dist/ort.webgl.min.js' {
+    export * from 'onnxruntime-web'
+}
 
 declare module '@/plugins/decomposed-achievements/DecomposedAchievements.json' {
     import { IDecomposedAchievement } from '@/typings/Achievement'

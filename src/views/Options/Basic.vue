@@ -46,13 +46,25 @@
                     </div>
                 </div>
             </el-form-item>
+            <el-collapse>
+                <el-collapse-item title="实验性功能">
+                    <el-form-item label="使用GPU运行ONNX">
+                        <div>
+                            <div class="select">
+                                <el-switch v-model="localOptions.onnxWebgl"></el-switch>
+                            </div>
+                            <div class="desc">下次使用识别功能时生效。</div>
+                        </div>
+                    </el-form-item>
+                </el-collapse-item>
+            </el-collapse>
         </el-form>
     </section>
 </template>
 
 <script>
 import { langNames } from '@/i18n'
-import { options } from '@/store'
+import { options, localOptions } from '@/store'
 import { configuredMode } from '@/utils/darkmode'
 export default {
     setup() {
@@ -63,6 +75,7 @@ export default {
         return {
             langNames,
             options,
+            localOptions,
             report,
             configuredMode,
         }

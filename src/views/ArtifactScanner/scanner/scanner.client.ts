@@ -9,6 +9,7 @@ import charactersAmos from '@/plugins/amos/characters/index'
 import artifactAmos from '@/plugins/amos/artifacts/index'
 import { IMatFromImageElement } from '@/utils/IMat'
 import { cloneDeep } from 'lodash-es'
+import { localOptions } from '@/store'
 export function createWorker() {
     const _worker = WorkerMacro(/* @worker './scanner.expose.ts' */)
     const worker = wrap(_worker) as Remote<typeof W>
@@ -38,7 +39,11 @@ export function initScanner() {
             const ortWasm = hasSIMD ? 'ort-wasm-simd.wasm' : 'ort-wasm.wasm'
             const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
             await race
-            await requireAsBlob([ortWasm, ocvWasm, 'yas.ort'], (e) => progressHandler(e), all)
+            await requireAsBlob(
+                [...(localOptions.value.onnxWebgl ? [] : [ortWasm]), ocvWasm, 'yas.ort'],
+                (e) => progressHandler(e),
+                all,
+            )
             const map = {
                 map: artifactAmos,
                 characters: charactersAmos,
@@ -58,7 +63,7 @@ export function initScanner() {
         }
         w1.removeEventListener('error', workerErrorHandler)
         w2.removeEventListener('error', workerErrorHandler)
-        await Promise.all([workerCV.init(), workerOCR.init()])
+        await Promise.all([workerCV.init(localOptions.value.onnxWebgl), workerOCR.init(localOptions.value.onnxWebgl)])
     })()
 
     return {

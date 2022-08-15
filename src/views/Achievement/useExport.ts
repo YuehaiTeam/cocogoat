@@ -6,20 +6,9 @@ import { ref } from 'vue'
 import { store, options } from '@/store'
 import dayjs from 'dayjs'
 import achevementsAmos from '@/plugins/amos/achievements'
-import { cloneDeep } from 'lodash-es'
 import copy from 'copy-to-clipboard'
-import { IAchievementStore, UIAF, UIAFMagicTime } from '@/typings/Achievement'
+import { UIAF, UIAFMagicTime, UIAFStatus, UIAFStatusCN, IAchievementStore } from '@/typings/Achievement'
 import { getUrl } from '@/router'
-export function getV1Json() {
-    let ach0 = cloneDeep(store.value.achievements)
-    ach0 = ach0.filter((i) => !Array.isArray(i.partial))
-    ach0.forEach((e) => {
-        e.images = undefined
-        e.partial = undefined
-        e.partialDetail = undefined
-    })
-    return ach0
-}
 export function useExportAchievements() {
     const exportData = ref({
         show: false,
@@ -27,12 +16,31 @@ export function useExportAchievements() {
         content: '',
     })
     const doExport = (
-        _to: 'paimon' | 'seelie' | 'cocogoat' | 'cocogoat.v2' | 'excel' | 'snapgenshin' | 'uiaf' | 'share' | '',
+        _to:
+            | 'paimon'
+            | 'seelie'
+            | 'cocogoat'
+            | 'cocogoat.v2'
+            | 'excel'
+            | 'snapgenshin'
+            | 'xunkong'
+            | 'uiaf'
+            | 'share'
+            | '',
     ) => {
         const to = _to || options.value.achievements_recent_export
         if (to !== 'share') options.value.achievements_recent_export = to
         if (to === 'cocogoat') {
-            const ach0 = getV1Json()
+            const ach0 = Object.values(store.value.achievement2)
+                .filter((ach) => ach.status > UIAFStatus.ACHIEVEMENT_UNFINISHED)
+                .map((ach) => {
+                    return {
+                        id: ach.id,
+                        categoryId: ach.goalId,
+                        date: dayjs(ach.timestamp).format('YYYY-MM-DD'),
+                        status: ach.current?.toString(),
+                    } as IAchievementStore
+                })
             const data = {
                 source: '椰羊成就',
                 value: {
@@ -40,36 +48,11 @@ export function useExportAchievements() {
                 },
                 lastModified: new Date().toISOString(),
             }
-            const jstr = JSON.stringify(data, null, 4)
-            // save to file
-            const blob = new Blob([jstr], { type: 'application/json' })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = '椰羊成就导出 ' + dayjs().format('YYYYMMDDHHmmss') + '.cocogoat-v1.json'
-            a.click()
+            downloadJson(data, '椰羊成就.legacy')
             return
         }
         if (to === 'cocogoat.v2') {
-            const ach0 = cloneDeep(store.value.achievements)
-            ach0.forEach((e) => {
-                e.images = undefined
-            })
-            const data = {
-                source: '椰羊成就',
-                value: {
-                    achievements: ach0,
-                },
-                lastModified: new Date().toISOString(),
-            }
-            const jstr = JSON.stringify(data, null, 4)
-            // save to file
-            const blob = new Blob([jstr], { type: 'application/json' })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = '椰羊成就导出 ' + dayjs().format('YYYYMMDDHHmmss') + '.cocogoat-v2.json'
-            a.click()
+            downloadJson(toUIAFExt(), '椰羊成就.uiafext')
             return
         }
         if (to === 'share') {
@@ -80,20 +63,13 @@ export function useExportAchievements() {
                     showClose: false,
                     type: 'info',
                 })
-                const ach0 = cloneDeep(store.value.achievements)
-                ach0.forEach((e) => {
-                    e.images = undefined
-                })
-                const data = {
-                    achievements: ach0,
-                }
                 try {
                     const res = await fetch(await apibase('/v2/memo?source=分享链接'), {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify(data),
+                        body: JSON.stringify(toUIAFExt()),
                     })
                     if (!res.ok) {
                         let err = res.statusText
@@ -142,38 +118,23 @@ export function useExportAchievements() {
             return
         }
         if (to === 'uiaf') {
-            const data = toUIAF(getV1Json())
-            const jstr = JSON.stringify(data, null, 4)
-            const blob = new Blob([jstr], { type: 'application/json' })
-            const url = URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = '椰羊UIAF ' + dayjs().format('YYYYMMDDHHmmss') + '.json'
-            a.click()
+            downloadJson(toUIAF(), '椰羊UIAF')
             return
         }
         if (to === 'snapgenshin') {
-            // const ach0 = toUIAF(store.value.achievements)
-            const ach0 = getV1Json().map((e) => {
-                return {
-                    Id: e.id,
-                    TimeStamp: Math.floor(new Date(e.date).getTime() / 1000),
-                }
-            })
-            const f = document.createElement('iframe')
-            // f.src = 'snapgenshin://achievement/import/uiaf'
-            f.src = 'snapgenshin://achievement/import/clipboard'
-            f.style.display = 'none'
-            copy(JSON.stringify(ach0))
-            document.body.appendChild(f)
-            setTimeout(() => {
-                document.body.removeChild(f)
-            }, 1000)
-            ElNotification.success({
-                title: '已发起自动导入',
-                message: '如果SnapGenshin没有启动或导入失败，请导出为椰羊JSON后手动导入。',
-                duration: 15 * 1e3,
-            })
+            callClient(
+                'snapgenshin://achievement/import/uiaf',
+                '如果SnapGenshin没有启动或导入失败，请导出为椰羊JSON后手动导入。',
+                toUIAF(),
+            )
+            return
+        }
+        if (to === 'xunkong') {
+            callClient(
+                'xunkong://import-achievement?caller=椰羊&from=clipboard',
+                '如果寻空没有启动或导入失败，请导出为UIAF后手动导入。',
+                toUIAF(),
+            )
             return
         }
         if (to === 'excel') {
@@ -182,9 +143,17 @@ export function useExportAchievements() {
         }
         let content = ''
         if (to === 'seelie') {
-            const exportArray = getV1Json().map((i) => {
-                return [i.id, (i.status + ' ' + i.date).trim()]
-            })
+            const exportArray = Object.values(store.value.achievement2)
+                .filter((ach) => ach.status > UIAFStatus.ACHIEVEMENT_UNFINISHED)
+                .map((ach) => {
+                    return [
+                        ach.id,
+                        (ach.current + ' ' + ach.timestamp
+                            ? dayjs(ach.timestamp).format('YYYY-MM-DD HH:mm:ss')
+                            : ''
+                        ).trim(),
+                    ]
+                })
             content = `/*
 * 复制此处所有内容，
 * 在Seelie.me页面按F12打开调试器，
@@ -202,9 +171,11 @@ localStorage.setItem(\`\${a}-achievements\`,JSON.stringify(b))
 localStorage.last_update = (new Date()).toISOString()
 location.href='/achievements'`
         } else {
-            const exportArray = getV1Json().map((a) => {
-                return [a.categoryId, a.id]
-            })
+            const exportArray = Object.values(store.value.achievement2)
+                .filter((ach) => ach.status > UIAFStatus.ACHIEVEMENT_UNFINISHED)
+                .map((ach) => {
+                    return [ach.goalId, ach.id]
+                })
             content = `/*
 * 复制此处所有内容，
 * 在Paimon.moe页面按F12打开调试器，
@@ -230,27 +201,67 @@ location.href='/achievement'`
     return { exportData, doExport }
 }
 
-export function toUIAF(data: IAchievementStore[]): UIAF {
+export function toUIAF(data = store.value.achievement2): UIAF {
     const uiaf: UIAF = {
         info: {
             export_app: 'cocogoat',
             export_app_version: process.env.VUE_APP_GIT_SHA || 'unkonwn',
             export_timestamp: Math.floor(Date.now() / 1000),
-            uiaf_version: '1.0',
+            uiaf_version: '1.1',
         },
         list: [],
     }
-    data.forEach((e) => {
-        if (e.partial && e.partial.length > 0) return
-        const dt = new Date(e.date).getTime()
-        const val = (e.status.match(/[0-9/]+/g) || []).join('').split('/')[0]
+    Object.values(data).forEach((e) => {
         uiaf.list.push({
             id: e.id,
-            timestamp: Math.floor(dt > 0 ? dt / 1000 : UIAFMagicTime),
-            current: Number(val) || null,
+            timestamp: e.timestamp || UIAFMagicTime,
+            current: e.current || 0,
+            status: e.status,
         })
     })
     return uiaf
+}
+export function toUIAFExt(data = store.value.achievement2): UIAF {
+    const uiaf: UIAF = {
+        info: {
+            export_app: 'cocogoat',
+            export_app_version: process.env.VUE_APP_GIT_SHA || 'unkonwn',
+            export_timestamp: Math.floor(Date.now() / 1000),
+            uiaf_version: '1.1',
+            cocogoat_ext: {
+                version: '1.0',
+            },
+        },
+        list: [],
+    }
+    Object.values(data).forEach((e) => {
+        uiaf.list.push(JSON.parse(JSON.stringify(e)))
+    })
+    return uiaf
+}
+function downloadJson(data: unknown, prefix: string) {
+    const jstr = JSON.stringify(data, null, 4)
+    const blob = new Blob([jstr], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = prefix + '.' + dayjs().format('YYYYMMDDHHmmss') + '.json'
+    a.click()
+}
+function callClient(url: string, msg: string, copyData: unknown) {
+    const f = document.createElement('iframe')
+    f.src = url
+    f.style.display = 'none'
+    if (copyData) copy(JSON.stringify(copyData))
+    document.body.appendChild(f)
+    ElNotification.success({
+        title: '已发起自动导入',
+        message: msg,
+        duration: 15 * 1e3,
+    })
+    setTimeout(() => {
+        document.body.removeChild(f)
+    }, 1000)
 }
 async function dumpToExcel() {
     const noti = ElNotification.info({
@@ -268,20 +279,22 @@ async function dumpToExcel() {
         { header: '原石', key: 'reward' },
         { header: '描述', key: 'desc' },
         { header: '状态', key: 'status' },
+        { header: '进度', key: 'current' },
         { header: '日期', key: 'date' },
     ]
     // convert data
     achevementsAmos.forEach((category) => {
         category.achievements.forEach((achievement) => {
-            const ach = getV1Json().find((i) => i.id === achievement.id)
+            const ach = store.value.achievement2[achievement.id]
             worksheet.addRow({
                 id: achievement.id,
                 category: i18n.amos[category.name],
                 name: i18n.amos[achievement.name],
                 desc: i18n.amos[achievement.desc],
                 reward: achievement.reward,
-                status: ach ? ach.status : '未完成',
-                date: ach ? ach.date : '',
+                status: ach ? UIAFStatusCN[ach.status] : '未完成',
+                current: ach ? ach.current : '',
+                date: ach ? dayjs(ach.timestamp).format('YYYY-MM-DD HH:mm:ss') : '',
             })
         })
     })

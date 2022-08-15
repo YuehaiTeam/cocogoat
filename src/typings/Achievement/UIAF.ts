@@ -4,6 +4,12 @@ export enum UIAFStatus {
     ACHIEVEMENT_FINISHED = 2,
     ACHIEVEMENT_POINT_TAKEN = 3,
 }
+export const UIAFStatusCN = {
+    [UIAFStatus.ACHIEVEMENT_INVALID]: '无效',
+    [UIAFStatus.ACHIEVEMENT_UNFINISHED]: '未完成',
+    [UIAFStatus.ACHIEVEMENT_FINISHED]: '已完成',
+    [UIAFStatus.ACHIEVEMENT_POINT_TAKEN]: '已领取',
+}
 export interface UIAFItem {
     id: number
     current: number | null
@@ -18,6 +24,9 @@ export interface UIAF {
         export_app_version?: string
         uiaf_version?: '1.0' | '1.1'
         export_timestamp?: number
+        cocogoat_ext?: {
+            version: '1.0'
+        }
     }
     list: UIAFItem[]
 }

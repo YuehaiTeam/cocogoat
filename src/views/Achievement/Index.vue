@@ -186,7 +186,7 @@
 <script lang="ts">
 import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, toRef, defineComponent, computed, watch, onMounted } from 'vue'
+import { ref, toRef, defineComponent, computed, watch } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import achPartialAmos from '@/plugins/amos/achievements/partial'
 
@@ -218,7 +218,6 @@ import ExportDropdown from './ExportDropdown.vue'
 import ImportDialog from './ImportDialog.vue'
 import ScannerDialog from './ScannerDialog.vue'
 import versionMap, { allVersions, versionDateMap } from './versionMap'
-import { uniqBy } from 'lodash-es'
 import bus from '@/bus'
 import { AchievementItem } from '@/typings/Achievement/Achievement'
 
@@ -497,14 +496,6 @@ export default defineComponent({
                 })
             }
         }
-        onMounted(() => {
-            // dedupe
-            const dedupedResult = uniqBy(store.value.achievements, (e) => e.id)
-            if (dedupedResult.length !== store.value.achievements.length) {
-                console.log('deduped from ' + store.value.achievements.length + ' to ' + dedupedResult.length)
-                store.value.achievements = dedupedResult
-            }
-        })
         const contributed = useContributedAchievements()
         const detail = ref(undefined as Achievement | undefined)
         return {

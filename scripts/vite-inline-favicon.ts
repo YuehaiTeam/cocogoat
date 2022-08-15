@@ -8,7 +8,6 @@ function inlineFavicon(): Plugin {
         generateBundle: (opt, bundle) => {
             console.log(opt.dir)
             const htmlFiles = Object.keys(bundle).filter((i) => i.endsWith('.html'))
-            const bundlesToDelete = [] as string[]
             for (const name of htmlFiles) {
                 const htmlChunk = bundle[name] as { source: string }
                 let replacedHtml = htmlChunk.source as string

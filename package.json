@@ -101,8 +101,10 @@
         "unplugin-auto-import": "^0.10.1",
         "unplugin-vue-components": "^0.21.2",
         "vite": "3.0.3",
+        "vite-plugin-checker": "^0.4.9",
         "vite-plugin-ifdef": "^1.0.5",
         "vite-plugin-singlefile": "^0.11.0",
+        "vue-tsc": "^0.40.1",
         "webpack-bundle-analyzer": "^4.5.0",
         "worker-loader": "^3.0.8"
     },

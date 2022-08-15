@@ -66,7 +66,7 @@ export default {
         return {
             transitionName: '',
             isMobile: false,
-            pcUserShown: false
+            pcUserShown: false,
         }
     },
     computed: {

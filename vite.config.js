@@ -12,6 +12,7 @@ import { singleFileHTML } from './scripts/vite-singlefile'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import checker from 'vite-plugin-checker'
 import vue from '@vitejs/plugin-vue'
 import GitInfo from 'git-repo-info'
 import { resolve } from 'path'
@@ -71,6 +72,13 @@ export default defineConfig(({ command, mode }) => {
             },
         },
         plugins: [
+            checker({
+                typescript: true,
+                vueTsc: true,
+                eslint: {
+                    lintCommand: 'eslint ./**/*.{js,ts,vue} --ext .js,.ts,.vue',
+                },
+            }),
             vue(),
             AutoImport({
                 resolvers: [ElementPlusResolver()],

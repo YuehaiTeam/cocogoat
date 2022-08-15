@@ -6,6 +6,7 @@ const gzipAssets = function (): Plugin {
         enforce: 'post',
         async transform(code, id) {
             if (id.split('?')[1]?.includes('gzip')) {
+                // eslint-disable-next-line no-new-func
                 const b64str = new Function(code.replace('export default', 'return'))()
                 try {
                     const fn = id.split('/').at(-1)

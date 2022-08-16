@@ -125,7 +125,7 @@
                     ></el-option>
                 </el-select>
                 <el-divider></el-divider>
-                <component :is="addComp" @submit="addSave($event)" />
+                <component :is="addComp" @submit="addSave($event as any)" />
             </div>
         </el-drawer>
     </section>

@@ -24,8 +24,14 @@
 import { defineComponent, ref, onBeforeUnmount, provide, onMounted } from 'vue-demi'
 export default defineComponent({
     props: {
-        width: Number,
-        height: Number,
+        width: {
+            type: Number,
+            required: true,
+        },
+        height: {
+            type: Number,
+            required: true,
+        },
     },
     emits: ['exit'],
     setup() {

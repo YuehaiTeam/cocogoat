@@ -26,20 +26,20 @@
         <div :class="$style.right">
             <div class="preview">
                 <div>
-                    <span class="sel-span" @click="file1.click()">点此选择输入图片(<code>cv_in</code>)</span>
-                    <div class="cc" @click="$event.currentTarget?.classList.toggle('click')">
+                    <span class="sel-span" @click="file1?.click()">点此选择输入图片(<code>cv_in</code>)</span>
+                    <div class="cc" @click=";($event.currentTarget as HTMLElement)?.classList.toggle('click')">
                         <img :src="imgsrc" />
                     </div>
                 </div>
                 <div>
-                    <span class="sel-span" @click="file2.click()">点此选择第二输入(<code>cv_sub</code>)</span>
-                    <div class="cc" @click="$event.currentTarget?.classList.toggle('click')">
+                    <span class="sel-span" @click="file2?.click()">点此选择第二输入(<code>cv_sub</code>)</span>
+                    <div class="cc" @click=";($event.currentTarget as HTMLElement)?.classList.toggle('click')">
                         <img :src="imgsrc2" />
                     </div>
                 </div>
                 <div>
                     <span>输出结果(<code>cv_canvas</code>)</span>
-                    <div class="cc" @click="$event.currentTarget?.classList.toggle('click')">
+                    <div class="cc" @click=";($event.currentTarget as HTMLElement)?.classList.toggle('click')">
                         <canvas ref="cvsel" />
                     </div>
                 </div>
@@ -269,8 +269,8 @@ src.delete()`)
             editorChange,
             editorMount,
             amdRequire,
-            file1: ref(null),
-            file2: ref(null),
+            file1: ref(null as HTMLInputElement | null),
+            file2: ref(null as HTMLInputElement | null),
             run,
         }
     },

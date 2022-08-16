@@ -10,6 +10,11 @@ export const UIAFStatusCN = {
     [UIAFStatus.ACHIEVEMENT_FINISHED]: '已完成',
     [UIAFStatus.ACHIEVEMENT_POINT_TAKEN]: '已领取',
 }
+export interface UIAFItem10 {
+    id: number
+    current: number | null
+    timestamp: number
+}
 export interface UIAFItem {
     id: number
     current: number | null
@@ -22,13 +27,13 @@ export interface UIAF {
     info: {
         export_app?: string
         export_app_version?: string
-        uiaf_version?: '1.0' | '1.1'
+        uiaf_version?: 'v1.0' | 'v1.1'
         export_timestamp?: number
         cocogoat_ext?: {
-            version: '1.0'
+            version: 'v1.0'
         }
     }
-    list: UIAFItem[]
+    list: UIAFItem10[]
 }
 // 9999-12-31 23:59:59
 export const UIAFMagicTime = 253402271999

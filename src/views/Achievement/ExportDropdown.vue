@@ -3,14 +3,18 @@
         导出
         <template #dropdown>
             <el-dropdown-menu class="el-dropdown-menu--small">
-                <el-dropdown-item class="export-title" @click="doExport('cocogoat.v2')"> 椰羊JSON </el-dropdown-item>
                 <el-dropdown-item class="export-title" @click="doExport('share')"> 分享链接 </el-dropdown-item>
+                <el-dropdown-item class="export-title" @click="doExport('cocogoat.v2')"> 椰羊JSON </el-dropdown-item>
                 <el-dropdown-item class="export-title" @click="doExport('cocogoat')"> 椰羊JSON(旧) </el-dropdown-item>
+                <el-dropdown-item class="export-title" @click="doExport('excel')"> Excel文件 </el-dropdown-item>
+                <el-dropdown-item divided class="export-title" @click="doExport('uiaf')">
+                    UIAF 1.1 JSON
+                </el-dropdown-item>
+                <el-dropdown-item class="export-title" @click="doExport('uiaf10')"> UIAF 1.0 JSON </el-dropdown-item>
                 <el-dropdown-item divided @click="doExport('snapgenshin')"> Snap Genshin </el-dropdown-item>
+                <el-dropdown-item @click="doExport('xunkong')"> 寻空 </el-dropdown-item>
                 <el-dropdown-item @click="doExport('paimon')"> Paimon.moe </el-dropdown-item>
                 <el-dropdown-item @click="doExport('seelie')"> Seelie.me </el-dropdown-item>
-                <el-dropdown-item divided class="export-title" @click="doExport('uiaf')"> UIAF JSON </el-dropdown-item>
-                <el-dropdown-item divided class="export-title" @click="doExport('excel')"> Excel文件 </el-dropdown-item>
             </el-dropdown-menu>
         </template>
     </el-dropdown>

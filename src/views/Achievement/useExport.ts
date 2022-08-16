@@ -7,7 +7,7 @@ import { store, options } from '@/store'
 import dayjs from 'dayjs'
 import achevementsAmos from '@/plugins/amos/achievements'
 import copy from 'copy-to-clipboard'
-import { UIAF, UIAFMagicTime, UIAFStatus, UIAFStatusCN, IAchievementStore } from '@/typings/Achievement'
+import { UIAF, UIAFMagicTime, UIAFStatus, UIAFStatusCN, IAchievementStore, UIAFItem10 } from '@/typings/Achievement'
 import { getUrl } from '@/router'
 export function useExportAchievements() {
     const exportData = ref({
@@ -25,6 +25,7 @@ export function useExportAchievements() {
             | 'snapgenshin'
             | 'xunkong'
             | 'uiaf'
+            | 'uiaf10'
             | 'share'
             | '',
     ) => {
@@ -118,7 +119,11 @@ export function useExportAchievements() {
             return
         }
         if (to === 'uiaf') {
-            downloadJson(toUIAF(), '椰羊UIAF')
+            downloadJson(toUIAF(), '椰羊UIAF1.1')
+            return
+        }
+        if (to === 'uiaf10') {
+            downloadJson(toUIAF('v1.0'), '椰羊UIAF1.0')
             return
         }
         if (to === 'snapgenshin') {
@@ -201,23 +206,24 @@ location.href='/achievement'`
     return { exportData, doExport }
 }
 
-export function toUIAF(data = store.value.achievement2): UIAF {
+export function toUIAF(version: 'v1.1' | 'v1.0' = 'v1.1', data = store.value.achievement2): UIAF {
     const uiaf: UIAF = {
         info: {
             export_app: 'cocogoat',
             export_app_version: process.env.VUE_APP_GIT_SHA || 'unkonwn',
             export_timestamp: Math.floor(Date.now() / 1000),
-            uiaf_version: '1.1',
+            uiaf_version: version,
         },
         list: [],
     }
     Object.values(data).forEach((e) => {
+        if (version === 'v1.0' && e.status <= UIAFStatus.ACHIEVEMENT_UNFINISHED) return
         uiaf.list.push({
             id: e.id,
             timestamp: e.timestamp || UIAFMagicTime,
             current: e.current || 0,
-            status: e.status,
-        })
+            status: version === 'v1.0' ? undefined : e.status,
+        } as UIAFItem10)
     })
     return uiaf
 }
@@ -227,9 +233,9 @@ export function toUIAFExt(data = store.value.achievement2): UIAF {
             export_app: 'cocogoat',
             export_app_version: process.env.VUE_APP_GIT_SHA || 'unkonwn',
             export_timestamp: Math.floor(Date.now() / 1000),
-            uiaf_version: '1.1',
+            uiaf_version: 'v1.1',
             cocogoat_ext: {
-                version: '1.0',
+                version: 'v1.0',
             },
         },
         list: [],

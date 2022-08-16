@@ -42,10 +42,12 @@
                 <div v-if="fin" class="right">
                     <div class="status">
                         <input
-                            :value="fin.status"
+                            :value="fin.current"
                             type="text"
-                            @input="$emit('input-status', ($event?.target as HTMLInputElement).value)"
+                            @input="$emit('input-current', ($event?.target as HTMLInputElement).value)"
                         />
+                        <div class="sep">/</div>
+                        <div class="total">{{ i.total }}</div>
                     </div>
                     <div v-if="isFin" class="date">
                         <input
@@ -109,7 +111,7 @@ export default defineComponent({
             required: true,
         },
     },
-    emits: ['input-date', 'input-status', 'input-partial', 'check', 'click-title'],
+    emits: ['input-date', 'input-current', 'input-partial', 'check', 'click-title'],
     setup(props, { emit }) {
         const badgeMap = {
             WQ: '任务',
@@ -127,7 +129,6 @@ export default defineComponent({
                 }
             }),
             isFin: computed(() => {
-                if (props.fin) console.log(props.fin.status, UIAFStatus.ACHIEVEMENT_UNFINISHED)
                 return props.fin && props.fin.status > UIAFStatus.ACHIEVEMENT_UNFINISHED
             }),
             version: computed(() => {
@@ -403,9 +404,57 @@ export default defineComponent({
                         border-color: var(--c-theme);
                     }
                 }
-                .status input {
+
+                .status {
+                    text-align: center;
+                    display: flex;
                     font-size: 17px;
-                    height: 22px;
+                    font-family: Consolas, monospace;
+
+                    & > div {
+                        color: var(--c-theme);
+                        display: inline-block;
+                        height: 26px;
+                        line-height: 26px;
+                        height: 24px;
+                        line-height: 24px;
+                        border: 1px solid transparent;
+                    }
+                    input {
+                        font-size: 17px;
+                        height: 22px;
+                        display: inline-block;
+                        text-align: right;
+                        font-family: Consolas, monospace;
+                        border-top-right-radius: 0;
+                        border-bottom-right-radius: 0;
+                        &:focus,
+                        &:hover {
+                            border-right-color: transparent;
+                            & + div {
+                                border-top-color: var(--c-theme);
+                                border-bottom-color: var(--c-theme);
+                                & + div {
+                                    border-top-color: var(--c-theme);
+                                    border-bottom-color: var(--c-theme);
+                                    border-right-color: var(--c-theme);
+                                }
+                            }
+                        }
+                    }
+                    .sep {
+                        padding-right: 2px;
+                        margin-left: -1px;
+                        border-left: 0;
+                    }
+                    .total {
+                        padding-right: 4px;
+                        margin-left: -1px;
+                        margin-right: -2px;
+                        border-left: 0;
+                        border-top-right-radius: 2px;
+                        border-bottom-right-radius: 2px;
+                    }
                 }
             }
             .middle {

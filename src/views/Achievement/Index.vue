@@ -152,7 +152,7 @@
                                 :partial="achPartialAmos[i.id] || []"
                                 @check="updateFinished(i.id)"
                                 @input-date="achievementFin[i.id].timestamp = $event"
-                                @input-status="achievementFin[i.id].status = $event"
+                                @input-current="updateCurrent(i.id, Number($event))"
                                 @input-partial="updatePartial(i.id, $event[0], $event[1])"
                                 @click-title="detail = i"
                             />
@@ -220,6 +220,7 @@ import ScannerDialog from './ScannerDialog.vue'
 import versionMap, { allVersions, versionDateMap } from './versionMap'
 import bus from '@/bus'
 import { AchievementItem } from '@/typings/Achievement/Achievement'
+import { debounce } from 'lodash-es'
 
 export default defineComponent({
     name: 'ArtifactIndex',
@@ -337,7 +338,7 @@ export default defineComponent({
         const statusVersion = ref([] as number[])
         const statusQuest = ref([] as string[])
         const isFin = (id: number) => {
-            return achievementFin.value[id] && !Array.isArray(achievementFin.value[id].partial)
+            return achievementFin.value[id] && achievementFin.value[id].status > UIAFStatus.ACHIEVEMENT_UNFINISHED
         }
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
@@ -432,15 +433,55 @@ export default defineComponent({
                     achievementFin.value[id].timestamp = 0
                 } else {
                     achievementFin.value[id].status = UIAFStatus.ACHIEVEMENT_POINT_TAKEN
-                    achievementFin.value[id].timestamp = Math.floor(Date.now() / 1000)
+                    achievementFin.value[id].timestamp =
+                        achievementFin.value[id].timestamp || Math.floor(Date.now() / 1000)
                 }
             } else {
                 achievementFin.value[id] = AchievementItem.create(
                     id,
                     UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
                 ).finishAllPartials()
+                achievementFin.value[id].current = achievementFin.value[id]._amos.total
             }
         }
+        const updateCurrent = (id: number, current: number) => {
+            achievementFin.value[id].current = current || 0
+            // deep into preStage and postStage
+            let k = achievementFin.value[id]._amos
+            const updateSub = (k: Achievement) => {
+                if (!achievementFin.value[k.id]) {
+                    achievementFin.value[k.id] = AchievementItem.create(k.id, UIAFStatus.ACHIEVEMENT_UNFINISHED)
+                }
+                const item = toRef(achievementFin.value, k.id)
+                item.value.current = current || 0
+                if (item.value.current >= k.total) {
+                    item.value.status = UIAFStatus.ACHIEVEMENT_POINT_TAKEN
+                    item.value.timestamp = Math.floor(Date.now() / 1000)
+                } else {
+                    item.value.status = UIAFStatus.ACHIEVEMENT_UNFINISHED
+                }
+            }
+            while (k.preStage) {
+                const q = currentCat.value.achievements.find((i) => i.id === k.preStage)
+                if (!q) {
+                    console.log('DATAERR: ', k.preStage)
+                    break
+                }
+                k = q || k
+                updateSub(k)
+            }
+            k = achievementFin.value[id]._amos
+            while (k.postStage) {
+                const q = currentCat.value.achievements.find((i) => i.id === k.postStage)
+                if (!q) {
+                    console.log('DATAERR: ', k.preStage)
+                    break
+                }
+                k = q || k
+                updateSub(k)
+            }
+        }
+        const debouncedUpdateCurrent = debounce(updateCurrent, 400)
         const updatePartial = (id: number, pid: number, state: boolean) => {
             const d = achPartialAmos[id]
             if (!d) return
@@ -512,6 +553,7 @@ export default defineComponent({
             currentAch,
             updateFinished,
             updatePartial,
+            updateCurrent: debouncedUpdateCurrent,
             doClear,
             showClear,
             selectCat,

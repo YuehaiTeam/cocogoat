@@ -3,7 +3,7 @@ import { Ref } from 'vue'
 import dayjs from 'dayjs'
 import { store } from '@/store'
 import { sandboxedEval } from '@/utils/sandbox'
-import { IAchievementStore, UIAFMagicTime, UIAF } from '@/typings/Achievement'
+import { IAchievementStore, UIAFMagicTime, UIAF, UIAFStatus } from '@/typings/Achievement'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 
 function hasCocogoatAchievementJson(j: Record<string, any[]>) {
@@ -93,6 +93,7 @@ export function convertUIAF(data: UIAF): { achievements: IAchievementStore[]; so
     data.list.forEach((e) => {
         const dt = new Date(e.timestamp === UIAFMagicTime ? 0 : e.timestamp * 1000)
         const val = e.current ? e.current.toString() : ''
+        if ((e.status || e.status === 0) && e.status <= UIAFStatus.ACHIEVEMENT_UNFINISHED) return
         achievements.push({
             id: e.id,
             date: dt.toISOString(),

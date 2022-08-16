@@ -18,10 +18,17 @@ export interface IAchievementStore {
     partial?: number[]
     partialDetail?: { id: number; timestamp: number }[]
 }
+export enum UIAFStatus {
+    ACHIEVEMENT_INVALID = 0,
+    ACHIEVEMENT_UNFINISHED = 1,
+    ACHIEVEMENT_FINISHED = 2,
+    ACHIEVEMENT_POINT_TAKEN = 3,
+}
 export interface UIAFItem {
     id: number
     current: number
     timestamp: number
+    status?: UIAFStatus
 }
 export interface UIAF {
     // we read source from memo - which is not in the official UIAF format
@@ -29,7 +36,7 @@ export interface UIAF {
     info: {
         export_app?: string
         export_app_version?: string
-        uiaf_version?: '1.0'
+        uiaf_version?: 'v1.0' | 'v1.1'
         export_timestamp?: number
     }
     list: UIAFItem[]

@@ -236,7 +236,7 @@ export function toUIAF(data: IAchievementStore[]): UIAF {
             export_app: 'cocogoat',
             export_app_version: process.env.VUE_APP_GIT_SHA || 'unkonwn',
             export_timestamp: Math.floor(Date.now() / 1000),
-            uiaf_version: '1.0',
+            uiaf_version: 'v1.0',
         },
         list: [],
     }

@@ -1,10 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Ref } from 'vue'
-import dayjs from 'dayjs'
 import { store } from '@/store'
 import { sandboxedEval } from '@/utils/sandbox'
-import { IAchievementStore, UIAFMagicTime, UIAF } from '@/typings/Achievement'
-import achevementsAmos from '@/plugins/amos/achievements/index'
+import { IAchievementStore, UIAFMagicTime, UIAF, UIAFStatus } from '@/typings/Achievement'
+import { AchievementItem, IAchievementItem, IAchievementSource } from '@/typings/Achievement/Achievement'
 
 function hasCocogoatAchievementJson(j: Record<string, any[]>) {
     return (
@@ -35,18 +34,22 @@ function hasPaimonMoeJson(j: Record<string, any>) {
     return false
 }
 function convertPaimonMoeJson(j: Record<string, any>) {
-    const achList = [] as IAchievementStore[]
+    const achList = [] as AchievementItem[]
     Object.keys(j.achievement).forEach((index: string) => {
         const ach = j.achievement[index] as Record<number, true>
         Object.keys(ach).forEach((key) => {
             if (!ach[Number(key)]) return
-            achList.push({
-                id: Number(key),
-                status: '导入',
-                categoryId: Number(index),
-                date: dayjs().format('YYYY/MM/DD'),
-                images: {},
-            })
+            achList.push(
+                new AchievementItem({
+                    id: Number(key),
+                    status: UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
+                    timestamp: Math.floor(Date.now() / 1000),
+                    current: 0,
+                    partial: {},
+                    image: '',
+                    source: IAchievementSource.IMPORT,
+                }),
+            )
         })
     })
     return achList
@@ -62,18 +65,24 @@ function hasSeelieJson(j: Record<string, any>) {
     return false
 }
 function convertSeelieJson(b: Record<string, any>) {
-    const achList = [] as IAchievementStore[]
+    const achList = [] as AchievementItem[]
     Object.keys(b).forEach((key) => {
         const seelieItem = b[key] as { done: boolean; notes: string }
         if (!seelieItem.done) return
         seelieItem.notes = seelieItem.notes || ''
-        achList.push({
-            id: Number(key),
-            status: seelieItem.notes.trim().split(' ')[0],
-            categoryId: -1,
-            date: (seelieItem.notes.trim() + ' ').split(' ')[1].trim(),
-            images: {},
-        })
+        achList.push(
+            new AchievementItem({
+                id: Number(key),
+                current: Number(seelieItem.notes.trim().split(' ')[0]) || 0,
+                timestamp: Math.floor(
+                    new Date((seelieItem.notes.trim() + ' ').split(' ')[1].trim()).getTime() / 1000 || 0,
+                ),
+                image: '',
+                partial: {},
+                status: UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
+                source: IAchievementSource.IMPORT,
+            }),
+        )
     })
     return achList
 }
@@ -85,6 +94,41 @@ export function hasUIAF(data: Record<string, any>): data is UIAF {
     if (typeof data.list[0].current === 'undefined') return false
     if (!data.list[0].timestamp && data.list[0].timestamp !== 0) return false
     return true
+}
+export function legacyToUIAFExt(src: IAchievementStore[]): AchievementItem[] {
+    return src.map(
+        (e) =>
+            new AchievementItem({
+                id: e.id,
+                timestamp: new Date(e.date).getTime(),
+                current: Number(e.status) || 0,
+                status:
+                    e.partial && e.partial.length > 0
+                        ? UIAFStatus.ACHIEVEMENT_UNFINISHED
+                        : UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
+                partial:
+                    e.partialDetail?.reduce((a, b) => {
+                        a[b.id] = Math.floor(new Date(b.timestamp).getTime() / 1000)
+                        return a
+                    }, {} as Record<number, number>) || {},
+                image: e.images?.main || '',
+                source: IAchievementSource.IMPORT,
+            }),
+    )
+}
+export function toUIAFExt(src: IAchievementItem[]): AchievementItem[] {
+    return src.map(
+        (e) =>
+            new AchievementItem({
+                id: e.id,
+                timestamp: e.timestamp,
+                current: e.current,
+                status: e.status,
+                partial: e.partial || {},
+                image: e.image || '',
+                source: IAchievementSource.IMPORT,
+            }),
+    )
 }
 export function convertUIAF(data: UIAF): { achievements: IAchievementStore[]; source: string } {
     let source = data.source || data.info.export_app || 'UIAF'
@@ -110,9 +154,7 @@ export function useImport(
     content: Ref<string>,
     allowed: Ref<boolean>,
     importText: Ref<string>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    importData: Ref<any>,
-    importType: Ref<string>,
+    importData: Ref<AchievementItem[]>,
 ) {
     // eslint-disable-next-line complexity
     const checkContent = async () => {
@@ -126,35 +168,31 @@ export function useImport(
             if (j.achievements && hasCocogoatAchievementJson(j)) {
                 importText.value = '导入椰羊成就 (' + j.achievements.length + '个)'
                 allowed.value = true
-                importType.value = 'cocogoat'
-                importData.value = j.achievements
+                importData.value = legacyToUIAFExt(j.achievements)
             } else if (j.value && j.value.achievements && hasCocogoatAchievementJson(j.value)) {
                 const imsource = j.source || '椰羊备份'
                 importText.value = '导入' + imsource + ' (' + j.value.achievements.length + '个)'
                 allowed.value = true
-                importType.value = 'cocogoat'
-                importData.value = j.value.achievements
+                importData.value = legacyToUIAFExt(j.value.achievements)
             } else if (hasUIAF(j)) {
-                const { source, achievements } = convertUIAF(j)
-                importText.value = '导入' + source + ' (' + achievements.length + '个)'
+                let source = j.source || j.info.export_app || 'UIAF'
+                if (source === 'cocogoat') source = '椰羊UIAF'
+                importText.value = '导入' + source + ' (' + j.list.length + '个)'
                 allowed.value = true
-                importType.value = 'no-categoryId'
-                importData.value = achievements
+                importData.value = toUIAFExt(j.list as IAchievementItem[])
             } else if (j.value && hasUIAF(j.value)) {
-                const { source, achievements } = convertUIAF(j.value)
-                importText.value = '导入' + (j.source || source) + ' (' + achievements.length + '个)'
+                let source = j.source || j.value.info.export_app || 'UIAF'
+                if (source === 'cocogoat') source = '椰羊UIAF'
+                importText.value = '导入' + source + ' (' + j.value.list.length + '个)'
                 allowed.value = true
-                importType.value = 'no-categoryId'
-                importData.value = achievements
-            } else if (j.achievement && (importData.value = hasPaimonMoeJson(j))) {
+                importData.value = toUIAFExt(j.value.list as IAchievementItem[])
+            } else if (j.achievement && (importData.value = hasPaimonMoeJson(j) || [])) {
                 importText.value = '导入Paimon.moe备份 (' + importData.value.length + '个)'
                 allowed.value = true
-                importType.value = 'cocogoat'
             } else if (j.achievements && hasSeelieJson(j)) {
                 importData.value = convertSeelieJson(j.achievements)
                 importText.value = '导入Seelie备份 (' + importData.value.length + '个)'
                 allowed.value = true
-                importType.value = 'no-categoryId'
             } else {
                 importText.value = '未识别到可导入的内容'
                 allowed.value = false
@@ -218,8 +256,7 @@ export function useImport(
                     if (mockDB && hasCocogoatAchievementJson(mockDB)) {
                         importText.value = '导入椰羊代码 (' + mockDB.achievements.length + '个)'
                         allowed.value = true
-                        importType.value = 'cocogoat'
-                        importData.value = mockDB.achievements
+                        importData.value = legacyToUIAFExt(mockDB.achievements)
                         return
                     } else {
                         throw new Error()
@@ -230,7 +267,6 @@ export function useImport(
                     importData.value = convertPaimonMoeJson(result)
                     importText.value = '导入Paimon.moe代码 (' + importData.value.length + '个)'
                     allowed.value = true
-                    importType.value = 'cocogoat'
                     return
                 }
                 if (typeof result.account === 'string' || typeof result['main-achievements'] === 'string') {
@@ -240,7 +276,6 @@ export function useImport(
                     const achList = convertSeelieJson(b)
                     importText.value = '导入SeeLie.me代码 (' + achList.length + '个)'
                     allowed.value = true
-                    importType.value = 'no-categoryId'
                     importData.value = achList
                     return
                 }
@@ -254,41 +289,12 @@ export function useImport(
         }
     }
     const importToStore = () => {
-        if (importType.value === 'no-categoryId') {
-            // calculate categoryId Map
-            const cMap = {} as Record<number, number>
-            achevementsAmos.forEach((cat) => {
-                cat.achievements.forEach((ach) => {
-                    cMap[ach.id] = cat.id
-                })
-            })
-            const dv = importData.value as IAchievementStore[]
-            for (const ach of dv) {
-                if (!ach.id) continue
-                if (ach.categoryId === -1) {
-                    ach.categoryId = cMap[ach.id]
-                }
-                const find = store.value.achievements.find((a) => a.id === ach.id)
-                if (find) {
-                    // replace original
-                    Object.assign(find, ach)
-                    continue
-                }
-                store.value.achievements.push(ach)
-            }
-        }
-        if (importType.value === 'cocogoat') {
-            const dv = importData.value as IAchievementStore[]
-            for (const ach of dv) {
-                if (!ach.id) continue
-                const find = store.value.achievements.find((a) => a.id === ach.id)
-                if (find) {
-                    // replace original
-                    Object.assign(find, ach)
-                    continue
-                }
-                store.value.achievements.push(ach)
-            }
+        const dv = importData.value as AchievementItem[]
+        for (const ach of dv) {
+            if (!ach.id || !(ach instanceof AchievementItem)) continue
+            const orig = store.value.achievement2[ach.id] || ach
+            ach.partial = ach.partial || orig.partial
+            store.value.achievement2[ach.id] = ach
         }
     }
     return {

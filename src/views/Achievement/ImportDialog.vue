@@ -67,9 +67,8 @@ export default defineComponent({
         const importText = ref('未识别到可导入的内容')
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const importData = ref(null as any)
-        const importType = ref('')
         const memoLoading = ref(false)
-        const { checkContent, importToStore } = useImport(content, allowed, importText, importData, importType)
+        const { checkContent, importToStore } = useImport(content, allowed, importText, importData)
         const debouncedCheck = debounce(() => {
             checkContent()
             memoLoading.value = false

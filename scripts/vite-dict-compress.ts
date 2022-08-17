@@ -5,6 +5,7 @@ const dictCompress = function (): Plugin {
         enforce: 'post',
         async transform(code, id) {
             if (id.split('?')[1]?.includes('dictcompress')) {
+                // eslint-disable-next-line no-new-func
                 const origstr = new Function(code.replace('export default', 'return'))()
                 const newstr = origstr.replace(/\r/g, '').replace(/\n/g, '')
                 return `export default ${JSON.stringify(newstr)}`

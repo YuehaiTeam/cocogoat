@@ -13,6 +13,15 @@ $--color-primary: var(--c-theme);
 }
 .m .cc-user-corner {
     width: 50px;
+    right: auto;
+    left: 0;
+    .cc-user-selector {
+        width: 52px;
+        overflow: hidden;
+        .down {
+            display: none;
+        }
+    }
 }
 .pc .cc-menu {
     .logo {

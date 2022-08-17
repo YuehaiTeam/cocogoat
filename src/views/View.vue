@@ -1,28 +1,18 @@
 <template>
-    <div :class="{ [$style.fullHeight]: fullHeight, [$style.layout]: true }">
+    <div :class="{ [$style.fullHeight]: fullHeight, [$style.layout]: true, [$style.open]: actionsOpen }">
         <header :class="$style.componentHeader">
             <div :class="$style.appTitle"><slot name="title" /></div>
-            <div
-                v-if="$slots.actions"
-                :class="[$style.boxActions, actionsOpen ? $style.open : '', width > 0 ? $style.loaded : '']"
-                :style="
-                    isMobile
-                        ? {
-                              transform: `translateX(${actionsOpen ? 0 : (width || 300) + 21}px)`,
-                          }
-                        : {}
-                "
-            >
-                <el-button
-                    v-if="isMobile && $slots.actions"
-                    :class="$style.btnActions"
-                    plain
-                    @click="actionsOpen = !actionsOpen"
-                >
-                    <fa-icon icon="angle-left" />
-                </el-button>
-                <div ref="actionsEl" :class="$style.appActions"><slot name="actions" /></div>
+            <div v-if="$slots.actions" :class="[$style.appActions, actionsOpen ? $style.open : '']">
+                <slot name="actions" />
             </div>
+            <el-button
+                v-if="isMobile && $slots.actions"
+                :class="[$style.btnActions, $style.boxActions, actionsOpen ? $style.open : '']"
+                plain
+                @click="actionsOpen = !actionsOpen"
+            >
+                <fa-icon icon="ellipsis-vertical" />
+            </el-button>
         </header>
         <main :class="$style.componentMain">
             <slot />
@@ -31,11 +21,10 @@
 </template>
 <script lang="ts">
 import bus from '@/bus'
-import { defineComponent, Ref, ref, toRef, watch } from 'vue'
-import { useElementSize } from '@vueuse/core'
+import { defineComponent, ref, toRef } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
-library.add(faAngleLeft)
+import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons'
+library.add(faEllipsisVertical)
 export default defineComponent({
     props: {
         fullHeight: {
@@ -45,17 +34,8 @@ export default defineComponent({
     },
     setup() {
         const actionsOpen = ref(false)
-        const actionsEl = ref<HTMLElement | null>(null)
-        const { width } = useElementSize(actionsEl as Ref<HTMLElement | null>)
-        watch(actionsEl, (el) => {
-            if (el) {
-                width.value = el.offsetWidth
-            }
-        })
         return {
             actionsOpen,
-            actionsEl,
-            width,
             isMobile: toRef(bus(), 'isMobile'),
         }
     },
@@ -67,7 +47,6 @@ export default defineComponent({
     width: 100%;
     max-width: 100vw;
     overflow: hidden;
-    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -102,65 +81,68 @@ export default defineComponent({
         box-sizing: border-box;
         padding-bottom: 55px;
         padding-left: 0;
+        transition: padding 0.2s;
+        &.open {
+            padding-top: 100px;
+        }
+        .component-header {
+            height: 0;
+            overflow: hidden;
+        }
     }
     .app-title {
-        padding-left: 60px;
-    }
-    .box-actions {
         position: fixed;
+        top: 0;
+        left: 58px;
+        z-index: 999;
         right: 0;
-        bottom: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        &.loaded {
-            transition: all 0.4s;
-        }
-        &.open {
-            .btn-actions :global(.svg-inline--fa) {
-                transform: rotateY(180deg);
-            }
-        }
+        padding: 0;
     }
+
     .app-actions {
-        background: var(--c-white);
-        border: 1px solid var(--c-theme);
-        border-right: 0;
-        border-top-left-radius: 5px;
-        border-bottom-left-radius: 5px;
-        padding: 10px;
-        :global(.a-line) {
-            display: flex;
-            justify-content: center;
-            & > * {
-                flex-grow: 1;
+        height: 50px;
+        position: fixed;
+        top: 0px;
+        &.open {
+            top: 50px;
+        }
+        right: 0;
+        left: 0;
+        line-height: 48px;
+        vertical-align: middle;
+        text-align: right;
+        background-color: #fff;
+        transition: all 0.2s;
+        z-index: 989;
+        padding: 0 15px;
+        :global {
+            .a-line {
+                display: inline-block;
+                margin-left: 10px;
             }
         }
     }
     .btn-actions {
-        border-radius: 5px;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-        border-right: 0;
-        width: 40px;
-        height: 40px;
-        text-align: center;
-        padding: 0;
-        padding-left: 1px;
-        border-color: var(--c-theme);
-        color: var(--c-white);
-        background: var(--c-theme);
-        svg {
-            width: 23px;
-            height: 23px;
-            fill: currentColor;
-        }
-        :global(.svg-inline--fa) {
-            transition: all 0.5s;
+        position: fixed;
+        right: 0;
+        top: 0;
+        width: 45px;
+        height: 50px;
+        border: 0;
+        transition: all 0.1s;
+        z-index: 999;
+        border-radius: 0;
+        font-size: 20px;
+        &.open {
+            background-color: var(--el-color-primary-light-9);
+            color: var(--c-theme);
         }
     }
 }
 :global(.pc) {
+    .component-header {
+        position: fixed;
+    }
     .app-actions {
         height: 100%;
         position: absolute;

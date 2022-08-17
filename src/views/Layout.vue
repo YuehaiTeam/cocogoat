@@ -1,9 +1,5 @@
 <template>
-    <header class="cc-header">
-        <div class="logo">
-            <icon-cocogoat class="v-icon cocogoat" />
-        </div>
-    </header>
+    <header class="cc-header"></header>
     <div class="cc-user-corner">
         <user-selector />
     </div>
@@ -31,13 +27,7 @@
         </div>
     </aside>
     <router-view v-slot="{ Component }">
-        <transition
-            :name="isMobile ? transitionName : ''"
-            :duration="isMobile ? 100 : -1"
-            :mode="isMobile ? '' : 'out-in'"
-        >
-            <component :is="Component" />
-        </transition>
+        <component :is="Component" />
     </router-view>
 </template>
 
@@ -75,32 +65,6 @@ export default {
         },
         user() {
             return {}
-        },
-    },
-    watch: {
-        $route(to, from) {
-            const navs = ['', 'artifact', 'achievement', 'options']
-            let toDepth = navs.indexOf(to.path.split('/')[1])
-            let fromDepth = navs.indexOf(from.path.split('/')[1])
-            if (toDepth == fromDepth) {
-                toDepth = to.path.split('/').length
-                fromDepth = from.path.split('/').length
-            }
-            if (to.path[to.path.length - 1] == '/') toDepth--
-            if (from.path[from.path.length - 1] == '/') fromDepth--
-            if (toDepth == fromDepth) {
-                if (to.params.id) toDepth++
-                if (from.params.id) fromDepth++
-            }
-            if (toDepth == fromDepth) {
-                toDepth = navs.indexOf(to.path.split('/')[2])
-                fromDepth = navs.indexOf(from.path.split('/')[2])
-            }
-            if (toDepth == fromDepth) {
-                this.transitionName = ''
-            } else {
-                this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
-            }
         },
     },
     created() {

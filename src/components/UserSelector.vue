@@ -76,7 +76,10 @@ export default defineComponent({
 <template>
     <section :class="$style.userSelector">
         <el-dropdown :show-timeout="0" :hide-timeout="50" @command="onSelect" @visible-change="menuState = $event">
-            <div :class="[$style.userInfo, $style.currentUser, syncStatus.status, menuState ? 'open' : '']">
+            <div
+                :class="[$style.userInfo, $style.currentUser, syncStatus.status, menuState ? 'open' : '']"
+                class="cc-user-selector"
+            >
                 <img :src="avatar" />
                 <div :class="[$style.syncIcon, syncStatus.status, 'head-sync-icon']">
                     <fa-icon :icon="syncIcon[syncStatus.status]" />

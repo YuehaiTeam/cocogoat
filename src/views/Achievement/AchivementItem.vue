@@ -452,8 +452,8 @@ export default defineComponent({
                         margin-left: -1px;
                         margin-right: -2px;
                         border-left: 0;
-                        border-top-right-radius: 2px;
-                        border-bottom-right-radius: 2px;
+                        border-top-right-radius: 3px;
+                        border-bottom-right-radius: 3px;
                     }
                 }
             }
@@ -561,9 +561,24 @@ export default defineComponent({
                 width: 65px;
                 font-size: 12px;
             }
-            .status input {
+            .status {
                 font-size: 15px;
-                height: 17px;
+
+                & > div {
+                    height: 19px;
+                    line-height: 21px;
+                    font-size: 13px;
+                    vertical-align: bottom;
+                }
+                input {
+                    font-size: 15px;
+                    height: 17px;
+                    width: 100%;
+                    padding-right: 1px;
+                }
+                .sep {
+                    padding: 0;
+                }
             }
         }
     }

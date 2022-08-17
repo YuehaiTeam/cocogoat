@@ -189,6 +189,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ref, toRef, defineComponent, computed, watch } from 'vue'
 import achevementsAmos from '@/plugins/amos/achievements/index'
 import achPartialAmos from '@/plugins/amos/achievements/partial'
+import { goalMap } from '@/views/Achievement/goalMap'
 
 import {
     faCrosshairs,
@@ -240,20 +241,39 @@ export default defineComponent({
         const showScanner = ref(false)
         const search = ref('')
         const achievementFin = toRef(store.value, 'achievement2')
-        console.log(store, achievementFin)
-        const achievementFinStat = ref(
-            {} as Record<
-                number,
-                {
-                    count: number
-                    reward: number
-                }
-            >,
-        )
+        const achievementFinStat = computed(() => {
+            return Object.keys(achievementFin.value).reduce(
+                (acc, id) => {
+                    const fin: AchievementItem = achievementFin.value[Number(id)]
+                    const goalId = goalMap[fin.id]
+                    if (fin.status > UIAFStatus.ACHIEVEMENT_UNFINISHED) {
+                        acc[goalId] = acc[goalId] || { count: 0, reward: 0 }
+                        acc[goalId].count++
+                        acc[goalId].reward +=
+                            achevementsAmos.find((e) => e.id === goalId)?.achievements.find((e) => e.id === fin.id)
+                                ?.reward || 0
+                    }
+                    return acc
+                },
+                {} as Record<
+                    number,
+                    {
+                        count: number
+                        reward: number
+                    }
+                >,
+            )
+        })
         const sortByStatus = ref(true)
-        const totalFin = ref({ count: 0, reward: 0 } as {
-            count: number
-            reward: number
+        const totalFin = computed(() => {
+            return Object.values(achievementFinStat.value).reduce(
+                (acc, val) => {
+                    acc.count += val.count
+                    acc.reward += val.reward
+                    return acc
+                },
+                { count: 0, reward: 0 },
+            )
         })
         const nowDate = new Date()
 
@@ -340,6 +360,10 @@ export default defineComponent({
         const isFin = (id: number) => {
             return achievementFin.value[id] && achievementFin.value[id].status > UIAFStatus.ACHIEVEMENT_UNFINISHED
         }
+        const firstSort = ref([] as number[])
+        watch([sortByStatus, currentCat], () => {
+            firstSort.value = []
+        })
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
             const statusQuest2 = statusQuest.value.map((e) => (e === 'MQ' ? '' : e))
@@ -349,42 +373,53 @@ export default defineComponent({
             if (statusVersion.value.length > 0) {
                 data = data.filter((i) => statusVersion.value.includes(versionMap[i.id]))
             }
-            if (sortByStatus.value)
-                data = data.sort((a, b) => {
-                    const ret = 0
-                    let fa = achievementFin.value[a.id] as AchievementItem | undefined
-                    let fb = achievementFin.value[b.id] as AchievementItem | undefined
-                    if (a.postStage) {
-                        let p = a
-                        while (p.postStage) {
-                            const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
-                            p = q || p
-                            if (!q) {
-                                console.log('DATAERR: ', p.postStage)
-                                break
+            if (sortByStatus.value) {
+                if (firstSort.value.length <= 0) {
+                    data = data.sort((a, b) => {
+                        const ret = 0
+                        let fa = achievementFin.value[a.id] as AchievementItem | undefined
+                        let fb = achievementFin.value[b.id] as AchievementItem | undefined
+                        if (a.postStage) {
+                            let p = a
+                            while (p.postStage) {
+                                const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
+                                p = q || p
+                                if (!q) {
+                                    console.log('DATAERR: ', p.postStage)
+                                    break
+                                }
                             }
+                            fa = achievementFin.value[p.id]
                         }
-                        fa = achievementFin.value[p.id]
-                    }
-                    if (b.postStage) {
-                        let p = b
-                        while (p.postStage) {
-                            const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
-                            p = q || p
-                            if (!q) {
-                                console.log('DATAERR: ', p.postStage)
-                                break
+                        if (b.postStage) {
+                            let p = b
+                            while (p.postStage) {
+                                const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
+                                p = q || p
+                                if (!q) {
+                                    console.log('DATAERR: ', p.postStage)
+                                    break
+                                }
                             }
+                            fb = achievementFin.value[p.id]
                         }
-                        fb = achievementFin.value[p.id]
-                    }
-                    if (a.preStage === b.id) return 1
-                    fa = fa && isFin(fa.id) ? fa : undefined
-                    fb = fb && isFin(fb.id) ? fb : undefined
-                    if (fa && !fb) return 1
-                    if (!fa && fb) return -1
-                    return ret
-                })
+                        if (a.preStage === b.id) return 1
+                        fa = fa && isFin(fa.id) ? fa : undefined
+                        fb = fb && isFin(fb.id) ? fb : undefined
+                        if (fa && !fb) return 1
+                        if (!fa && fb) return -1
+                        return ret
+                    })
+                    firstSort.value = data.map((e) => e.id)
+                } else {
+                    // sort by firstsort to avoid item disappear on click finish
+                    data = data.sort((a, b) => {
+                        const fa = firstSort.value.indexOf(a.id)
+                        const fb = firstSort.value.indexOf(b.id)
+                        return fa - fb
+                    })
+                }
+            }
             if (search.value.trim()) {
                 const has = (ach: Achievement, search: string) => {
                     if (ach.id.toString().includes(search)) return true
@@ -426,7 +461,7 @@ export default defineComponent({
             }
             return data
         })
-        const updateFinished = (id: number) => {
+        const updateFinished = async (id: number) => {
             if (achievementFin.value[id]) {
                 if (achievementFin.value[id].status > UIAFStatus.ACHIEVEMENT_UNFINISHED) {
                     achievementFin.value[id].status = UIAFStatus.ACHIEVEMENT_UNFINISHED
@@ -437,17 +472,16 @@ export default defineComponent({
                         achievementFin.value[id].timestamp || Math.floor(Date.now() / 1000)
                 }
             } else {
-                achievementFin.value[id] = AchievementItem.create(
+                achievementFin.value[id] = await AchievementItem.create(
                     id,
                     UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
                 ).finishAllPartials()
-                achievementFin.value[id].current = achievementFin.value[id]._amos.total
+                achievementFin.value[id].current = (await achievementFin.value[id].amos).total
             }
         }
         const updateCurrent = (id: number, current: number) => {
             achievementFin.value[id].current = current || 0
             // deep into preStage and postStage
-            let k = achievementFin.value[id]._amos
             const updateSub = (k: Achievement) => {
                 if (!achievementFin.value[k.id]) {
                     achievementFin.value[k.id] = AchievementItem.create(k.id, UIAFStatus.ACHIEVEMENT_UNFINISHED)
@@ -461,6 +495,8 @@ export default defineComponent({
                     item.value.status = UIAFStatus.ACHIEVEMENT_UNFINISHED
                 }
             }
+            let k = currentCat.value.achievements.find((i) => i.id === id) as Achievement
+            updateSub(k)
             while (k.preStage) {
                 const q = currentCat.value.achievements.find((i) => i.id === k.preStage)
                 if (!q) {
@@ -470,7 +506,7 @@ export default defineComponent({
                 k = q || k
                 updateSub(k)
             }
-            k = achievementFin.value[id]._amos
+            k = currentCat.value.achievements.find((i) => i.id === id) as Achievement
             while (k.postStage) {
                 const q = currentCat.value.achievements.find((i) => i.id === k.postStage)
                 if (!q) {
@@ -503,7 +539,8 @@ export default defineComponent({
                 store.value.achievement2 = {}
             } else {
                 Object.keys(achievementFin.value).forEach((e) => {
-                    if (achievementFin.value[Number(e)].goalId === currentCat.value.id) {
+                    const goalId = goalMap[achievementFin.value[Number(e)].id]
+                    if (goalId === currentCat.value.id) {
                         delete store.value.achievement2[Number(e)]
                     }
                 })

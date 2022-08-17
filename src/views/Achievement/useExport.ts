@@ -15,7 +15,7 @@ export function useExportAchievements() {
         title: '',
         content: '',
     })
-    const doExport = (
+    const doExport = async (
         _to:
             | 'paimon'
             | 'seelie'
@@ -34,10 +34,10 @@ export function useExportAchievements() {
         if (to === 'cocogoat') {
             const ach0 = Object.values(store.value.achievement2)
                 .filter((ach) => ach.status > UIAFStatus.ACHIEVEMENT_UNFINISHED)
-                .map((ach) => {
+                .map(async (ach) => {
                     return {
                         id: ach.id,
-                        categoryId: ach.goalId,
+                        categoryId: await ach.goalId,
                         date: dayjs(ach.timestamp).format('YYYY-MM-DD'),
                         status: ach.current?.toString(),
                     } as IAchievementStore
@@ -45,7 +45,7 @@ export function useExportAchievements() {
             const data = {
                 source: '椰羊成就',
                 value: {
-                    achievements: ach0,
+                    achievements: await Promise.all(ach0),
                 },
                 lastModified: new Date().toISOString(),
             }
@@ -178,9 +178,10 @@ location.href='/achievements'`
         } else {
             const exportArray = Object.values(store.value.achievement2)
                 .filter((ach) => ach.status > UIAFStatus.ACHIEVEMENT_UNFINISHED)
-                .map((ach) => {
-                    return [ach.goalId, ach.id]
+                .map(async (ach) => {
+                    return [await ach.goalId, ach.id]
                 })
+            const fexportArray = await Promise.all(exportArray)
             content = `/*
 * 复制此处所有内容，
 * 在Paimon.moe页面按F12打开调试器，
@@ -190,7 +191,7 @@ location.href='/achievements'`
 * 使用此方法导入是为了保证您的原有成就不被覆盖
 *
 */
-const b = ${JSON.stringify(exportArray)};
+const b = ${JSON.stringify(fexportArray)};
 const a = (await localforage.getItem('achievement')) || {};
 b.forEach(c=>{a[c[0]]=a[c[0]]||{};a[c[0]][c[1]]=true})
 await localforage.setItem('achievement',a);

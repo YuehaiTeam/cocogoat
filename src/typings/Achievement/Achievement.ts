@@ -1,9 +1,6 @@
 import { Ref, ref } from 'vue'
 import { Achievement } from './Amos'
 import { UIAFItem, UIAFStatus } from './UIAF'
-import achievementsAmos from '@/plugins/amos/achievements/index'
-import achPartialAmos from '@/plugins/amos/achievements/partial'
-import { goalMap } from '../../views/Achievement/goalMap'
 import { IPartialAchievement } from 'cocogoat-amos/dist/achievement-partial/typing'
 
 export enum IAchievementSource {
@@ -19,24 +16,14 @@ export interface IAchievementItem extends UIAFItem {
 }
 export class AchievementItem implements IAchievementItem {
     _data: Ref<IAchievementItem> | IAchievementItem
-    _amos: Achievement
-    _part: IPartialAchievement
-    goalId: number
+    _amos: Achievement | null = null
+    _part: IPartialAchievement | null = null
     constructor(data: IAchievementItem) {
         if (data instanceof AchievementItem) {
             this._data = data._data
         } else {
             this._data = ref(data)
         }
-        this.goalId = goalMap[this.id]
-        const amos = achievementsAmos
-            .find((cat) => cat.id === this.goalId)
-            ?.achievements.find((ach) => ach.id === this.id)
-        if (!amos) {
-            throw new Error(`Achievement ${this.id} not found`)
-        }
-        this._amos = amos
-        this._part = achPartialAmos[this.id] || []
     }
     data() {
         return 'value' in this._data ? this._data.value : this._data
@@ -83,6 +70,32 @@ export class AchievementItem implements IAchievementItem {
     set source(source) {
         this.data().source = source
     }
+    get amos() {
+        if (this._amos) return Promise.resolve(this._amos)
+        const achievementsAmos = import('@/plugins/amos/achievements/index')
+        const goalMap = import('@/views/Achievement/goalMap')
+        const achPartialAmos = import('@/plugins/amos/achievements/partial')
+        return Promise.all([achievementsAmos, achPartialAmos, goalMap]).then(
+            ([{ default: achievementsAmos }, { default: achPartialAmos }, { goalMap }]) => {
+                const goalId = goalMap[this.id]
+                const amos = achievementsAmos
+                    .find((cat) => cat.id === goalId)
+                    ?.achievements.find((ach) => ach.id === this.id)
+                if (!amos) {
+                    throw new Error(`Achievement ${this.id} not found`)
+                }
+                this._amos = amos
+                this._part = achPartialAmos[this.id] || []
+                return this._amos
+            },
+        )
+    }
+    get goalId() {
+        return this.amos.then((amos) => amos.categoryId)
+    }
+    get part() {
+        return this.amos.then(() => this._part as IPartialAchievement)
+    }
     toJSON() {
         return this.data()
     }
@@ -92,8 +105,8 @@ export class AchievementItem implements IAchievementItem {
     removePartial(id: number) {
         delete this.partial[id]
     }
-    finishAllPartials() {
-        this.partial = this._part.reduce((acc, part) => {
+    async finishAllPartials() {
+        this.partial = (await this.part).reduce((acc, part) => {
             acc[part.id] = Math.floor(Date.now() / 1000)
             return acc
         }, {} as Record<number, number>)

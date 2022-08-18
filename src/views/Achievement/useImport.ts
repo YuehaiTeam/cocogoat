@@ -2,6 +2,7 @@
 import { Ref } from 'vue'
 import { store } from '@/store'
 import { sandboxedEval } from '@/utils/sandbox'
+import { legacyToUIAFExt } from '@/store/migrate'
 import { IAchievementStore, UIAFMagicTime, UIAF, UIAFStatus } from '@/typings/Achievement'
 import { AchievementItem, IAchievementItem, IAchievementSource } from '@/typings/Achievement/Achievement'
 
@@ -94,27 +95,6 @@ export function hasUIAF(data: Record<string, any>): data is UIAF {
     if (typeof data.list[0].current === 'undefined') return false
     if (!data.list[0].timestamp && data.list[0].timestamp !== 0) return false
     return true
-}
-export function legacyToUIAFExt(src: IAchievementStore[]): AchievementItem[] {
-    return src.map(
-        (e) =>
-            new AchievementItem({
-                id: e.id,
-                timestamp: new Date(e.date).getTime(),
-                current: Number(e.status) || 0,
-                status:
-                    e.partial && e.partial.length > 0
-                        ? UIAFStatus.ACHIEVEMENT_UNFINISHED
-                        : UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
-                partial:
-                    e.partialDetail?.reduce((a, b) => {
-                        a[b.id] = Math.floor(new Date(b.timestamp).getTime() / 1000)
-                        return a
-                    }, {} as Record<number, number>) || {},
-                image: e.images?.main || '',
-                source: IAchievementSource.IMPORT,
-            }),
-    )
 }
 export function toUIAFExt(src: IAchievementItem[]): AchievementItem[] {
     return src.map(

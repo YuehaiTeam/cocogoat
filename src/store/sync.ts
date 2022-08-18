@@ -1,6 +1,6 @@
 import { debounce } from 'lodash-es'
 import { ref, reactive, watch, Ref, nextTick } from 'vue'
-import { reloadAllUsers, currentUser, store, disableAutoSave } from '.'
+import { reloadAllUsers, currentUser, store, disableAutoSave, loadStore } from '.'
 import * as localStorageImpl from './impl/localStorage'
 import { SyncProvider } from './providers/typing'
 /// #if WEBPACK
@@ -196,7 +196,7 @@ export const getAll = async () => {
     await nextTick()
     reloadAllUsers()
     currentUser.value = localStorageImpl.currentUser()[0]
-    const storeval = localStorageImpl.get(currentUser.value)
+    const storeval = loadStore()
     if (storeval) {
         store.value = storeval
     }

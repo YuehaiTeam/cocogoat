@@ -2,6 +2,7 @@ import { IAchievementStore } from '@/typings/Achievement'
 import { IArtifact } from '@/typings/Artifact'
 import { currentUser as storageCurrentUser, get, set, list } from './impl'
 import { Ref, ref, watch } from 'vue'
+import { runMigrate } from './migrate'
 import { AchievementItem } from '../typings/Achievement/Achievement'
 
 export const disableAutoSave = ref(false)
@@ -10,6 +11,7 @@ export function createEmptyStore() {
     return {
         achievements: [] as IAchievementStore[],
         achievement2: {} as Record<number, AchievementItem>,
+        achievementVersion: 2,
         artifacts: [] as IArtifact[],
         user: {
             name: '默认',
@@ -21,7 +23,7 @@ export type IStore = ReturnType<typeof createEmptyStore>
 export function createEmptyOptions() {
     return {
         lang: navigator.language.toLowerCase(),
-        achievements_recent_export: 'paimon',
+        achievements_recent_export: 'excel',
         achievements_show_unpublished: false,
         reporting: true,
         showads: true,
@@ -31,8 +33,12 @@ export type IOptions = ReturnType<typeof createEmptyOptions>
 
 export function loadStore(): IStore {
     const uid = storageCurrentUser()
-    const predata = get(uid) || {}
+    const predata = get(uid) || { achievementVersion: 2.0 }
+    predata.achievementVersion = predata.achievementVersion || 1.0
     const data = Object.assign(createEmptyStore(), predata)
+    if (runMigrate(uid, data)) {
+        set(uid, data)
+    }
     data.achievement2 = AchievementItem.fromObject(data.achievement2)
     return data
 }

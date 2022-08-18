@@ -47,7 +47,7 @@ declare global {
 
 ;(async () => {
     await initi18n()
-    if (options.value.reporting && process.env.NODE_ENV === 'production') {
+    if (options.value.reporting && process.env.NODE_ENV === 'production' && process.env.VUE_APP_TEST !== 'true') {
         const { init } = await import('@/utils/reporting')
         init(app, router)
     }
@@ -90,4 +90,9 @@ if (lastT > 3) {
             sessionStorage.lastRefreshTimes = (Number(sessionStorage.lastRefreshTimes) || 0) + 1
         }
     })
+}
+
+// Test Watermark
+if (process.env.VUE_APP_TEST === 'true') {
+    import('@/utils/testWatermark').then(({ installWatermark }) => installWatermark())
 }

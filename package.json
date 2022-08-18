@@ -23,6 +23,7 @@
         "@fortawesome/free-regular-svg-icons": "^6.1.1",
         "@fortawesome/free-solid-svg-icons": "^6.1.1",
         "@fortawesome/vue-fontawesome": "^3.0.0-5",
+        "@pansy/watermark": "^2.2.1",
         "@sentry/browser": "^6.17.9",
         "@sentry/core": "^6.17.9",
         "@sentry/tracing": "^6.17.9",

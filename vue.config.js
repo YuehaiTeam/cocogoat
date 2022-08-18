@@ -18,6 +18,7 @@ const singleFile = process.argv.includes('--singlefile') || singleFileDLL
 const SentryPlugin = require('@sentry/webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const isCI = !!process.env.SENTRY_KEY
+const isTest = process.argv.includes('--test') || process.env.CF_PAGES === '1'
 const useCDN = process.argv.includes('--cdn') || isCI
 const useSWC = isCI
     ? 'false'
@@ -33,10 +34,14 @@ process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
 process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
 process.env.VUE_APP_LOCALRES = singleFile || process.env.NODE_ENV === 'development' ? 'true' : 'false'
 process.env.VUE_APP_TIMESTAMP = Date.now()
+process.env.VUE_APP_TEST = isTest ? 'true' : 'false'
 process.env.VUE_APP_GIT_SHA = (gitInfo.abbreviatedSha || '').substring(0, 8)
+process.env.VUE_APP_GIT_BRC = gitInfo.branch || 'unknown'
 process.env.VUE_APP_GIT_MSG =
     ((gitInfo.commitMessage || '').split('-----END PGP SIGNATURE-----')[1] || '').trim() || gitInfo.commitMessage || ''
-console.log(`[cocogoat-web] Build ${process.env.NODE_ENV} ${process.env.VUE_APP_GIT_SHA}/${process.env.VUE_APP_BUILD}`)
+console.log(
+    `[cocogoat-web] Build ${process.env.NODE_ENV} ${process.env.VUE_APP_GIT_BRC}#${process.env.VUE_APP_GIT_SHA}/${process.env.VUE_APP_BUILD}`,
+)
 console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, SWC: ${useSWC}, Sentry: ${useSentry}`)
 console.log('')
 console.log(process.env.VUE_APP_GIT_MSG)

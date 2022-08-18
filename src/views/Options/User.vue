@@ -60,7 +60,12 @@
                     <el-input v-model="edit.name" placeholder="爷真可爱" size="large"></el-input>
                 </el-form-item>
                 <el-form-item label="头像">
-                    <el-select v-model="edit.avatar" size="large" filterable style="width: 100%">
+                    <el-select v-model="edit.avatar" size="large" filterable :class="$style.avatarSel">
+                        <template #prefix>
+                            <div :class="$style.avatarSelPrefix">
+                                <img :src="characterIcon(edit.avatar)" />
+                            </div>
+                        </template>
                         <el-option
                             v-for="i in characterAmos"
                             :key="i.key"
@@ -260,6 +265,22 @@ export default defineComponent({
                 margin-top: -2px;
                 font-family: Consolas, monospace;
             }
+        }
+    }
+}
+.avatar-sel {
+    height: 57px;
+    overflow: hidden;
+    .avatar-sel-prefix {
+        border-radius: 100%;
+        margin: 5px;
+        margin-left: -6px;
+        overflow: hidden;
+        box-shadow: 0 0 0 1px var(--el-select-border-color-hover) inset;
+        img {
+            width: 45px;
+            height: 45px;
+            display: block;
         }
     }
 }

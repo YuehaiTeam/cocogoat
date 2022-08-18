@@ -69,14 +69,12 @@ export const template =
     'https://upload-bbs.mihoyo.com/game_record/genshin/character_icon/UI_AvatarIcon_#.png?x-oss-process=image/crop,w_200,h_200,y_5,g_north'
 export const characterIcon = (name: string) => {
     let n = ''
-    if (list.includes(name)) n = name
     if (mapping[name]) n = mapping[name]
-    if (list.includes(underlineToCamelW(name))) n = underlineToCamelW(name)
-    if (list.includes(underlineToCamelW(name.replace('_', '')))) n = underlineToCamelW(name.replace('_', ''))
-    if (list.includes(underlineToCamelW(name.split('_')[1]))) n = underlineToCamelW(name.split('_')[1])
+    else if (list.includes(underlineToCamelW(name))) n = underlineToCamelW(name)
+    else if (list.includes(underlineToCamelW(name.replace('_', '')))) n = underlineToCamelW(name.replace('_', ''))
+    else if (list.includes(underlineToCamelW(name.split('_')[1]))) n = underlineToCamelW(name.split('_')[1])
     if (n === '') {
-        n = 'PlayerGirl'
-        console.log(`characterIcon: ${name} not found`)
+        n = name
     }
     return template.replace('#', n)
 }

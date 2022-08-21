@@ -24,6 +24,7 @@ export function useExportAchievements() {
             | 'excel'
             | 'snapgenshin'
             | 'xunkong'
+            | 'qyinter'
             | 'uiaf'
             | 'uiaf10'
             | 'share'
@@ -132,6 +133,35 @@ export function useExportAchievements() {
                 '如果SnapGenshin没有启动或导入失败，请导出为椰羊JSON后手动导入。',
                 toUIAF(),
             )
+            return
+        }
+        if (to === 'qyinter') {
+            const data = {
+                key: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+                    .toString(16)
+                    .substring(0, 8)
+                    .toUpperCase(),
+                data: toUIAF('v1.0'),
+            }
+            try {
+                const res = await fetch('https://api.qyinter.com/achievementRedis', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                if (!res.ok) {
+                    throw new Error(await res.text())
+                }
+                ElNotification.success({
+                    message: `请在原魔工具箱小程序输入 ${data.key} 以导入，三分钟内有效`,
+                    duration: 3 * 60 * 1000,
+                })
+            } catch (e) {
+                ElNotification.error('导出失败，请稍后再试')
+                console.error(e)
+            }
             return
         }
         if (to === 'xunkong') {

@@ -13,6 +13,7 @@
                 <el-dropdown-item class="export-title" @click="doExport('uiaf10')"> UIAF 1.0 JSON </el-dropdown-item>
                 <el-dropdown-item divided @click="doExport('snapgenshin')"> Snap Genshin </el-dropdown-item>
                 <el-dropdown-item @click="doExport('xunkong')"> 寻空 </el-dropdown-item>
+                <el-dropdown-item @click="doExport('qyinter')"> 原魔工具箱 </el-dropdown-item>
                 <el-dropdown-item @click="doExport('paimon')"> Paimon.moe </el-dropdown-item>
                 <el-dropdown-item @click="doExport('seelie')"> Seelie.me </el-dropdown-item>
             </el-dropdown-menu>

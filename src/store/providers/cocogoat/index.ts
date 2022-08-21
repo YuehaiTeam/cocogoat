@@ -118,6 +118,13 @@ class CocogoatSyncProvider implements SyncProvider {
             this.status.error = err
             throw err
         }
+        // 404
+        if (req.status === 404) {
+            return {
+                value: null,
+                lastModified: new Date(0),
+            }
+        }
         // server fault
         if (!req.ok) {
             let errMsg = req.statusText

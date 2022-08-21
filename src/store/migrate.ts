@@ -30,16 +30,13 @@ export function achArrayToObject(src: AchievementItem[]): Record<number, Achieve
 }
 export const runMigrate = (key: string, data: IStore) => {
     let hasMigrated = false
-    if (
-        key.startsWith('cocogoat.v1.') &&
-        !key.endsWith('.options') &&
-        !key.includes('.playground.') &&
-        !key.endsWith('.currentUser')
-    ) {
+    const pk = '.' + key
+    if (!pk.endsWith('.options') && !pk.includes('.playground.') && !pk.endsWith('.currentUser')) {
         if (data.achievementVersion === 1.0) {
             data.achievement2 = achArrayToObject(legacyToUIAFExt(data.achievements))
             data.achievementVersion = 2.0
             hasMigrated = true
+            console.log('Migrated achievement from v1.0 to v2.0')
         }
     }
     return hasMigrated

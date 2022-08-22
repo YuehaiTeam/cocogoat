@@ -23,6 +23,7 @@ export function useExportAchievements() {
             | 'cocogoat.v2'
             | 'excel'
             | 'snapgenshin'
+            | 'snaphutao'
             | 'xunkong'
             | 'qyinter'
             | 'uiaf'
@@ -130,12 +131,34 @@ export function useExportAchievements() {
         if (to === 'snapgenshin') {
             callClient(
                 'snapgenshin://achievement/import/uiaf',
-                '如果SnapGenshin没有启动或导入失败，请导出为椰羊JSON后手动导入。',
+                '如果SnapGenshin没有启动或导入失败，请导出为UIAF 1.1后手动导入。',
+                toUIAF(),
+            )
+            return
+        }
+        if (to === 'snaphutao') {
+            callClient(
+                'hutao://achievement/import',
+                '如果SnapHutao没有启动或导入失败，请导出为UIAF 1.1后手动导入。',
+                toUIAF(),
+            )
+            return
+        }
+        if (to === 'xunkong') {
+            callClient(
+                'xunkong://import-achievement?caller=椰羊&from=clipboard',
+                '如果寻空没有启动或导入失败，请导出为UIAF 1.1后手动导入。',
                 toUIAF(),
             )
             return
         }
         if (to === 'qyinter') {
+            const msg = ElNotification({
+                message: '正在导出，请稍候...',
+                duration: 0,
+                showClose: false,
+                type: 'info',
+            })
             const data = {
                 key: Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
                     .toString(16)
@@ -154,22 +177,34 @@ export function useExportAchievements() {
                 if (!res.ok) {
                     throw new Error(await res.text())
                 }
-                ElNotification.success({
-                    message: `请在原魔工具箱小程序输入 ${data.key} 以导入，三分钟内有效`,
-                    duration: 3 * 60 * 1000,
-                })
+                try {
+                    try {
+                        msg.close()
+                    } catch (e) {}
+                    await ElMessageBox.prompt(
+                        '请在原魔工具箱小程序输入以下分享码以导入成就，三分钟内有效。',
+                        '导出到原魔工具箱成功',
+                        {
+                            confirmButtonText: '复制分享码',
+                            cancelButtonText: '关闭',
+                            inputValue: data.key,
+                        },
+                    )
+                    copy(data.key)
+                    ElNotification({
+                        message: '分享码已复制到剪贴板',
+                        type: 'success',
+                    })
+                } catch (e) {
+                    console.log(e)
+                }
             } catch (e) {
+                try {
+                    msg.close()
+                } catch (e) {}
                 ElNotification.error('导出失败，请稍后再试')
                 console.error(e)
             }
-            return
-        }
-        if (to === 'xunkong') {
-            callClient(
-                'xunkong://import-achievement?caller=椰羊&from=clipboard',
-                '如果寻空没有启动或导入失败，请导出为UIAF后手动导入。',
-                toUIAF(),
-            )
             return
         }
         if (to === 'excel') {

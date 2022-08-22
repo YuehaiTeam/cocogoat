@@ -15,4 +15,5 @@ export interface CocogoatGlobal<T> {
     resources: typeof resources
     currentUser: typeof currentUser
     sw: ServiceWorker
+    pre: boolean
 }

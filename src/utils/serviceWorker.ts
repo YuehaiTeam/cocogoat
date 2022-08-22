@@ -91,6 +91,7 @@ export class ServiceWorker {
         })
     }
     async checkUpdate() {
+        if (window.$cocogoat.pre) return
         if (!this.manifest) return
         const manifestCache = await caches.open('cocogoat-sw-manifest')
         const cachedManifest = await manifestCache.match(__webpack_public_path__ + 'index.json')

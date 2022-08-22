@@ -111,7 +111,7 @@ export default defineComponent({
         line-height: 48px;
         vertical-align: middle;
         text-align: right;
-        background-color: #fff;
+        background-color: var(--c-white);
         transition: all 0.2s;
         z-index: 989;
         padding: 0 15px;

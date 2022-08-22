@@ -28,7 +28,7 @@
 <script lang="ts">
 import { getUrl } from '@/router'
 import { useScannerFrame } from './scannerFrame'
-import { defineComponent, ref, Ref, toRef } from 'vue'
+import { defineComponent, computed, ref, Ref, toRef } from 'vue'
 import { IAScannerData } from '../AchievementScanner/scanner/scanner'
 export default defineComponent({
     props: {
@@ -37,7 +37,8 @@ export default defineComponent({
             default: false,
         },
     },
-    setup(props) {
+    emits: ['update:showScanner'],
+    setup(props, { emit }) {
         const frameSrc = getUrl('frames.achievement.scan')
         const scannerFrame = ref<HTMLIFrameElement | null>(null)
         const scannerResult = ref({
@@ -45,10 +46,18 @@ export default defineComponent({
             length: 0,
             faildImages: [] as { image: string; data: IAScannerData }[],
         })
+        const showScanner = computed({
+            get() {
+                return props.showScanner
+            },
+            set(value) {
+                emit('update:showScanner', value)
+            },
+        })
         const { sendOops } = useScannerFrame({
             scannerFrame: scannerFrame as Ref<HTMLIFrameElement | null>,
             results: scannerResult,
-            showScanner: toRef(props, 'showScanner'),
+            showScanner,
         })
         return {
             frameSrc,

@@ -59,7 +59,7 @@
                 </div>
             </div>
         </template>
-        <scanner-dialog :showScanner="showScanner" />
+        <scanner-dialog v-model:showScanner="showScanner" />
         <el-dialog v-model="showImport" title="导入" :custom-class="$style.importDialog" destroy-on-close>
             <import-dialog :memo-id="autoImportId" @close="closeImport" />
         </el-dialog>

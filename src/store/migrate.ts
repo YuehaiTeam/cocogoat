@@ -38,6 +38,11 @@ export const runMigrate = (key: string, data: IStore) => {
             hasMigrated = true
             console.log('Migrated achievement from v1.0 to v2.0')
         }
+        if (data.achievement2 && 'undefined' in data.achievement2) {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            delete data.achievement2['undefined']
+        }
     }
     return hasMigrated
 }

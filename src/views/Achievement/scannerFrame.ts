@@ -67,7 +67,7 @@ export function useScannerFrame({
                 }
             }
             const faildData = [] as IAScannerData[]
-            const r = result
+            let r = result
                 .filter((e: IAScannerData) => {
                     if (!e.success || !e.done) {
                         faildData.push(e)
@@ -98,6 +98,7 @@ export function useScannerFrame({
                         source: IAchievementSource.IMPORT,
                     }).finishAllPartials()
                 })
+            r = await Promise.all(r)
             r.forEach((e: AchievementItem) => {
                 const orig = store.value.achievement2[e.id]
                 if (orig) {

@@ -69,7 +69,7 @@ jobs:
       - name: Keep index.json
         run: mkdir distindex && mv dist/index.json ./distindex/index.json && cp distindex/index.json ./distindex/pre.json
       - name: Check for A/B test
-        run: (git log -1 --pretty=%B | grep -F '[ab]' >/dev/null 2>&1) && rm ./distindex/index.json
+        run: ((git log -1 --pretty=%B | grep -F '[ab]' >/dev/null 2>&1) && rm ./distindex/index.json) || echo "This build will be published FULLY!!"
       - name: Deploy static files
         uses: TencentCloud/cos-action@v1
         with:

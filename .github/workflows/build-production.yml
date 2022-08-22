@@ -67,7 +67,9 @@ jobs:
           rm -rf dist/index.html
           rm -rf dist/report.html
       - name: Keep index.json
-        run: mv dist/index.json ./index.temp.json
+        run: mkdir distindex && mv dist/index.json ./distindex/index.json && cp distindex/index.json ./distindex/pre.json
+      - name: Check for A/B test
+        run: (git log -1 --pretty=%B | grep -F '[ab]' >/dev/null 2>&1) && rm ./distindex/index.json
       - name: Deploy static files
         uses: TencentCloud/cos-action@v1
         with:
@@ -89,8 +91,8 @@ jobs:
           secret_key: ${{ secrets.COS_KEY }}
           cos_bucket: ${{ secrets.COS_BUCKET }}
           cos_region: ${{ secrets.COS_REGION }}
-          local_path: index.temp.json
-          remote_path: index.json
+          local_path: distindex
+          remote_path: /
           clean: false
       - name: Notification
         run: |

@@ -107,7 +107,7 @@
                                             v-if="i <= publishedInfo.latestPublishedVersion"
                                             :key="i"
                                             :value="i"
-                                            :label="i.toFixed(1)"
+                                            :label="i === 0 ? 'BETA' : i.toFixed(1)"
                                         ></el-option>
                                     </template>
                                 </el-select>
@@ -371,7 +371,7 @@ export default defineComponent({
                 data = data.filter((i) => statusQuest2.includes(currentCat.value.quest[i.id]))
             }
             if (statusVersion.value.length > 0) {
-                data = data.filter((i) => statusVersion.value.includes(versionMap[i.id]))
+                data = data.filter((i) => statusVersion.value.includes(versionMap[i.id] || 0))
             }
             if (sortByStatus.value) {
                 if (firstSort.value.length <= 0) {

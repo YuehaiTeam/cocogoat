@@ -4,7 +4,7 @@
             <div class="sidebar-in">
                 <router-link
                     v-for="i in achievementCat"
-                    :key="i.key"
+                    :key="i.key || i.id"
                     :to="{
                         ...$route,
                         params: {

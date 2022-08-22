@@ -28,7 +28,7 @@
 <script lang="ts">
 import { getUrl } from '@/router'
 import { useScannerFrame } from './scannerFrame'
-import { defineComponent, computed, ref, Ref, toRef } from 'vue'
+import { defineComponent, computed, ref, Ref } from 'vue'
 import { IAScannerData } from '../AchievementScanner/scanner/scanner'
 export default defineComponent({
     props: {

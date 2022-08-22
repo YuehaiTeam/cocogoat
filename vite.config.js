@@ -4,7 +4,6 @@ import importExternal from './scripts/vite-external'
 import { viteWorkerMacro } from './scripts/workermacro'
 import ignoreNolocal from './scripts/vite-ignore-nolocal'
 import gzipAssets from './scripts/vite-gzip-assets'
-import dictCompress from './scripts/vite-dict-compress'
 import inlineFavicon from './scripts/vite-inline-favicon'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { viteSingleFile } from 'vite-plugin-singlefile'
@@ -103,7 +102,6 @@ export default defineConfig(({ command, mode }) => {
             importExternal({
                 'monaco-editor': 'monaco',
             }),
-            dictCompress(),
             visualizer({
                 emitFile: true,
                 file: 'report.html',

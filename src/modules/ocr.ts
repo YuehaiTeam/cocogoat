@@ -5,7 +5,9 @@ import resources from '@/resources'
 
 import { ICVMat } from '@/utils/cv'
 
-const ocrMap: string[] = ['\0', ...ocrString.trim().split(''), ' ']
+const ocrMap: string[] = ocrString.toString().trim().replace(/\r/g, '').split('\n')
+ocrMap.unshift('\0')
+ocrMap.push(' ')
 
 ort.env.wasm.wasmPaths = resources
 // disable MultiThreading

@@ -37,7 +37,7 @@ export function loadStore(): IStore {
     predata.achievementVersion = predata.achievementVersion || 1.0
     const data = Object.assign(createEmptyStore(), predata)
     if (runMigrate(uid, data)) {
-        set(uid, data)
+        console.log('Store Migration Finished')
     }
     data.achievement2 = AchievementItem.fromObject(data.achievement2)
     return data

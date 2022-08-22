@@ -103,7 +103,7 @@ export function toUIAFExt(src: IAchievementItem[]): AchievementItem[] {
                 id: e.id,
                 timestamp: e.timestamp,
                 current: e.current,
-                status: e.status,
+                status: 'status' in e ? e.status : UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
                 partial: e.partial || {},
                 image: e.image || '',
                 source: IAchievementSource.IMPORT,

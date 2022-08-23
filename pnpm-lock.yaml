@@ -9,7 +9,7 @@ patchedDependencies:
     hash: eqfc4faeujsbv3kkaxl3fw3yam
     path: patches/git-repo-info@2.1.1.patch
   vue-virtual-scroller@2.0.0-alpha.1:
-    hash: baz2agmz7zhad3aoyzan5m5vti
+    hash: rfk6l3w64yvy7dk3dqwf6tgolm
     path: patches/vue-virtual-scroller@2.0.0-alpha.1.patch
 
 specifiers:
@@ -144,7 +144,7 @@ dependencies:
   vue-monaco: 1.2.2
   vue-router: 4.0.16_vue@3.2.37
   vue-scriptx: 0.2.5
-  vue-virtual-scroller: 2.0.0-alpha.1_baz2agmz7zhad3aoyzan5m5vti_vue@3.2.37
+  vue-virtual-scroller: 2.0.0-alpha.1_rfk6l3w64yvy7dk3dqwf6tgolm_vue@3.2.37
   workbox-routing: 6.5.3
   workbox-strategies: 6.5.3
 
@@ -9431,7 +9431,7 @@ packages:
       typescript: 4.7.4
     dev: true
 
-  /vue-virtual-scroller/2.0.0-alpha.1_baz2agmz7zhad3aoyzan5m5vti_vue@3.2.37:
+  /vue-virtual-scroller/2.0.0-alpha.1_rfk6l3w64yvy7dk3dqwf6tgolm_vue@3.2.37:
     resolution: {integrity: sha512-Mn5w3Qe06t7c3Imm2RHD43RACab1CCWplpdgzq+/FWJcpQtcGKd5vDep8i+nIwFtzFLsWAqEK0RzM7KrfAcBng==}
     peerDependencies:
       vue: ^3.0.11

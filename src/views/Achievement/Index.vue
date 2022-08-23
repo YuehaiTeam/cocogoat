@@ -79,10 +79,13 @@
             <achievement-sidebar :achievementCat="achievementCat" :achievementFinStat="achievementFinStat" />
             <article>
                 <DynamicScroller
+                    ref="scroll"
+                    class="scroller"
+                    :emit-update="searchTo"
                     :items="currentAch"
                     :min-item-size="80"
                     :custom-scrollbar="CustomElScrollVue"
-                    class="scroller"
+                    @update="onScrollUpdate"
                 >
                     <template #before>
                         <div class="page-before">
@@ -127,12 +130,49 @@
                                     <el-checkbox v-model="sortByStatus" label="未完成优先" size="large" />
                                 </div>
                             </div>
-                            <div class="right">
-                                <el-input v-model="search" class="search-box" placeholder="搜索成就名字、描述或ID">
-                                    <template #suffix>
-                                        <span class="fa-icon">
+                            <div class="right" :class="{ [$style.searchToWrap]: searchTo && searchHidden && searchKw }">
+                                <el-autocomplete
+                                    v-if="searchTo"
+                                    v-model="searchKw"
+                                    clearable
+                                    :fetchSuggestions="searchToList"
+                                    :trigger-on-focus="false"
+                                    class="search-box"
+                                    placeholder="输入成就名字、描述或ID，定位成就"
+                                >
+                                    <template #default="{ item }">
+                                        <div :class="$style.searchToDesc">
+                                            <div class="value">{{ item.value }}</div>
+                                            <small class="desc">{{ item.desc }}</small>
+                                        </div>
+                                    </template>
+                                    <template #prefix>
+                                        <a
+                                            class="fa-icon"
+                                            title="切换到筛选"
+                                            style="cursor: pointer"
+                                            @click="searchTo = !searchTo"
+                                        >
+                                            <fa-icon icon="filter" />
+                                        </a>
+                                    </template>
+                                </el-autocomplete>
+                                <el-input
+                                    v-if="!searchTo"
+                                    v-model="searchKw"
+                                    clearable
+                                    class="search-box"
+                                    placeholder="搜索成就名字、描述或ID"
+                                >
+                                    <template #prefix>
+                                        <a
+                                            class="fa-icon"
+                                            title="切换到定位"
+                                            style="cursor: pointer"
+                                            @click="searchTo = !searchTo"
+                                        >
                                             <fa-icon icon="search" />
-                                        </span>
+                                        </a>
                                     </template>
                                 </el-input>
                             </div>
@@ -198,9 +238,10 @@ import {
     faTrashCan,
     faEllipsis,
     faSearch,
+    faFilter,
 } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
-library.add(faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan, faEllipsis, faSearch)
+library.add(faCrosshairs, faArrowUpFromBracket, faCheck, faTrashCan, faEllipsis, faSearch, faFilter)
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 
 import { i18n } from '@/i18n'
@@ -237,9 +278,26 @@ export default defineComponent({
         DynamicScrollerItem,
     },
     setup() {
+        const scroll = ref(null as typeof DynamicScroller | null)
         const selectedIds = ref<string[]>([])
         const showScanner = ref(false)
-        const search = ref('')
+        const searchKw = ref('')
+        const searchTo = ref(false)
+        const searchHidden = ref(false)
+        const onScrollUpdate = (startIdx: number) => {
+            searchHidden.value = startIdx > 1
+        }
+        const search = computed(() => {
+            return searchTo.value ? '' : searchKw.value
+        })
+        watch(searchKw, () => {
+            if (!searchTo.value || !scroll.value) return
+            const itemIndex = currentAch.value.findIndex((i) => i18n.amos[i.name] === searchKw.value)
+            if (itemIndex >= 0) {
+                console.log('scrollToItem', scroll.value.scrollToItem, itemIndex)
+                scroll.value.scrollToItem(itemIndex)
+            }
+        })
         const achievementFin = computed({
             get() {
                 return store.value.achievement2
@@ -362,6 +420,21 @@ export default defineComponent({
                 quest: q,
             }
         })
+        const has = (ach: Achievement, search: string) => {
+            if (ach.id.toString().includes(search)) return true
+            if (i18n.amos[ach.name].toLowerCase().includes(search.toLowerCase())) return true
+            if (i18n.amos[ach.desc].toLowerCase().includes(search.toLowerCase())) return true
+        }
+        const searchToList = (search: string, cb: (data: unknown) => unknown) => {
+            return cb(
+                currentCat.value.achievements
+                    .filter((e) => has(e, search))
+                    .map((e) => ({
+                        value: i18n.amos[e.name],
+                        desc: i18n.amos[e.desc],
+                    })),
+            )
+        }
         const statusVersion = ref([] as number[])
         const statusQuest = ref([] as string[])
         const isFin = (id: number) => {
@@ -428,11 +501,6 @@ export default defineComponent({
                 }
             }
             if (search.value.trim()) {
-                const has = (ach: Achievement, search: string) => {
-                    if (ach.id.toString().includes(search)) return true
-                    if (i18n.amos[ach.name].toLowerCase().includes(search.toLowerCase())) return true
-                    if (i18n.amos[ach.desc].toLowerCase().includes(search.toLowerCase())) return true
-                }
                 data = data.filter((e) => {
                     const hasThis = has(e, search.value)
                     let hasPre = false
@@ -584,9 +652,14 @@ export default defineComponent({
         const contributed = useContributedAchievements()
         const detail = ref(undefined as Achievement | undefined)
         return {
+            scroll,
             options,
             store,
-            search,
+            searchKw,
+            searchTo,
+            searchHidden,
+            onScrollUpdate,
+            searchToList,
             showScanner,
             selectedIds,
             achievementCat,
@@ -623,6 +696,15 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" module>
+.search-to-wrap {
+    position: fixed;
+    right: 20px;
+    z-index: 10;
+}
+.search-to-desc {
+    line-height: 20px;
+    padding: 5px 0;
+}
 .total-percent {
     color: #999;
     font-size: 14px;

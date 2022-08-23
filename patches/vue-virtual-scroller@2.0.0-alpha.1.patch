@@ -1,5 +1,5 @@
 diff --git a/src/components/RecycleScroller.vue b/src/components/RecycleScroller.vue
-index 64fe21606cc69c7abb5d083b1dcb5380dae0f718..31c348691bc197f779b49a63ae6bf6e7b190f9c8 100644
+index 64fe21606cc69c7abb5d083b1dcb5380dae0f718..5b1c95c72050338c6b5c9c12b5ff69c20134c532 100644
 --- a/src/components/RecycleScroller.vue
 +++ b/src/components/RecycleScroller.vue
 @@ -1,4 +1,5 @@
@@ -49,8 +49,25 @@ index 64fe21606cc69c7abb5d083b1dcb5380dae0f718..31c348691bc197f779b49a63ae6bf6e7
      addListeners () {
        this.listenerTarget = this.getListenerTarget()
        this.listenerTarget.addEventListener('scroll', this.handleScroll, supportsPassive
+@@ -580,10 +590,14 @@ export default {
+     },
+ 
+     scrollToPosition (position) {
++      let { $el: el, direction } = this
++      if(this.$refs.customScrollbar && this.$refs.customScrollbar.getCustomScrollEl){
++        el = this.$refs.customScrollbar.getCustomScrollEl(el)
++      }
+       if (this.direction === 'vertical') {
+-        this.$el.scrollTop = position
++        el.scrollTop = position
+       } else {
+-        this.$el.scrollLeft = position
++        el.scrollLeft = position
+       }
+     },
+ 
 diff --git a/src/index.js b/src/index.js
-index 6400a50d74c378fb03047451811ca7b661680091..674d6cb29845e96aacd9e63971215f698dbc3f7b 100644
+index 6400a50d74c378fb03047451811ca7b661680091..52f426834b3b01696e2dd38a8beee683cf5f7d05 100644
 --- a/src/index.js
 +++ b/src/index.js
 @@ -23,7 +23,7 @@ function registerComponents (app, prefix) {

@@ -240,7 +240,14 @@ export default defineComponent({
         const selectedIds = ref<string[]>([])
         const showScanner = ref(false)
         const search = ref('')
-        const achievementFin = toRef(store.value, 'achievement2')
+        const achievementFin = computed({
+            get() {
+                return store.value.achievement2
+            },
+            set(val) {
+                store.value.achievement2 = val
+            },
+        })
         const achievementFinStat = computed(() => {
             return Object.keys(achievementFin.value).reduce(
                 (acc, id) => {

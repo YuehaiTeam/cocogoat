@@ -76,9 +76,9 @@ const routes: Array<RouteRecordRaw> = [
                         component: () => import('@/views/Options/Sync.vue'),
                     },
                     {
-                        path: 'about',
-                        name: 'options.about',
-                        component: () => import('@/views/Options/About.vue'),
+                        path: 'env',
+                        name: 'options.env',
+                        component: () => import('@/views/Options/Env.vue'),
                     },
                 ],
             },

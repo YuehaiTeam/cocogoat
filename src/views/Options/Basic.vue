@@ -38,11 +38,11 @@
                     <div class="desc">仅在首页出现的广告不会影响浏览，希望您能支持我们。</div>
                 </div>
             </el-form-item>
-            <el-form-item v-if="options.reporting" label="手动发送错误报告">
+            <el-form-item v-if="options.reporting" label="上传日志">
                 <div>
-                    <el-button @click="report">点击发送错误报告</el-button>
+                    <el-button @click="report">手动上传日志</el-button>
                     <div class="report">
-                        错误报告为匿名信息，无法提供任何反馈或修复通知。如需反馈问题，请在Github上发送issue或加入QQ交流群，并附上错误报告ID。
+                        日志上传为匿名信息，无法提供任何反馈或修复通知。如需反馈问题，请在Github上发送issue或加入QQ交流群，并附上日志ID。
                     </div>
                 </div>
             </el-form-item>

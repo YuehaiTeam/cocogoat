@@ -95,8 +95,8 @@ export async function report() {
         })
         if (res.ok) {
             ElNotification({
-                title: '反馈提交成功',
-                message: 'ID: ' + evid,
+                title: '日志已上传',
+                message: 'ID: ' + evid + ' 请将此ID提交给开发者，否则无法解决任何问题。',
                 type: 'success',
                 customClass: 'feedback-notification',
                 duration: 0,

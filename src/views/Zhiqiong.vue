@@ -49,7 +49,10 @@
                         <div class="browser item">
                             <div class="icon"><fa-icon :icon="['fab', 'chrome']" /></div>
                             <div class="text">网页版插件</div>
-                            <a class="el-button el-button--large" href="https://zhiqiong.vercel.app/sharedmap.user.js">
+                            <a
+                                class="el-button el-button--large"
+                                href="https://zhiqiong.cocogoat.work/sharedmap.user.js"
+                            >
                                 <span>安装油猴脚本</span>
                             </a>
                             <div class="version">自动更新</div>

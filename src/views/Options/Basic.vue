@@ -38,15 +38,15 @@
                     <div class="desc">仅在首页出现的广告不会影响浏览，希望您能支持我们。</div>
                 </div>
             </el-form-item>
-            <el-form-item v-if="options.reporting" label="上传日志">
-                <div>
-                    <el-button @click="report">手动上传日志</el-button>
-                    <div class="report">
-                        日志上传为匿名信息，无法提供任何反馈或修复通知。如需反馈问题，请在Github上发送issue或加入QQ交流群，并附上日志ID。
-                    </div>
-                </div>
-            </el-form-item>
         </el-form>
+        <h4>关于</h4>
+        <section class="about">
+            <div class="logo"><icon-cocogoat /> 椰羊cocogoat</div>
+            <div class="copyright">&copy;2022 YuehaiTeam <build-info /></div>
+            <div v-if="options.reporting" class="logreport">
+                <el-link @click="report">上传日志</el-link>
+            </div>
+        </section>
     </section>
 </template>
 
@@ -54,7 +54,13 @@
 import { langNames } from '@/i18n'
 import { options } from '@/store'
 import { configuredMode } from '@/utils/darkmode'
+import IconCocogoat from '@/components/Icons/cocogoat.vue'
+import BuildInfo from '@/components/BuildInfo.vue'
 export default {
+    components: {
+        IconCocogoat,
+        BuildInfo,
+    },
     setup() {
         const report = async () => {
             const reporting = await import('@/utils/reporting')
@@ -73,5 +79,40 @@ export default {
 <style lang="scss" module>
 .option-basic {
     padding: 0 20px;
+    :global {
+        .about {
+            display: flex;
+            flex-direction: column;
+            align-content: center;
+            justify-content: center;
+            width: 300px;
+            max-width: 80%;
+            align-items: center;
+            .logo {
+                height: 50px;
+                color: var(--c-text);
+                fill: var(--c-text);
+                font-family: genshin;
+                font-size: 30px;
+                vertical-align: middle;
+                svg {
+                    width: 50px;
+                    height: 50px;
+                    vertical-align: top;
+                    position: relative;
+                    top: -4px;
+                }
+            }
+
+            .copyright {
+                font-family: Consolas, monospace;
+                font-size: 16px;
+            }
+
+            .logreport {
+                margin-top: 12px;
+            }
+        }
+    }
 }
 </style>

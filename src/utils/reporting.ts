@@ -63,9 +63,9 @@ export async function setUser(email: string) {
 export async function report() {
     let input
     try {
-        input = await ElMessageBox.prompt('请在下方输入您的问题。程序日志将被同时提交。', '反馈', {
+        input = await ElMessageBox.prompt('请在下方输入您的问题。程序日志将被同时提交。', '上传日志', {
             inputType: 'textarea',
-            inputPlaceholder: '遇到什么困难了吗？',
+            inputPlaceholder: '点击xxx之后，yyy就崩溃了。',
         })
     } catch (e) {
         return

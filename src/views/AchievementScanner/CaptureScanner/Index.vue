@@ -16,7 +16,6 @@ import { computed, defineComponent, onBeforeUnmount, ref, watch } from 'vue'
 import FloatContent from './FloatContent.vue'
 import FloatContentB from './FloatContent2.vue'
 import { send } from '../utils'
-import delay from 'delay'
 import FastQ from 'fastq'
 import type { IAScannerData, IAScannerFaild, IAScannerLine } from '../scanner/scanner'
 import type { Rect } from '@/utils/opencv'
@@ -31,6 +30,20 @@ import { measureLatency, tillChanged } from '@/utils/cv/measurement'
 import WebCapturer from '@/components/Capturer/WebCapturer/Index.vue'
 import { ICapturer } from '@/components/Capturer/typing'
 import CReady from './Ready.vue'
+function delayFrames(count: number) {
+    // using requestAnimationFrame to delay frames
+    return new Promise<void>((resolve) => {
+        let i = 0
+        const frame = () => {
+            if (i++ >= count) {
+                resolve()
+            } else {
+                requestAnimationFrame(frame)
+            }
+        }
+        frame()
+    })
+}
 export default defineComponent({
     name: 'AchievementScanner',
     components: {
@@ -95,7 +108,7 @@ export default defineComponent({
                 }
             }
             if (state.value !== S.Processing) {
-                await delay(400)
+                await delayFrames(25)
             }
         }
         const tempCanvas = document.createElement('canvas')
@@ -191,7 +204,8 @@ export default defineComponent({
                 }
                 if (doDelay) {
                     // wait sometime before capture
-                    await delay(webControlLatency > 0 ? webControlLatency : 60)
+                    // use delayFrames for setTimeout may be throttled
+                    await delayFrames(Math.floor((webControlLatency > 0 ? webControlLatency : 60) / 16))
                 }
             }
             const doMeasure = async () => {
@@ -216,15 +230,15 @@ export default defineComponent({
                         imageData = tempCtx && tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height)
                         if (!imageData) {
                             console.warn('->capture FAILD')
-                            await delay(60)
+                            await delayFrames(4)
                         }
                     }
                     cvQueue.push({ imageData, keepLastLine: false })
                     if (webControlEnabled.value) {
                         if (firstScroll) {
-                            await delay(60)
+                            await delayFrames(4)
                             await doWebControl(false)
-                            await delay(100)
+                            await delayFrames(8)
                             firstScroll = false
                         } else {
                             await (webControlLatency > 0 ? doWebControl() : doMeasure())

@@ -205,7 +205,8 @@ export default defineComponent({
                 if (doDelay) {
                     // wait sometime before capture
                     // use delayFrames for setTimeout may be throttled
-                    await delayFrames(Math.floor((webControlLatency > 0 ? webControlLatency : 60) / 16))
+                    const lt = Math.ceil(webControlLatency > 0 ? webControlLatency : 60)
+                    await delayFrames(lt / 16)
                 }
             }
             const doMeasure = async () => {
@@ -219,7 +220,7 @@ export default defineComponent({
                     },
                 )
                 console.log('->latency measurement done', res)
-                webControlLatency = Math.min(130, Math.max(res.latency, 40))
+                webControlLatency = Math.min(160, Math.max(res.latency, 80))
             }
             let firstScroll = true
             while (state.value === S.Capture) {

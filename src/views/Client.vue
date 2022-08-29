@@ -4,6 +4,21 @@
         <div :class="$style.client">
             <div class="center">
                 <el-link :href="url" type="primary">如果下载没有自动开始，请点击这里</el-link>
+                <div class="faq">
+                    <h3>无法运行、提示找不到DLL？</h3>
+                    <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe" target="_blank">请点击这里</a>
+                    下载并安装微软基础运行库，安装完成后即可正常运行
+                </div>
+                <div class="copyright">
+                    椰羊·霜华插件 v{{ version }} ({{ size }})
+                    <br />
+                    开发者：月海亭YuehaiTeam
+                </div>
+                <div class="installer">
+                    首次运行时程序会自动安装到 <code>C:\Program Files\cocogoat-control</code> 目录下
+                    <br />
+                    您可在控制面板或设置中随时卸载
+                </div>
             </div>
             <div v-if="options.showads">
                 <div :class="$style.card" class="plz-card">
@@ -59,6 +74,8 @@ export default defineComponent({
         )
         return {
             url: latest.url,
+            version: latest.version,
+            size: latest.formattedSize,
             options,
             please,
             ad,
@@ -81,6 +98,31 @@ export default defineComponent({
             padding: 30px;
             .el-link {
                 font-size: 20px;
+            }
+            .copyright {
+                padding: 20px;
+                font-size: 13px;
+            }
+
+            .installer {
+                font-size: 13px;
+                margin-top: -19px;
+                code {
+                    font-family: Consolas, monospace;
+                    background: var(--c-border);
+                    padding: 2px 5px;
+                    border-radius: 3px;
+                    color: var(--c-text);
+                }
+            }
+
+            .faq {
+                padding: 20px;
+                font-size: 14px;
+                margin-top: 40px;
+                h3 {
+                    margin-bottom: 5px;
+                }
             }
         }
         .plz-card {

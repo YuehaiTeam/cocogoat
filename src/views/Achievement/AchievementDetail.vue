@@ -12,7 +12,7 @@
                 class="el-link el-link--info is-underline trigger-id"
                 target="_blank"
                 rel="nofollow"
-                :href="`https://genshin.honeyhunterworld.com/db/achiev/achiev_${achievement?.id || 0}/?lang=CHS`"
+                :href="`https://genshin.honeyhunterworld.com/a_${achievement?.id || 0}/?lang=CHS`"
             >
                 <span class="el-link--inner"> ID: {{ achievement?.id }} </span>
             </a>
@@ -33,9 +33,7 @@
                             class="el-link el-link--default is-underline"
                             target="_blank"
                             rel="nofollow"
-                            :href="`https://genshin.honeyhunterworld.com/db/q/${
-                                i.taskId ? `com_${i.taskId}` : `q_${i.questId}`
-                            }/?lang=CHS`"
+                            :href="`https://genshin.honeyhunterworld.com/q_${i.questId}/?lang=CHS`"
                         >
                             <span class="el-link--inner"> {{ amos[i.name] }} </span>
                         </a>

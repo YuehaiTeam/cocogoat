@@ -345,7 +345,7 @@ export default defineComponent({
         const publishedInfo = computed(() => {
             let latestPublishedVersion = 999
             let hasUnpublishedVersion = process.env.NODE_ENV !== 'production'
-            for (const version of Object.keys(versionDateMap)) {
+            for (const version of Object.keys(versionDateMap).sort((a, b) => Number(b) - Number(a))) {
                 const date = versionDateMap[Number(version)]
                 if (date <= nowDate) {
                     latestPublishedVersion = Number(version)

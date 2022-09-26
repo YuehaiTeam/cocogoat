@@ -366,7 +366,7 @@ async function dumpToExcel() {
                 reward: achievement.reward,
                 status: ach ? UIAFStatusCN[ach.status] : '未完成',
                 current: ach ? ach.current : '',
-                date: ach ? dayjs(ach.timestamp).format('YYYY-MM-DD HH:mm:ss') : '',
+                date: ach ? dayjs(ach.timestamp * 1000).format('YYYY-MM-DD HH:mm:ss') : '',
             })
         })
     })

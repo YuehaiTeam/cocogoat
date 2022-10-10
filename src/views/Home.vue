@@ -24,6 +24,22 @@
                             </div>
                             <div class="text">PC端<br />更新包列表</div>
                         </router-link>
+                        <a
+                            :class="$style.extraOne"
+                            style="color: #ef930b"
+                            href="https://yuehaiteam.github.io/webstatic-extractor/"
+                            target="_blank"
+                        >
+                            <div class="circle">
+                                <div class="img" style="border-color: #ef930b">
+                                    <fa-icon icon="file-zipper" />
+                                </div>
+                                <div class="svg-w" style="background: #ef930b">
+                                    <icon-cocogoat style="fill: #fff" />
+                                </div>
+                            </div>
+                            <div class="text">WebStatic<br />Extractor</div>
+                        </a>
 
                         <router-link :class="$style.extraOne" style="color: #009892" :to="{ name: 'zhiqiong' }">
                             <div class="circle">
@@ -108,9 +124,16 @@
 <script lang="ts">
 import { ref, defineComponent, watch } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faInfinity, faFolderTree, faTerminal, faBoxOpen, faMapLocationDot } from '@fortawesome/free-solid-svg-icons'
+import {
+    faInfinity,
+    faFolderTree,
+    faTerminal,
+    faBoxOpen,
+    faMapLocationDot,
+    faFileZipper,
+} from '@fortawesome/free-solid-svg-icons'
 import { faGithubAlt, faQq } from '@fortawesome/free-brands-svg-icons'
-library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen, faMapLocationDot)
+library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen, faMapLocationDot, faFileZipper)
 
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import BuildInfo from '@/components/BuildInfo.vue'
@@ -319,6 +342,9 @@ a.card {
                 }
                 .svg-inline--fa {
                     width: 40px;
+                    &.fa-file-zipper {
+                        width: 30px;
+                    }
                 }
             }
 

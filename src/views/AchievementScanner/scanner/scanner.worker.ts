@@ -18,10 +18,10 @@ export function initScanner() {
     const { scannerOnImage, scannerOnLine: scannerOnLine2, recognizeAchievement: recognizeAchievement2 } = workerCV
     const { recognizeAchievement, scannerOnLine } = workerOCR
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let progressHandler = (progress: number) => {
+    let progressHandler = (progress: number, error?: Error) => {
         // do nothing
     }
-    const onProgress = (handler: (progress: number) => unknown) => {
+    const onProgress = (handler: (progress: number, error?: Error) => unknown) => {
         progressHandler = handler
     }
     const workerErrorHandler = (e: ErrorEvent) => {
@@ -46,7 +46,7 @@ export function initScanner() {
             ])
             progressHandler(100)
         } catch (e) {
-            progressHandler(-1)
+            progressHandler(-1, e as Error)
             throw e
         }
         w1.removeEventListener('error', workerErrorHandler)

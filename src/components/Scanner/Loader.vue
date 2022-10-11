@@ -50,7 +50,7 @@ export default defineComponent({
             type: Function as PropType<
                 () => {
                     initPromise: Promise<unknown>
-                    onProgress: (handler: (progress: number) => unknown) => void
+                    onProgress: (handler: (progress: number, error?: Error) => unknown) => void
                 }
             >,
             required: true,
@@ -65,7 +65,10 @@ export default defineComponent({
                 return
             }
             const instance = props.instance()
-            instance.onProgress((pvalue) => {
+            instance.onProgress((pvalue, error) => {
+                if (error) {
+                    send('error', error.message + '\n' + error.stack, props.source)
+                }
                 if (progress.value < 0) {
                     return
                 }

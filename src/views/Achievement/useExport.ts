@@ -164,7 +164,7 @@ export function useExportAchievements() {
                     .toString(16)
                     .substring(0, 8)
                     .toUpperCase(),
-                data: toUIAF('v1.0'),
+                data: toUIAF('v1.1'),
             }
             try {
                 const res = await fetch('https://api.qyinter.com/achievementRedis', {

@@ -32,7 +32,7 @@
         "@sentry/vue": "^6.17.9",
         "@types/serviceworker": "^0.0.43",
         "@vue/shared": "3.2.37",
-        "cocogoat-amos": "^1.0.0",
+        "cocogoat-amos": "^1.0.1",
         "color-diff": "^1.2.0",
         "comlink": "^4.3.1",
         "copy-to-clipboard": "^3.3.1",

@@ -46,7 +46,7 @@ specifiers:
   '@vue/shared': 3.2.37
   '@vueuse/core': ^8.7.5
   clean-webpack-plugin: ^4.0.0
-  cocogoat-amos: ^1.0.1
+  cocogoat-amos: ^1.0.2
   color-diff: ^1.2.0
   comlink: ^4.3.1
   copy-to-clipboard: ^3.3.1
@@ -117,7 +117,7 @@ dependencies:
   '@sentry/vue': 6.19.7_vue@3.2.37
   '@types/serviceworker': 0.0.43
   '@vue/shared': 3.2.37
-  cocogoat-amos: 1.0.1
+  cocogoat-amos: 1.0.2
   color-diff: 1.2.0
   comlink: 4.3.1
   copy-to-clipboard: 3.3.1
@@ -4017,8 +4017,8 @@ packages:
     engines: {node: '>=0.8'}
     dev: true
 
-  /cocogoat-amos/1.0.1:
-    resolution: {integrity: sha512-xxPyz6pAgWWxTK8QQA7K7mBxQFn89Bk7kChLkhMQDnkqynurMuCO6+P4IY9m16Jchkh+ConZFMUQ4BpgqK4CiQ==}
+  /cocogoat-amos/1.0.2:
+    resolution: {integrity: sha512-K6B9asw1JWAfU9I4MoCiGqeO7/zfDGZBDvhyzvLIB7AZCZwaQCxRFlVRjtG3ygic4c/jpo1GZyIKhwjM4EyOow==}
     hasBin: true
     dependencies:
       commander: 9.3.0

@@ -3,7 +3,7 @@ import { Ref } from 'vue'
 import { store } from '@/store'
 import { sandboxedEval } from '@/utils/sandbox'
 import { legacyToUIAFExt } from '@/store/migrate'
-import { IAchievementStore, UIAFMagicTime, UIAF, UIAFStatus } from '@/typings/Achievement'
+import { IAchievementStore, UIAFMagicTime, UIAF, UIAFStatus, UIAFItem } from '@/typings/Achievement'
 import { AchievementItem, IAchievementItem, IAchievementSource } from '@/typings/Achievement/Achievement'
 
 function hasCocogoatAchievementJson(j: Record<string, any[]>) {
@@ -96,6 +96,19 @@ export function hasUIAF(data: Record<string, any>): data is UIAF {
     if (!data.list[0].timestamp && data.list[0].timestamp !== 0) return false
     return true
 }
+export function getUIAFCount(data: UIAF): string {
+    try {
+        if (data.info.uiaf_version === 'v1.0') {
+            return data.list.length.toString() + '个'
+        }
+        const fin = data.list
+            .filter((e) => (e as UIAFItem).status > UIAFStatus.ACHIEVEMENT_UNFINISHED)
+            .length.toString()
+        return `${fin}个已完成，${data.list.length - Number(fin)}个未完成`
+    } catch (e) {
+        return '数量统计失败'
+    }
+}
 export function toUIAFExt(src: IAchievementItem[]): AchievementItem[] {
     return src.map(
         (e) =>
@@ -157,13 +170,13 @@ export function useImport(
             } else if (hasUIAF(j)) {
                 let source = j.source || j.info.export_app || 'UIAF'
                 if (source === 'cocogoat') source = '椰羊UIAF'
-                importText.value = '导入' + source + ' (' + j.list.length + '个)'
+                importText.value = '导入' + source + ' ( ' + getUIAFCount(j) + ' )'
                 allowed.value = true
                 importData.value = toUIAFExt(j.list as IAchievementItem[])
             } else if (j.value && hasUIAF(j.value)) {
                 let source = j.source || j.value.info.export_app || 'UIAF'
                 if (source === 'cocogoat') source = '椰羊UIAF'
-                importText.value = '导入' + source + ' (' + j.value.list.length + '个)'
+                importText.value = '导入' + source + ' ( ' + getUIAFCount(j.value) + ' )'
                 allowed.value = true
                 importData.value = toUIAFExt(j.value.list as IAchievementItem[])
             } else if (j.achievement && (importData.value = hasPaimonMoeJson(j) || [])) {

@@ -1,4 +1,4 @@
-[submodule ".cache/GenshinData"]
-	path = .cache/GenshinData
-	url = https://github.com/Dimbreath/GenshinData
-	branch = master
+[submodule "src/generated/amos-data"]
+	path = src/generated/amos-data
+	url = https://github.com/YuehaiTeam/amos-data.git
+	branch = main

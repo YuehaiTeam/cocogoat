@@ -93,7 +93,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faPlus, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons'
 import { del, get, set } from '@/store/impl'
 import { characterIcon } from '@/assets/mihoyoImages/characterIcon'
-import characterAmos from '@/plugins/amos/characters'
+import characterAmos from '@/generated/amos-data/amos/characters'
 library.add(faPlus, faPenToSquare, faTrashCan)
 type Unpacked<T> = T extends (infer U)[] ? U : T
 export default defineComponent({

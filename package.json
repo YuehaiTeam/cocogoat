@@ -15,7 +15,7 @@
         "build:webpack": "vue-cli-service build",
         "build:singlefile:webpack": "vue-cli-service build --singlefile",
         "lint": "vue-cli-service lint",
-        "postinstall": "git submodule update --init --remote --depth 1 && node scripts/amos"
+        "postinstall": "git submodule update --init --remote --depth 1"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^6.1.1",
@@ -32,7 +32,6 @@
         "@sentry/vue": "^6.17.9",
         "@types/serviceworker": "^0.0.43",
         "@vue/shared": "3.2.37",
-        "cocogoat-amos": "^1.0.3",
         "color-diff": "^1.2.0",
         "comlink": "^4.3.1",
         "copy-to-clipboard": "^3.3.1",
@@ -72,7 +71,7 @@
         "@types/murmurhash-js": "^1.0.3",
         "@types/qs": "^6.9.7",
         "@types/webpack-env": "^1.17.0",
-        "@typescript-eslint/eslint-plugin": "^5.4.0",
+        "@typescript-eslint/eslint-plugin": "^5.45.0",
         "@typescript-eslint/parser": "^5.4.0",
         "@vitejs/plugin-vue": "3.0.0-beta.1",
         "@vue/cli-plugin-babel": "^5.0.6",
@@ -98,7 +97,7 @@
         "sass": "^1.32.7",
         "sass-loader": "^12.0.0",
         "swc-loader": "^0.2.3",
-        "typescript": "latest",
+        "typescript": "4.7.3",
         "unplugin-auto-import": "^0.10.1",
         "unplugin-vue-components": "^0.21.2",
         "vite": "3.0.3",

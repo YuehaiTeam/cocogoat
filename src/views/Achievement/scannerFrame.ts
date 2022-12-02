@@ -4,7 +4,7 @@ import { UIAFStatus } from '@/typings/Achievement'
 import delay from 'delay'
 import { ElLoading, ElMessageBox, ElNotification } from 'element-plus'
 import { ref, Ref, watch, onBeforeUnmount } from 'vue'
-import achevementsAmos from '@/plugins/amos/achievements/index'
+import achevementsAmos from '@/generated/amos-data/amos/achievements/index'
 import type { IAScannerData } from '../AchievementScanner/scanner/scanner'
 import { AchievementItem, IAchievementSource } from '@/typings/Achievement/Achievement'
 export interface IScannerFrameResult {

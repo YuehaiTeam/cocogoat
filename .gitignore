@@ -24,7 +24,7 @@ pnpm-debug.log*
 *.sw?
 .cache
 
-src/plugins/amos
+src/generated/
 
 /*.txt
 

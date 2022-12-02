@@ -1,7 +1,7 @@
 import { Ref, ref } from 'vue'
 import { Achievement } from './Amos'
 import { UIAFItem, UIAFStatus } from './UIAF'
-import { IPartialAchievement } from 'cocogoat-amos/dist/achievement-partial/typing'
+import { IPartialAchievement } from '@/generated/amos-data/amos/achievements/typing-partial'
 
 export enum IAchievementSource {
     SCAN = 'scan',
@@ -72,9 +72,9 @@ export class AchievementItem implements IAchievementItem {
     }
     get amos() {
         if (this._amos) return Promise.resolve(this._amos)
-        const achievementsAmos = import('@/plugins/amos/achievements/index')
+        const achievementsAmos = import('@/generated/amos-data/amos/achievements/index')
         const goalMap = import('@/views/Achievement/goalMap')
-        const achPartialAmos = import('@/plugins/amos/achievements/partial')
+        const achPartialAmos = import('@/generated/amos-data/amos/achievements/partial')
         return Promise.all([achievementsAmos, achPartialAmos, goalMap]).then(
             ([{ default: achievementsAmos }, { default: achPartialAmos }, { goalMap }]) => {
                 const goalId = goalMap[this.id]

@@ -1,4 +1,4 @@
-import achevementsAmos from '@/plugins/amos/achievements/index'
+import achevementsAmos from '@/generated/amos-data/amos/achievements/index'
 export const goalMap = {} as Record<number, number>
 const goalKeys = {
     31: 'sumeru',

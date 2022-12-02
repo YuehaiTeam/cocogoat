@@ -4,7 +4,7 @@ import resources from '@/resources'
 import { requireAsBlob, speedTest } from '@/resource-main'
 import { WorkerMacro } from '@/utils/corsWorker'
 import { hasSIMD } from '@/utils/compatibility'
-import achevementsAmos from '@/plugins/amos/achievements/index'
+import achevementsAmos from '@/generated/amos-data/amos/achievements/index'
 import { i18n } from '@/i18n'
 import { cloneDeep } from 'lodash-es'
 export function createWorker() {

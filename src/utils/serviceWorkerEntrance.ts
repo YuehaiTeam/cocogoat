@@ -1,5 +1,5 @@
 import { template } from '@/assets/mihoyoImages/characterIcon'
-import characterAmos from '@/plugins/amos/characters'
+import characterAmos from '@/generated/amos-data/amos/characters'
 import { ServiceWorker } from '@/utils/serviceWorker'
 import { WorkerUrl } from '@/utils/corsWorker'
 import ProgressNotf from '@/components/ProgressNotf.vue'

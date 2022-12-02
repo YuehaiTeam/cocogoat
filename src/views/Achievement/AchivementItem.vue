@@ -85,7 +85,7 @@ import { Achievement, UIAFStatus } from '@/typings/Achievement'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 import dayjs from 'dayjs'
-import { IPartialAchievement } from 'cocogoat-amos/dist/achievement-partial/typing'
+import { IPartialAchievement } from '@/generated/amos-data/amos/achievements/typing-partial'
 import { AchievementItem } from '@/typings/Achievement/Achievement'
 library.add(faArrowUpRightFromSquare)
 export default defineComponent({

@@ -65,7 +65,7 @@ import type { IAScannerData, IAScannerFaild } from './scanner/scanner'
 import { useRoute } from 'vue-router'
 import { getUrl } from '@/router'
 
-import achevementsAmos from '@/plugins/amos/achievements/index'
+import achevementsAmos from '@/generated/amos-data/amos/achievements/index'
 
 export default defineComponent({
     setup() {

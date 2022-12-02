@@ -227,8 +227,8 @@
 import '@/styles/actions.scss'
 import { useRoute, useRouter } from 'vue-router'
 import { ref, toRef, defineComponent, computed, watch } from 'vue'
-import achevementsAmos from '@/plugins/amos/achievements/index'
-import achPartialAmos from '@/plugins/amos/achievements/partial'
+import achevementsAmos from '@/generated/amos-data/amos/achievements/index'
+import achPartialAmos from '@/generated/amos-data/amos/achievements/partial'
 import { goalMap } from '@/views/Achievement/goalMap'
 
 import {

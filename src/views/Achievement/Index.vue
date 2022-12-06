@@ -265,7 +265,7 @@ import { AchievementItem } from '@/typings/Achievement/Achievement'
 import { debounce } from 'lodash-es'
 
 export default defineComponent({
-    name: 'ArtifactIndex',
+    name: 'AchievementIndex',
     components: {
         IconCocogoat,
         AchievementItem: AchievementItemComp,

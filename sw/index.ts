@@ -173,7 +173,11 @@ registerRoute(new RegExp(`${process.env.BASE_URL}77/(.*)`), new NetworkOnly())
 // networkfirst for pages
 registerRoute(
     // eslint-disable-next-line prefer-regex-literals
-    ({ url }) => {
+    ({ url, request }) => {
+        // check is GET
+        if (request.method !== 'GET') {
+            return false
+        }
         // check same origin
         if (new URL(url).origin !== location.origin) {
             return false
@@ -181,24 +185,14 @@ registerRoute(
         return !new URL(url).pathname.includes('.')
     },
     async ({ url, request }): Promise<Response> => {
-        const u = new URL(url)
-        const basename = u.pathname.split('/').pop() || ''
-        // just fetch first
         try {
-            const response = await fetch(request)
-            console.log(u.pathname)
-            if (u.pathname === '/') {
-                const cache = await caches.open(cacheName)
-                await cache.put(request, response.clone())
-            }
+            // get entrance
+            const response = await fetch(new Request(process.env.VUE_APP_SWENTRANCE))
+            const cache = await caches.open(cacheName)
+            await cache.put(request, response.clone())
             return response
         } catch (e) {
-            if (basename.includes('.')) {
-                return new Response('[cocogoat-sw] Error: You are offline and no cached version installed!', {
-                    status: 404,
-                })
-            }
-            // fallback to `/` for cache
+            // fallback to cache
             const cache = await caches.open(cacheName)
             const cached = await cache.match(new Request(new URL('/', url).toString()))
             if (cached) {

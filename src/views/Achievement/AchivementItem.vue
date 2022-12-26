@@ -15,7 +15,7 @@
                 <div class="middle">
                     <div class="name">
                         <div class="award" :class="{ checked: isFin }">
-                            <img src="@/assets/images/yuanshi.png" alt="原石" />
+                            <img :src="img('yuanshi')" alt="原石" />
                             <span class="number">{{ i.reward }}</span>
                         </div>
                         <div class="ntxt" @click="$emit('click-title')">
@@ -80,6 +80,7 @@
 <script lang="ts">
 import { i18n } from '@/i18n'
 import versionMap from './versionMap'
+import img from '@/assets/images'
 import { toRef, PropType, defineComponent, computed } from 'vue'
 import { Achievement, UIAFStatus } from '@/typings/Achievement'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -118,6 +119,7 @@ export default defineComponent({
             IQ: '委托',
         } as Record<string, string>
         return {
+            img,
             amos: toRef(i18n, 'amos'),
             questType: computed(() => {
                 if (props.i.trigger && props.i.trigger.task && props.i.trigger.task.length > 0) {

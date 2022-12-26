@@ -19,7 +19,7 @@
                     </div>
                     <small>
                         <b>
-                            <img src="@/assets/images/yuanshi.png" alt="原石" />
+                            <img :src="img('yuanshi')" alt="原石" />
                             {{ achievementFinStat[i.id || 0]?.reward || 0 }}/{{ i.totalReward }}
                         </b>
                         <span>
@@ -43,6 +43,7 @@
 </template>
 
 <script lang="ts">
+import img from '@/assets/images'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons'
 library.add(faAngleLeft, faAngleRight)
@@ -65,6 +66,7 @@ export default defineComponent({
             scrollbarRef.value.setScrollLeft(Math.max(0, newScrollLeft))
         }
         return {
+            img,
             move,
             scrollbarRef,
             isMobile: toRef(bus(), 'isMobile'),

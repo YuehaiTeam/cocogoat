@@ -12,12 +12,13 @@
                 <fa-icon icon="angle-right" />
             </div>
         </el-button>
-        <img src="@/assets/openscreenshare.png" alt="请参照图片开始抓屏" />
+        <img :src="img('openscreenshare')" alt="请参照图片开始抓屏" />
         <footer-component />
     </div>
 </template>
 
 <script lang="ts">
+import img from '@/assets/images'
 import Footer from './Footer.vue'
 import { defineComponent } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -29,7 +30,9 @@ export default defineComponent({
     },
     emits: ['request-capture'],
     setup() {
-        return {}
+        return {
+            img,
+        }
     },
 })
 </script>

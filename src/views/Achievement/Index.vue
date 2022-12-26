@@ -15,7 +15,7 @@
                             <div class="count">{{ totalFin.count }} / {{ totalCount }}</div>
                             <div class="reward">
                                 {{ totalFin.reward }} / {{ totalReward }}
-                                <img src="@/assets/images/yuanshi.png" alt="原石" />
+                                <img :src="img('yuanshi')" alt="原石" />
                             </div>
                         </small>
                     </el-tooltip>
@@ -230,6 +230,7 @@ import { ref, toRef, defineComponent, computed, watch } from 'vue'
 import achevementsAmos from '@/generated/amos-data/amos/achievements/index'
 import achPartialAmos from '@/generated/amos-data/amos/achievements/partial'
 import { goalMap } from '@/views/Achievement/goalMap'
+import img from '@/assets/images'
 
 import {
     faCrosshairs,
@@ -653,6 +654,7 @@ export default defineComponent({
         const contributed = useContributedAchievements()
         const detail = ref(undefined as Achievement | undefined)
         return {
+            img,
             scroll,
             options,
             store,

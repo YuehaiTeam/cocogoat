@@ -6,13 +6,14 @@ function inlineFavicon(): Plugin {
         name: 'vite:inline-favicon',
         enforce: 'post',
         generateBundle: (opt, bundle) => {
-            console.log(opt.dir)
             const htmlFiles = Object.keys(bundle).filter((i) => i.endsWith('.html'))
             for (const name of htmlFiles) {
                 const htmlChunk = bundle[name] as { source: string }
                 let replacedHtml = htmlChunk.source as string
                 replacedHtml = replacedHtml.replace(/<link rel="icon" href="([^"]+)"\s*\/?>/, (...args) => {
+                    console.log('InlineFaviconVite:', args[1])
                     let icon = args[1]
+                    if (icon[0] === '/') icon = '.' + icon
                     const path = resolve(opt.dir || __dirname, icon)
                     try {
                         const content = readFileSync(path)

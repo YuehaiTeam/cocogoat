@@ -263,6 +263,7 @@ import versionMap, { allVersions, versionDateMap } from './versionMap'
 import bus from '@/bus'
 import { AchievementItem } from '@/typings/Achievement/Achievement'
 import { debounce } from 'lodash-es'
+import { AutocompleteFetchSuggestionsCallback } from 'element-plus'
 
 export default defineComponent({
     name: 'AchievementIndex',
@@ -425,7 +426,7 @@ export default defineComponent({
             if (i18n.amos[ach.name].toLowerCase().includes(search.toLowerCase())) return true
             if (i18n.amos[ach.desc].toLowerCase().includes(search.toLowerCase())) return true
         }
-        const searchToList = (search: string, cb: (data: unknown) => unknown) => {
+        const searchToList = (search: string, cb: AutocompleteFetchSuggestionsCallback) => {
             return cb(
                 currentCat.value.achievements
                     .filter((e) => has(e, search))

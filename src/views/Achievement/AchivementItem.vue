@@ -36,7 +36,7 @@
                             <fa-icon icon="arrow-up-right-from-square" />
                             攻略
                         </a>
-                        {{ amos[i.desc].replace('{param0}', i.total) }}
+                        {{ amos[i.desc].replace('{param0}', i.total.toString()) }}
                     </small>
                 </div>
                 <div v-if="fin" class="right">

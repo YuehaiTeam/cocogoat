@@ -1,4 +1,5 @@
 import { defineConfig, splitVendorChunkPlugin, loadEnv } from 'vite'
+import { createHtmlPlugin } from 'vite-plugin-html'
 import ifdefPlugin from './scripts/vite-ifdef'
 import importExternal from './scripts/vite-external'
 import { viteWorkerMacro } from './scripts/workermacro'
@@ -66,6 +67,7 @@ export default defineConfig(({ command, mode }) => {
         },
         esbuild: {
             charset: 'utf8',
+            legalComments: 'external',
         },
         css: {
             modules: {
@@ -104,7 +106,11 @@ export default defineConfig(({ command, mode }) => {
             }),
             visualizer({
                 emitFile: true,
-                file: 'report.html',
+                filename: 'dist/report.html',
+            }),
+            createHtmlPlugin({
+                minify: true,
+                entry: 'src/main.ts',
             }),
             ...(singleFile
                 ? [

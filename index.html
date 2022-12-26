@@ -18,5 +18,8 @@
         <main id="toki"></main>
         <div id="vueload"></div>
         <script type="module" src="/src/main.ts"></script>
+        <% if (process.env.VUE_APP_PREJS_URL) { %>
+        <script src="<%= process.env.VUE_APP_PREJS_URL %>"></script>
+        <% } %>
     </body>
 </html>

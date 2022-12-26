@@ -20,6 +20,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const isCI = !!process.env.SENTRY_KEY
 const isTest = process.argv.includes('--test') || process.env.CF_PAGES === '1'
 const useCDN = process.argv.includes('--cdn') || isCI
+const usePreJS = process.argv.includes('--prejs') || isCI
 const useSWC = isCI
     ? 'false'
     : process.argv.includes('--no-swc')
@@ -42,10 +43,29 @@ process.env.VUE_APP_GIT_MSG =
 console.log(
     `[cocogoat-web] Build ${process.env.NODE_ENV} ${process.env.VUE_APP_GIT_BRC}#${process.env.VUE_APP_GIT_SHA}/${process.env.VUE_APP_BUILD}`,
 )
-console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, SWC: ${useSWC}, Sentry: ${useSentry}`)
+console.log(`SingleFile: ${singleFile}, CDN: ${useCDN}, PreJS: ${usePreJS}, SWC: ${useSWC}, Sentry: ${useSentry}`)
 console.log('')
 console.log(process.env.VUE_APP_GIT_MSG)
 console.log('')
+
+const PREJS_PROD_SUFFIX = process.env.NODE_ENV === 'production' ? '.prod' : ''
+const PREJS_URL =
+    'https://s2.pstatp.com/cdn/expire-1-y/??' +
+    [
+        `vue/3.2.31/vue.runtime.global${PREJS_PROD_SUFFIX}.min.js`,
+        `vue-router/4.0.13/vue-router.global${PREJS_PROD_SUFFIX}.min.js`,
+        'font-awesome/6.0.0/js/fontawesome.min.js',
+    ].join(',')
+const preJsExt = {
+    vue: 'var Vue',
+    'vue-router': 'var VueRouter',
+    '@vue/reactivity': 'var Vue',
+    '@fortawesome/fontawesome-svg-core': 'var FontAwesome',
+}
+if (usePreJS) {
+    process.env.VUE_APP_PREJS_URL = PREJS_URL
+}
+
 module.exports = defineConfig({
     publicPath: singleFile ? '.' : process.env.NODE_ENV === 'production' && useCDN ? 'https://77.xyget.cn/' : '/',
     assetsDir: 'static',
@@ -54,6 +74,11 @@ module.exports = defineConfig({
     parallel: false,
     // worker-loader、sentry-plugin都和thread-loader冲突
     // swc/esbuild下thread-loader降低速度
+    devServer: {
+        headers: {
+            'Service-Worker-Allowed': '/',
+        },
+    },
     css: {
         extract: singleFile
             ? false
@@ -232,7 +257,13 @@ module.exports = defineConfig({
             })
             config
                 .plugin('EntrypointJsonPlugin')
-                .use(new EntrypointJsonPlugin(HtmlWebpackPlugin, Number(process.env.VUE_APP_BUILD).toString(36)))
+                .use(
+                    new EntrypointJsonPlugin(
+                        HtmlWebpackPlugin,
+                        Number(process.env.VUE_APP_BUILD).toString(36),
+                        usePreJS ? [PREJS_URL] : [],
+                    ),
+                )
 
             if (process.env.NODE_ENV === 'production') {
                 // bundle analyzer
@@ -275,6 +306,7 @@ module.exports = defineConfig({
                     'https://npm.elemecdn.com/@sentry/tracing/build/bundle.tracing.es6.min.js',
                     'Sentry',
                 ],
+                ...(usePreJS ? preJsExt : {}),
             })
 
             // swc

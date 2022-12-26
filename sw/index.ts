@@ -167,6 +167,16 @@ registerRoute(
     }),
 )
 
+// cachefirst for static cdn
+registerRoute(
+    ({ url }) => {
+        return new URL(url).origin.includes('pstatp.com')
+    },
+    new CacheFirst({
+        cacheName: cacheName + '-prejs',
+    }),
+)
+
 // network-only for api
 registerRoute(new RegExp(`${process.env.BASE_URL}77/(.*)`), new NetworkOnly())
 

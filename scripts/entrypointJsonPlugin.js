@@ -1,9 +1,11 @@
 const crypto = require('crypto')
 module.exports = class EntrypointJsonPlugin {
     files = []
-    constructor(htmlWebpackPlugin, data) {
+    prejs = []
+    constructor(htmlWebpackPlugin, data, prejs = []) {
         this.htmlWebpackPlugin = htmlWebpackPlugin
         this.files.push(data || {})
+        this.prejs = prejs
     }
     apply(compiler) {
         compiler.hooks.compilation.tap('EntrypointJsonPlugin', (compilation) => {
@@ -29,7 +31,7 @@ module.exports = class EntrypointJsonPlugin {
                             tag.attributes.href,
                     )
                     .map((tag) => tag.attributes.href)
-                this.files.push(scripts, styles)
+                this.files.push(this.prejs.concat(scripts), styles)
             })
         })
         // write json file

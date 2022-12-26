@@ -6,8 +6,8 @@
 
 网页端原神工具箱。也是半仙之兽。
 
-[![Build Production](https://img.shields.io/github/workflow/status/YuehaiTeam/cocogoat/Build%20Production?style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
-[![Build Singlefile](https://img.shields.io/github/workflow/status/YuehaiTeam/cocogoat/Build%20SingleFile?label=SINGLEFILE&style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
+[![Build Production](https://img.shields.io/github/actions/workflow/status/YuehaiTeam/cocogoat/build-production.yml?branch=main&style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
+[![Build Singlefile](https://img.shields.io/github/actions/workflow/status/YuehaiTeam/cocogoat/build-singlefile.yml?branch=main&style=for-the-badge&label=SINGLEFILE)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
 ![BSD-3 License](https://img.shields.io/github/license/YuehaiTeam/cocogoat?style=for-the-badge)
 
 </div>

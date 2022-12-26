@@ -18,19 +18,15 @@ jobs:
           mv .git/objects/pack .
           git unpack-objects < pack/*.pack
           rm -rf pack
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
-          node-version: '16'
-          architecture: 'x64'
-      - uses: szenius/set-timezone@v1.0
+          node-version: 16
+      - uses: szenius/set-timezone@v1.1
         with:
           timezoneLinux: "Asia/Shanghai"
           timezoneMacos: "Asia/Shanghai"
           timezoneWindows: "China Standard Time"
-      - uses: pnpm/action-setup@v2.2.2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
+      - uses: pnpm/action-setup@v2
       - name: Get pnpm store directory
         id: pnpm-cache
         run: |
@@ -51,12 +47,12 @@ jobs:
         run: |
           curl -X POST -H "Content-Type: application/json" -d '{"msg_type":"interactive","card":{"config":{"wide_screen_mode":false},"header":{"template":"red","title":{"content":"构建失败通知","tag":"plain_text"}},"elements":[{"tag":"div","text":{"content":"cocogoat-web构建失败，请检查错误信息","tag":"lark_md"}}]}}' ${{ secrets.FEISHU_WEBHOOK }}
       - name: Upload Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: cocogoat-web-report
           path: dist/report.html
       - name: Upload package
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: cocogoat-web
           path: dist/

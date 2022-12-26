@@ -41,21 +41,31 @@
                 </div>
                 <div v-if="fin" class="right">
                     <div class="status">
-                        <input
-                            :value="fin.current"
-                            type="text"
-                            @input="$emit('input-current', ($event?.target as HTMLInputElement).value)"
-                        />
-                        <div class="sep">/</div>
-                        <div class="total">{{ i.total }}</div>
+                        <div class="status-out">
+                            <input
+                                :value="fin.current"
+                                type="text"
+                                @input="$emit('input-current', ($event?.target as HTMLInputElement).value)"
+                            />
+                            <div class="sep">/</div>
+                            <div class="total">{{ i.total }}</div>
+                        </div>
+                        <div class="status-in">
+                            <div class="total">{{ fin.current }}</div>
+                            <div class="sep">/</div>
+                            <div class="total">{{ i.total }}</div>
+                        </div>
                     </div>
                     <div v-if="isFin" class="date">
-                        <input
-                            :value="formatDate(fin.timestamp)"
-                            type="text"
-                            @blur="updateDate(($event?.target as HTMLInputElement).value)"
-                            @keyup.enter="updateDate(($event?.target as HTMLInputElement).value)"
-                        />
+                        <div class="date-out">
+                            <input
+                                :value="formatDate(fin.timestamp)"
+                                type="text"
+                                @blur="updateDate(($event?.target as HTMLInputElement).value)"
+                                @keyup.enter="updateDate(($event?.target as HTMLInputElement).value)"
+                            />
+                        </div>
+                        <div class="date-in placeholder">{{ formatDate(fin.timestamp) }}</div>
                     </div>
                 </div>
             </div>
@@ -386,11 +396,12 @@ export default defineComponent({
             }
 
             .right {
-                width: 80px;
+                text-align: right;
                 position: absolute;
                 right: 15px;
                 top: 15px;
-                input {
+                input,
+                .placeholder {
                     appearance: none;
                     border: 0;
                     color: var(--c-theme);
@@ -407,9 +418,41 @@ export default defineComponent({
                     }
                 }
 
+                .date {
+                    position: relative;
+                    font-size: 13px;
+                    padding-top: 3px;
+                    .date-out {
+                        position: absolute;
+                        right: 0;
+                        top: 0;
+                        z-index: 2;
+                    }
+
+                    .date-in {
+                        opacity: 0;
+                    }
+                }
                 .status {
+                    position: relative;
+                    display: inline-block;
+                    .status-out {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        z-index: 2;
+                        min-width: 80px;
+                    }
+
+                    .status-in {
+                        opacity: 0;
+                        padding-right: 6px;
+                    }
+                }
+                .status-out,
+                .status-in {
                     text-align: center;
-                    display: flex;
+                    display: inline-flex;
                     font-size: 17px;
                     font-family: Consolas, monospace;
 
@@ -556,14 +599,18 @@ export default defineComponent({
             }
         }
         .right {
-            width: 65px;
+            min-width: 65px;
             position: absolute;
             right: 10px;
             input {
                 width: 65px;
                 font-size: 12px;
             }
-            .status {
+            .status-in,
+            .status-out {
+                &.status-in {
+                    padding-right: 8px;
+                }
                 font-size: 15px;
 
                 & > div {

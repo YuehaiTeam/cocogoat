@@ -115,6 +115,7 @@ export default defineComponent({
         transition: all 0.2s;
         z-index: 989;
         padding: 0 15px;
+        white-space: nowrap;
         :global {
             .a-line {
                 display: inline-block;

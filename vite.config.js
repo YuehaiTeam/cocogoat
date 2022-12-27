@@ -12,6 +12,7 @@ import { singleFileHTML } from './scripts/vite-singlefile'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import { ViteRsw } from 'vite-plugin-rsw'
 import checker from 'vite-plugin-checker'
 import vue from '@vitejs/plugin-vue'
 import GitInfo from 'git-repo-info'
@@ -112,6 +113,7 @@ export default defineConfig(({ command, mode }) => {
                 minify: true,
                 entry: 'src/main.ts',
             }),
+            ViteRsw(),
             ...(singleFile
                 ? [
                       ignoreNolocal(),

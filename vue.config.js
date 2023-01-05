@@ -67,7 +67,7 @@ if (usePreJS) {
 }
 
 module.exports = defineConfig({
-    publicPath: singleFile ? '.' : process.env.NODE_ENV === 'production' && useCDN ? 'https://77.xyget.cn/' : '/',
+    publicPath: singleFile ? '.' : process.env.NODE_ENV === 'production' && useCDN ? 'https://cocogoat.cn/' : '/',
     assetsDir: 'static',
     transpileDependencies: true,
     productionSourceMap: true,

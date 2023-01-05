@@ -43,7 +43,7 @@ console.log('')
 
 export default defineConfig(({ command, mode }) => {
     const env = loadEnv(mode, __dirname, 'VUE_APP_')
-    const base = singleFile ? './' : process.env.NODE_ENV === 'production' && useCDN ? 'https://77.xyget.cn/' : '/'
+    const base = singleFile ? './' : process.env.NODE_ENV === 'production' && useCDN ? 'https://cocogoat.cn/' : '/'
     return {
         base: base,
         define: Object.keys(env).reduce(

@@ -26,3 +26,5 @@ export const ocrCompatible = hasWasm && (isLocal ? hasSIMD : true)
 export const scannerCompatible = hasGetDisplayMedia && !isSafari && !isAndroid && !isIOS && ocrCompatible
 // Edge 增强安全模式
 export const edgeStrictMode = /Edg\/\d+/.test(navigator.userAgent) && !hasWasm
+// Windows
+export const isWindows = /Windows/.test(navigator.userAgent)

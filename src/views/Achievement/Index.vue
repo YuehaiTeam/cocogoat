@@ -53,7 +53,33 @@
                     </div>
                 </div>
                 <div class="a-line">
-                    <el-button size="default" type="primary" :plain="!showScanner" @click="showScanner = !showScanner">
+                    <div v-if="isWindows && !showScanner" class="dropdown">
+                        <el-dropdown class="header-export-dropdown" split-button @click="showScanner = !showScanner">
+                            <fa-icon icon="crosshairs" /> {{ showScanner ? '退出' : '' }}识别
+                            <template #dropdown>
+                                <el-dropdown-menu class="el-dropdown-menu--small">
+                                    <el-dropdown-item disabled>第三方工具</el-dropdown-item>
+                                    <el-dropdown-item>
+                                        <el-link
+                                            href="https://github.com/HolographicHat/YaeAchievement"
+                                            target="_blank"
+                                            style="font-size: 12px"
+                                            :underline="false"
+                                        >
+                                            YaeAchievement
+                                        </el-link>
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
+                    </div>
+                    <el-button
+                        v-else
+                        size="default"
+                        type="primary"
+                        :plain="!showScanner"
+                        @click="showScanner = !showScanner"
+                    >
                         <fa-icon icon="crosshairs" /> {{ showScanner ? '退出' : '' }}识别
                     </el-button>
                 </div>
@@ -265,6 +291,7 @@ import bus from '@/bus'
 import { AchievementItem } from '@/typings/Achievement/Achievement'
 import { debounce } from 'lodash-es'
 import { AutocompleteFetchSuggestionsCallback } from 'element-plus'
+import { isWindows } from '@/utils/compatibility'
 
 export default defineComponent({
     name: 'AchievementIndex',
@@ -694,6 +721,7 @@ export default defineComponent({
             achPartialAmos,
             publishedInfo,
             clickUnpublishedVersion,
+            isWindows,
         }
     },
 })

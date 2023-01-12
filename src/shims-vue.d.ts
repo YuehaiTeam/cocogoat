@@ -37,3 +37,9 @@ declare module 'flyio/dist/npm/fly'
 declare module 'vue-virtual-scroller'
 declare module 'vue-virtual-scroller/src/index'
 declare module '@/plugins/tongji'
+
+declare global {
+    interface process {
+        env: Record<string, string>
+    }
+}

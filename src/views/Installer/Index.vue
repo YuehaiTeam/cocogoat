@@ -21,6 +21,9 @@
                             <div class="center">
                                 <div class="name">{{ result.sdk.desc }}.zip</div>
                                 <div class="meta">
+                                    <span>
+                                        <fa-icon icon="file-zipper" /> {{ formatSize(result.sdk.package_size) }}</span
+                                    >
                                     <span> <fa-icon icon="database" /> {{ formatSize(result.sdk.size) }}</span>
                                     <span> <fa-icon icon="hashtag" /> {{ result.sdk.md5 }} </span>
                                 </div>
@@ -43,6 +46,10 @@
                                     <div class="center">
                                         <div class="name">{{ basename(result[m].latest.path) }}</div>
                                         <div class="meta">
+                                            <span>
+                                                <fa-icon icon="file-zipper" />
+                                                {{ formatSize(result[m].latest.package_size) }}</span
+                                            >
                                             <span>
                                                 <fa-icon icon="database" />
                                                 {{ formatSize(result[m].latest.size) }}</span
@@ -69,6 +76,9 @@
                                     <div class="center">
                                         <div class="name">{{ basename(i.path) }}</div>
                                         <div class="meta">
+                                            <span>
+                                                <fa-icon icon="file-zipper" /> {{ formatSize(i.package_size) }}</span
+                                            >
                                             <span> <fa-icon icon="database" /> {{ formatSize(i.size) }}</span>
                                             <span> <fa-icon icon="hashtag" /> {{ i.md5 }} </span>
                                         </div>
@@ -86,6 +96,9 @@
                                     <div class="center">
                                         <div class="name">{{ basename(z.path) }}</div>
                                         <div class="meta">
+                                            <span>
+                                                <fa-icon icon="file-zipper" /> {{ formatSize(z.package_size) }}</span
+                                            >
                                             <span> <fa-icon icon="database" /> {{ formatSize(z.size) }}</span>
                                             <span> <fa-icon icon="hashtag" /> {{ z.md5 }} </span>
                                         </div>
@@ -109,6 +122,9 @@
                                     <div class="center">
                                         <div class="name">{{ basename(i.path) }}</div>
                                         <div class="meta">
+                                            <span>
+                                                <fa-icon icon="file-zipper" /> {{ formatSize(i.package_size) }}</span
+                                            >
                                             <span> <fa-icon icon="database" /> {{ formatSize(i.size) }}</span>
                                             <span> <fa-icon icon="hashtag" /> {{ i.md5 }} </span>
                                         </div>
@@ -135,12 +151,13 @@ import {
     faAngleRight,
     faHashtag,
     faDatabase,
+    faFileZipper,
     faCalendarPlus,
     faHouseLaptop,
 } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { ElNotification } from 'element-plus'
-library.add(faBoxOpen, faAngleRight, faFileAudio, faHashtag, faDatabase, faCalendarPlus, faHouseLaptop)
+library.add(faBoxOpen, faAngleRight, faFileAudio, faHashtag, faDatabase, faFileZipper, faCalendarPlus, faHouseLaptop)
 import { vLoading } from 'element-plus/es/components/loading/src/directive'
 import 'element-plus/theme-chalk/el-loading.css'
 import 'element-plus/theme-chalk/el-notification.css'

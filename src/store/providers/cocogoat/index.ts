@@ -36,6 +36,9 @@ class CocogoatSyncProvider implements SyncProvider {
                 import('@/utils/reporting').then(({ setUser }) => {
                     setUser(this.email)
                 })
+                import('@/utils/txc').then(({ setUser }) => {
+                    setUser(this.email)
+                })
             }
         } catch (e) {
             const err = new SyncError(SYNCERR.AUTH, 'Authorization required', null)

@@ -110,10 +110,15 @@
                     <h4>本地使用</h4>
                     <div>如需离线使用，请点这里下载本地专用版。</div>
                 </a>
-                <a :class="$style.card" href="https://jq.qq.com/?_wv=1027&k=5w1TPQL4" target="_blank">
-                    <fa-icon :icon="['fab', 'qq']" />
-                    <h4>反馈聊天</h4>
-                    <div>无论功能反馈还是聊天吹水，都可以加入反馈群( 933468075 )</div>
+                <a
+                    :class="$style.card"
+                    href="https://support.qq.com/products/417765"
+                    target="_blank"
+                    @click.prevent="clicktxc"
+                >
+                    <fa-icon icon="message" />
+                    <h4>反馈问题</h4>
+                    <div>无论功能反馈还是聊天吹水，都可以前往 兔小巢 反馈。</div>
                 </a>
             </div>
             <div :class="$style.copyright">&copy;2022 YuehaiTeam cocogoat.work <build-info /></div>
@@ -131,14 +136,16 @@ import {
     faBoxOpen,
     faMapLocationDot,
     faFileZipper,
+    faMessage,
 } from '@fortawesome/free-solid-svg-icons'
-import { faGithubAlt, faQq } from '@fortawesome/free-brands-svg-icons'
-library.add(faGithubAlt, faQq, faInfinity, faFolderTree, faTerminal, faBoxOpen, faMapLocationDot, faFileZipper)
+import { faGithubAlt } from '@fortawesome/free-brands-svg-icons'
+library.add(faGithubAlt, faMessage, faInfinity, faFolderTree, faTerminal, faBoxOpen, faMapLocationDot, faFileZipper)
 
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import BuildInfo from '@/components/BuildInfo.vue'
 import { options } from '@/store'
 import { apibase, apistatus } from '@/utils/apibase'
+import { clicktxc } from '@/utils/txc'
 
 export default defineComponent({
     name: 'HomeView',
@@ -161,7 +168,7 @@ export default defineComponent({
                 }
             },
         )
-        return { ad, please, options, apistatus }
+        return { ad, please, options, apistatus, clicktxc }
     },
 })
 </script>

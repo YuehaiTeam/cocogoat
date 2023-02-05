@@ -6,8 +6,8 @@
 
 A 100% browser-based toolbox for Genshin Impact with every line of code made by working overtime.
 
-[![Build Production](https://img.shields.io/github/workflow/status/YuehaiTeam/cocogoat/Build%20Production?style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
-[![Build Singlefile](https://img.shields.io/github/workflow/status/YuehaiTeam/cocogoat/Build%20SingleFile?label=SINGLEFILE&style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
+[![Build Production](https://img.shields.io/github/actions/workflow/status/YuehaiTeam/cocogoat/build-production.yml?branch=main&style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
+[![Build Singlefile](https://img.shields.io/github/actions/workflow/status/YuehaiTeam/cocogoat/build-singlefile.yml?branch=main&style=for-the-badge&label=SINGLEFILE)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
 ![BSD-3 License](https://img.shields.io/github/license/YuehaiTeam/cocogoat?style=for-the-badge)
 
 </div>
@@ -54,5 +54,7 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
 This project is based on `typescript` and `vue.js`.  
 Feel free to contribute by creating pull requests or submitting bug reports/feature requests!
 
- - Run locally: `yarn serve`
- - Build locally: `yarn build`
+ - Run locally: `pnpm serve` (vite)
+ - Build locally: `pnpm build` (webpack)
+ - Build as a single file: `pnpm build:singlefile` (vite)
+ - You can specify the toolchain with `:vite` or `:webpack`. We recommend `vite` for development and `webpack` for deployment after testing.

@@ -91,7 +91,7 @@
                 </div>
             </div>
             <div :class="$style.cardList">
-                <a :class="$style.card" href="http://github.com/yuehaiTeam/cocogoat" target="_blank">
+                <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat" target="_blank">
                     <fa-icon :icon="['fab', 'github-alt']" />
                     <h4>开源地址</h4>
                     <div>本工具已在GitHub以BSD-3协议完全开源，可任意修改使用</div>

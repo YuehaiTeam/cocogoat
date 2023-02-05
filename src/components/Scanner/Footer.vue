@@ -1,6 +1,6 @@
 <template>
     <div :class="$style.opensource">
-        椰羊·{{ name }}扫描 | <a href="https://github.com/YuehaiTeam/cocogoat-web" target="_blank">Github</a> |
+        椰羊·{{ name }}扫描 | <a href="https://github.com/YuehaiTeam/cocogoat-web" target="_blank">GitHub</a> |
         <a href="https://github.com/YuehaiTeam/cocogoat-web/tree/main/docs" target="_blank">集成文档</a> |
         <build-info />
     </div>

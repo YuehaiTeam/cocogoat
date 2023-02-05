@@ -33,7 +33,7 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
 
 **FAQs**
  - Q: Can I use this locally？  
-   A: Yes. Just download the `singlefile build` from `Github Actions` and open the local HTML file with Chrome v91 or higher .
+   A: Yes. Just download the `singlefile build` from `GitHub Actions` and open the local HTML file with Chrome v91 or higher .
  - Q: Why does this website need a client?  
    A: It is implossible to simulate keyboard and mouse events without it.
  - Q: Why make a web page and not just a client?  

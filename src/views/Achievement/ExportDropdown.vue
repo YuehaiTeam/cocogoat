@@ -6,7 +6,7 @@
                 <el-dropdown-item @click="doExport('share')"> 分享链接 </el-dropdown-item>
                 <el-dropdown-item @click="doExport('cocogoat.v2')"> 椰羊 JSON </el-dropdown-item>
                 <el-dropdown-item @click="doExport('cocogoat')"> 椰羊 JSON（旧） </el-dropdown-item>
-                <el-dropdown-item @click="doExport('excel')"> Excel文件 </el-dropdown-item>
+                <el-dropdown-item @click="doExport('excel')"> Excel 文件 </el-dropdown-item>
                 <el-dropdown-item divided @click="doExport('uiaf')"> UIAF 1.1 JSON </el-dropdown-item>
                 <el-dropdown-item @click="doExport('uiaf10')"> UIAF 1.0 JSON </el-dropdown-item>
                 <el-dropdown-item divided @click="doExport('snapgenshin')"> Snap Genshin </el-dropdown-item>

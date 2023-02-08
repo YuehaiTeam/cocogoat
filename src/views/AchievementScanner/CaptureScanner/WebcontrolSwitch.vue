@@ -20,8 +20,8 @@
                     </div>
                     <div class="content">
                         由于浏览器限制，自动滚动无法在网页完成
-                        <a class="dlink" href="/assets/cocogoat-control-1.0.4.exe" target="_blank">
-                            点击此处下载客户端<br /><small>(v1.0.4 140kB)</small>
+                        <a class="dlink" href="/extra/client" target="_blank">
+                            如果插件没有自动启动，请点击此处下载辅助插件<small>（v{{ cVersion }} {{ cSize }}）</small>
                         </a>
                         <button @click="enable">
                             {{ loading ? '检测中' : needUpdate ? '我已更新并重新运行客户端' : '我已下载并运行客户端' }}
@@ -37,6 +37,8 @@
 <script lang="ts">
 import { CocogoatWebControl } from '@/modules/webcontrol'
 import { ref, defineComponent, PropType, toRef, Ref } from 'vue'
+import DlUpdate from '@/utils/dlUpdate'
+const latest = new DlUpdate('frostflake')
 export default defineComponent({
     props: {
         modelValue: Number,
@@ -103,6 +105,8 @@ export default defineComponent({
             gameNotFound,
             needUpdate,
             version,
+            cVersion: latest.version,
+            cSize: latest.formattedSize,
         }
     },
 })

@@ -1,9 +1,8 @@
 <template>
     <Layout full-height>
         <template #title>
-            <span style="font-family: genshin">椰羊 · </span> 扫描成就并导出到 {{
-                to === 'seelie' ? 'SEELIE.me' : 'Paimon.moe'
-            }}
+            <span style="font-family: genshin">椰羊 · </span>扫描成就并导出到
+            {{ to === 'seelie' ? 'SEELIE.me' : 'Paimon.moe' }}
         </template>
         <template #actions>
             <el-tooltip content="扫描完成之后也还可以切换哦">

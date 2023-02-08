@@ -121,7 +121,7 @@
                     <div>无论功能反馈还是聊天吹水，都可以前往 兔小巢 反馈。</div>
                 </a>
             </div>
-            <div :class="$style.copyright">&copy;2022 YuehaiTeam cocogoat.work <build-info /></div>
+            <div :class="$style.copyright">&copy;2022-2023 YuehaiTeam cocogoat.work <build-info /></div>
         </div>
     </Layout>
 </template>

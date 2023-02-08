@@ -13,7 +13,7 @@
                         v-model="content"
                         type="textarea"
                         :class="$style.textarea"
-                        placeholder="在此粘贴导入内容、在右下方选择文件，或拖动文件到这里&#13;&#13;支持的导入项目：&#13; - 椰羊JSON&#13; - Paimon.moe JSON&#13; - Seelie.me JSON&#13; - 在F12页面执行的JS代码(椰羊、Paimon.moe、Seelie.me)"
+                        placeholder="在此粘贴导入内容、在右下方选择文件，或拖动文件到这里&#13;&#13;支持的导入项目：&#13; - 椰羊 JSON&#13; - Paimon.moe JSON&#13; - SEELIE.me JSON&#13; - 在 F12 页面执行的 JS 代码（椰羊、Paimon.moe、SEELIE.me）"
                     >
                     </el-input>
                     <el-button class="file-button" @click="fileEl?.click()">选择文件</el-button>

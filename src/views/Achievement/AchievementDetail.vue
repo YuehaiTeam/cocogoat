@@ -41,7 +41,7 @@
                 </li>
             </ul>
             <div v-if="showNoTask" class="no-task">触发该成就的任务不存在或均为无名隐藏任务</div>
-            <div class="desc">点击ID或任务名可查看详情<br />触发条件为程序自动提取 请以实际游戏或攻略为准</div>
+            <div class="desc">点击 ID 或任务名可查看详情<br />触发条件为程序自动提取，请以实际游戏或攻略为准</div>
         </div>
     </el-dialog>
 </template>

@@ -5,14 +5,14 @@
             <div class="center">
                 <el-link :href="url" type="primary">如果下载没有自动开始，请点击这里</el-link>
                 <div class="faq">
-                    <h3>无法运行、提示找不到DLL？</h3>
+                    <h3>无法运行、提示找不到 DLL？</h3>
                     <a href="https://aka.ms/vs/17/release/vc_redist.x64.exe" target="_blank">请点击这里</a>
                     下载并安装微软基础运行库，安装完成后即可正常运行
                 </div>
                 <div class="copyright">
                     椰羊·霜华插件 v{{ version }} ({{ size }})
                     <br />
-                    开发者：月海亭YuehaiTeam
+                    开发者：月海亭 YuehaiTeam
                 </div>
                 <div class="installer">
                     首次运行时程序会自动安装到 <code>C:\Program Files\cocogoat-control</code> 目录下

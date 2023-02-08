@@ -6,7 +6,7 @@
             </div>
             <div class="m">
                 <div class="t">开始扫描</div>
-                <div class="d">点击开始后请选择原神窗口(如下图)</div>
+                <div class="d">点击开始后请选择原神窗口（如下图）</div>
             </div>
             <div class="r">
                 <fa-icon icon="angle-right" />

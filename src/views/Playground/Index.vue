@@ -26,19 +26,19 @@
         <div :class="$style.right">
             <div class="preview">
                 <div>
-                    <span class="sel-span" @click="file1?.click()">点此选择输入图片(<code>cv_in</code>)</span>
+                    <span class="sel-span" @click="file1?.click()">点此选择输入图片（<code>cv_in</code>）</span>
                     <div class="cc" @click=";($event.currentTarget as HTMLElement)?.classList.toggle('click')">
                         <img :src="imgsrc" />
                     </div>
                 </div>
                 <div>
-                    <span class="sel-span" @click="file2?.click()">点此选择第二输入(<code>cv_sub</code>)</span>
+                    <span class="sel-span" @click="file2?.click()">点此选择第二输入（<code>cv_sub</code>）</span>
                     <div class="cc" @click=";($event.currentTarget as HTMLElement)?.classList.toggle('click')">
                         <img :src="imgsrc2" />
                     </div>
                 </div>
                 <div>
-                    <span>输出结果(<code>cv_canvas</code>)</span>
+                    <span>输出结果（<code>cv_canvas</code>）</span>
                     <div class="cc" @click=";($event.currentTarget as HTMLElement)?.classList.toggle('click')">
                         <canvas ref="cvsel" />
                     </div>
@@ -51,12 +51,12 @@
                     </template>
                     <div :class="$style.popover">
                         内置的全局变量：
-                        <li><code>cv</code>: OpenCV.js</li>
-                        <li><code>cv_in</code>: 输入图片（<code>HTMLImageElement</code>）</li>
-                        <li><code>cv_sub</code>: 输入图片2（<code>HTMLImageElement</code>）</li>
-                        <li><code>cv_canvas</code>: 输出Canvas（<code>HTMLCanvasElement</code>）</li>
+                        <li><code>cv</code>：OpenCV.js</li>
+                        <li><code>cv_in</code>：输入图片（<code>HTMLImageElement</code>）</li>
+                        <li><code>cv_sub</code>：输入图片 2（<code>HTMLImageElement</code>）</li>
+                        <li><code>cv_canvas</code>：输出 Canvas（<code>HTMLCanvasElement</code>）</li>
                         <br /><br />
-                        请在开发者工具中查看Console输出。
+                        请在开发者工具中查看 Console 输出。
                     </div>
                 </el-popover>
                 <el-button class="run-btn" type="primary" @click="run">Run!</el-button>

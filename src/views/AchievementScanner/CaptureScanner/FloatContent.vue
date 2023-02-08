@@ -2,7 +2,7 @@
     <div>
         <div v-if="state === 0" class="wait-page">
             <div :class="$style.icon"></div>
-            <div :class="$style.text">请切换到游戏窗口<br />打开"天地万象"页面</div>
+            <div :class="$style.text">请切换到游戏窗口<br />打开“天地万象”页面</div>
         </div>
         <div v-if="state === 1" :class="$style.downPage">
             <div class="icon"></div>

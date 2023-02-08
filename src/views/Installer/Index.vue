@@ -1,7 +1,7 @@
 <template>
     <Layout full-height>
         <template #title>
-            <div class="teleport-title">PC端更新包列表</div>
+            <div class="teleport-title">PC 端更新包列表</div>
         </template>
         <template #actions></template>
         <div v-elloading="loading" :class="$style.page">
@@ -13,7 +13,7 @@
                     <el-tab-pane v-for="(i, a) in urls" :key="a" :name="a" :label="i.name"></el-tab-pane>
                 </el-tabs>
                 <div v-if="!loading">
-                    <el-card v-if="result.sdk" class="title-card" header="SDK(渠道服专用)">
+                    <el-card v-if="result.sdk" class="title-card" header="SDK（渠道服专用）">
                         <a class="d-link" :href="result.sdk.path" target="_blank" rel="noreferrer">
                             <div class="icon">
                                 <fa-icon icon="house-laptop"></fa-icon>

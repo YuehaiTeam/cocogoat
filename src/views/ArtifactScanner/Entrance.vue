@@ -21,7 +21,7 @@
                     </small>
                     <small v-else style="color: #fe6565">
                         <div>暂不支持该浏览器</div>
-                        <div style="font-size: 12px">请换用Chrome或Edge</div>
+                        <div style="font-size: 12px">请换用 Chrome 或 Edge</div>
                     </small>
                 </h2>
             </router-link>

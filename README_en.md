@@ -19,7 +19,7 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
 
 ### Achievement scanning
  - Recognize achievements by using a special version of [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) and [onnxruntime](https://onnx.ai) to run OCR in your browser.
- - Auto switching by running a clien that is only 140K in size.
+ - Auto switching by running a clien that is only 440 K in size.
  - Chinese and English are currently supported for recognition.
  - Support for mobile phone screenshots.
 
@@ -48,13 +48,13 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
    A: Eventually, we just need a PR/issue/group feedback to be submitted with the required import format!
 
 ## Upadting
- - Just reload the page by pressing `Ctrl+F5`
+ - Just reload the page by pressing <kbd>Ctrl</kbd> + <kbd>F5</kbd>
 
 ## Contributing
-This project is based on `typescript` and `vue.js`.  
+This project is based on `TypeScript` and `Vue.js`.  
 Feel free to contribute by creating pull requests or submitting bug reports/feature requests!
 
- - Run locally: `pnpm serve` (vite)
+ - Run locally: `pnpm serve` (Vite)
  - Build locally: `pnpm build` (webpack)
- - Build as a single file: `pnpm build:singlefile` (vite)
- - You can specify the toolchain with `:vite` or `:webpack`. We recommend `vite` for development and `webpack` for deployment after testing.
+ - Build as a single file: `pnpm build:singlefile` (Vite)
+ - You can specify the toolchain with `:vite` or `:webpack`. We recommend `Vite` for development and `webpack` for deployment after testing.

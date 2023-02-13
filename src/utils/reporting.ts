@@ -65,7 +65,7 @@ export async function report() {
     try {
         input = await ElMessageBox.prompt('请在下方输入您的问题。程序日志将被同时提交。', '上传日志', {
             inputType: 'textarea',
-            inputPlaceholder: '点击xxx之后，yyy就崩溃了。',
+            inputPlaceholder: '点击 xxx 之后，yyy 就崩溃了。',
         })
     } catch (e) {
         return
@@ -96,7 +96,7 @@ export async function report() {
         if (res.ok) {
             ElNotification({
                 title: '日志已上传',
-                message: 'ID: ' + evid + ' 请将此ID提交给开发者，否则无法解决任何问题。',
+                message: 'ID: ' + evid + ' 请将此 ID 提交给开发者，否则无法解决任何问题。',
                 type: 'success',
                 customClass: 'feedback-notification',
                 duration: 0,

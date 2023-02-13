@@ -6,8 +6,8 @@
 
 A 100% browser-based toolbox for Genshin Impact with every line of code made by working overtime.
 
-[![Build Production](https://img.shields.io/github/workflow/status/YuehaiTeam/cocogoat/Build%20Production?style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
-[![Build Singlefile](https://img.shields.io/github/workflow/status/YuehaiTeam/cocogoat/Build%20SingleFile?label=SINGLEFILE&style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
+[![Build Production](https://img.shields.io/github/actions/workflow/status/YuehaiTeam/cocogoat/build-production.yml?branch=main&style=for-the-badge)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
+[![Build Singlefile](https://img.shields.io/github/actions/workflow/status/YuehaiTeam/cocogoat/build-singlefile.yml?branch=main&style=for-the-badge&label=SINGLEFILE)](https://github.com/YuehaiTeam/cocogoat-web/actions/workflows/build-production.yml)
 ![BSD-3 License](https://img.shields.io/github/license/YuehaiTeam/cocogoat?style=for-the-badge)
 
 </div>
@@ -19,7 +19,7 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
 
 ### Achievement scanning
  - Recognize achievements by using a special version of [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR) and [onnxruntime](https://onnx.ai) to run OCR in your browser.
- - Auto switching by running a clien that is only 140K in size.
+ - Auto switching by running a clien that is only 440 K in size.
  - Chinese and English are currently supported for recognition.
  - Support for mobile phone screenshots.
 
@@ -33,7 +33,7 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
 
 **FAQs**
  - Q: Can I use this locally？  
-   A: Yes. Just download the `singlefile build` from `Github Actions` and open the local HTML file with Chrome v91 or higher .
+   A: Yes. Just download the `singlefile build` from `GitHub Actions` and open the local HTML file with Chrome v91 or higher .
  - Q: Why does this website need a client?  
    A: It is implossible to simulate keyboard and mouse events without it.
  - Q: Why make a web page and not just a client?  
@@ -48,11 +48,13 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
    A: Eventually, we just need a PR/issue/group feedback to be submitted with the required import format!
 
 ## Upadting
- - Just reload the page by pressing `Ctrl+F5`
+ - Just reload the page by pressing <kbd>Ctrl</kbd> + <kbd>F5</kbd>
 
 ## Contributing
-This project is based on `typescript` and `vue.js`.  
+This project is based on `TypeScript` and `Vue.js`.  
 Feel free to contribute by creating pull requests or submitting bug reports/feature requests!
 
- - Run locally: `yarn serve`
- - Build locally: `yarn build`
+ - Run locally: `pnpm serve` (Vite)
+ - Build locally: `pnpm build` (webpack)
+ - Build as a single file: `pnpm build:singlefile` (Vite)
+ - You can specify the toolchain with `:vite` or `:webpack`. We recommend `Vite` for development and `webpack` for deployment after testing.

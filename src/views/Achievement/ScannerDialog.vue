@@ -9,7 +9,7 @@
     </div>
     <el-dialog
         v-model="scannerResult.show"
-        :title="`成功扫描${scannerResult.length}个成就`"
+        :title="`成功扫描 ${scannerResult.length} 个成就`"
         :custom-class="$style.scannerResultDialog"
         destroy-on-close
     >

@@ -7,7 +7,7 @@
                 <h1>志琼</h1>
                 <small>让你的原神地图能定位，可共享</small>
                 <div class="tags">追踪定位 / 置顶悬浮 / 手机共享 / 多端同步</div>
-                <div class="tags supported">支持的地图：米游社 / HoyoLab / 空荧酒馆 / 光环助手</div>
+                <div class="tags supported">支持的地图：米游社 / HoYoLAB / 空荧酒馆 / 光环助手</div>
             </div>
             <div :class="$style.container">
                 <div class="zq-mobile">
@@ -42,7 +42,7 @@
                             <div class="icon"><fa-icon :icon="['fab', 'microsoft']" /></div>
                             <div class="text">独立悬浮窗</div>
                             <a class="el-button el-button--large" :href="url" target="_blank">
-                                <span>Game Bar悬浮窗</span>
+                                <span>Game Bar 悬浮窗</span>
                             </a>
                             <div class="version">v{{ version }} {{ size }}</div>
                         </div>
@@ -122,8 +122,8 @@ export default defineComponent({
             const first = zqCode.value[0]
             if (!isNaN(Number(zqCode.value)) && (first === '1' || first === '2' || first === '5')) {
                 ElMessageBox.alert(
-                    '如不清楚如何获取连接码，请安装PC端油猴脚本或悬浮窗后在共享界面扫码连接。',
-                    '连接码不是您的UID',
+                    '如不清楚如何获取连接码，请安装 PC 端油猴脚本或悬浮窗后在共享界面扫码连接。',
+                    '连接码不是您的 UID',
                     {
                         type: 'warning',
                         confirmButtonText: '知道了',

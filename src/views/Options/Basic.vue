@@ -1,14 +1,14 @@
 <template>
     <section :class="$style.optionBasic">
         <el-form label-position="right" label-width="130px">
-            <el-form-item label="语言(Language)">
+            <el-form-item label="语言 (Language)">
                 <div>
                     <div class="select">
                         <el-select v-model="options.lang">
                             <el-option v-for="(i, a) in langNames" :key="a" :label="i" :value="a" />
                         </el-select>
                     </div>
-                    <div class="desc">包含界面语言与识别器OCR语言。目前界面翻译基本未完成。</div>
+                    <div class="desc">包含界面语言与识别器 OCR 语言。目前界面翻译基本未完成。</div>
                 </div>
             </el-form-item>
             <el-form-item label="颜色模式">
@@ -42,7 +42,7 @@
         <h4>关于</h4>
         <section class="about">
             <div class="logo"><icon-cocogoat /> 椰羊cocogoat</div>
-            <div class="copyright">&copy;2022 YuehaiTeam <build-info /></div>
+            <div class="copyright">&copy;2022-2023 YuehaiTeam <build-info /></div>
             <div v-if="options.reporting" class="logreport">
                 <el-link @click="report">上传日志</el-link>
             </div>

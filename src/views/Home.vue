@@ -3,7 +3,7 @@
         <template #title><span style="font-family: genshin">椰羊 · 首页</span></template>
         <div :class="$style.root">
             <h1 :class="$style.title">
-                椰羊cocogoat
+                椰羊 cocogoat
                 <small>纯网页圣遗物管理·成就扫描·更多功能开发中</small>
             </h1>
             <div v-if="apistatus" :class="$style.apistatus">
@@ -22,7 +22,7 @@
                                     <icon-cocogoat style="fill: #fff" />
                                 </div>
                             </div>
-                            <div class="text">PC端<br />更新包列表</div>
+                            <div class="text">PC 端<br />更新包列表</div>
                         </router-link>
                         <a
                             :class="$style.extraOne"
@@ -91,10 +91,10 @@
                 </div>
             </div>
             <div :class="$style.cardList">
-                <a :class="$style.card" href="http://github.com/yuehaiTeam/cocogoat" target="_blank">
+                <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat" target="_blank">
                     <fa-icon :icon="['fab', 'github-alt']" />
                     <h4>开源地址</h4>
-                    <div>本工具已在Github以BSD-3协议完全开源，可任意修改使用</div>
+                    <div>本工具已在 GitHub 以 BSD-3 协议完全开源，可任意修改使用</div>
                 </a>
                 <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat/tree/main/docs" target="_blank">
                     <fa-icon icon="infinity" />
@@ -121,7 +121,7 @@
                     <div>无论功能反馈还是聊天吹水，都可以前往 兔小巢 反馈。</div>
                 </a>
             </div>
-            <div :class="$style.copyright">&copy;2022 YuehaiTeam cocogoat.work <build-info /></div>
+            <div :class="$style.copyright">&copy;2022-2023 YuehaiTeam cocogoat.work <build-info /></div>
         </div>
     </Layout>
 </template>

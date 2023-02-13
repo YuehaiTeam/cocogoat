@@ -123,7 +123,7 @@ export function useScannerFrame({
                     faildImages,
                 }
             } else {
-                ElMessageBox.alert('成功识别' + r.length + '个，失败0个', '扫描结束')
+                ElMessageBox.alert('成功识别 ' + r.length + ' 个，失败 0 个', '扫描结束')
             }
             await delay(100)
             loader.close()
@@ -147,7 +147,7 @@ export function useScannerFrame({
         let msg
         try {
             msg = await ElMessageBox.prompt(
-                '该反馈将上传识别失败的图片、您使用的识别方式、设备类型、设备屏幕分辨率等数据到服务器。您也可以在此输入额外的备注，以便作者定位问题。如需获得最快的修复速度，请加入交流群并将提交后出现的反馈ID发送给作者。',
+                '该反馈将上传识别失败的图片、您使用的识别方式、设备类型、设备屏幕分辨率等数据到服务器。您也可以在此输入额外的备注，以便作者定位问题。如需获得最快的修复速度，请加入交流群并将提交后出现的反馈 ID 发送给作者。',
                 '提交识别失败反馈',
                 {
                     inputPlaceholder: '备注其实可以不填，但就不知道能不能解决了。',

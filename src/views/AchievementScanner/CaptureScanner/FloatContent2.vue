@@ -64,7 +64,7 @@ export default defineComponent({
                     (73 / 250) * canvas.value.width,
                 )
                 ctx.fillText(
-                    '如需中断，请按Win键停止识别',
+                    '如需中断，请按 Win 键停止识别',
                     (89 / 250) * canvas.value.width,
                     (88 / 250) * canvas.value.width,
                 )

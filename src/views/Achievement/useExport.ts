@@ -131,7 +131,7 @@ export function useExportAchievements() {
         if (to === 'snapgenshin') {
             callClient(
                 'snapgenshin://achievement/import/uiaf',
-                '如果SnapGenshin没有启动或导入失败，请导出为UIAF 1.1后手动导入。',
+                '如果 SnapGenshin 没有启动或导入失败，请导出为 UIAF 1.1 后手动导入。',
                 toUIAF(),
             )
             return
@@ -139,7 +139,7 @@ export function useExportAchievements() {
         if (to === 'snaphutao') {
             callClient(
                 'hutao://achievement/import',
-                '如果SnapHutao没有启动或导入失败，请导出为UIAF 1.1后手动导入。',
+                '如果 SnapHutao 没有启动或导入失败，请导出为 UIAF 1.1 后手动导入。',
                 toUIAF(),
             )
             return
@@ -147,7 +147,7 @@ export function useExportAchievements() {
         if (to === 'xunkong') {
             callClient(
                 'xunkong://import-achievement?caller=椰羊&from=clipboard',
-                '如果寻空没有启动或导入失败，请导出为UIAF 1.1后手动导入。',
+                '如果寻空没有启动或导入失败，请导出为 UIAF 1.1 后手动导入。',
                 toUIAF(),
             )
             return
@@ -226,8 +226,8 @@ export function useExportAchievements() {
                 })
             content = `/*
 * 复制此处所有内容，
-* 在Seelie.me页面按F12打开调试器，
-* 选择控制台(Console)
+* 在 SEELIE.me 页面按 F12 打开调试器，
+* 选择控制台（Console）
 * 粘贴并回车执行完成导入
 * 
 * 使用此方法导入是为了保证您的原有成就不被覆盖
@@ -249,8 +249,8 @@ location.href='/achievements'`
             const fexportArray = await Promise.all(exportArray)
             content = `/*
 * 复制此处所有内容，
-* 在Paimon.moe页面按F12打开调试器，
-* 选择控制台(Console)
+* 在 Paimon.moe 页面按 F12 打开调试器，
+* 选择控制台（Console）
 * 粘贴并回车执行完成导入
 * 
 * 使用此方法导入是为了保证您的原有成就不被覆盖
@@ -265,7 +265,7 @@ location.href='/achievement'`
         exportData.value = {
             show: true,
             content,
-            title: '导出到' + (to === 'paimon' ? 'Paimon.moe' : 'Seelie.me'),
+            title: '导出到 ' + (to === 'paimon' ? 'Paimon.moe' : 'SEELIE.me'),
         }
         // do nothing
     }

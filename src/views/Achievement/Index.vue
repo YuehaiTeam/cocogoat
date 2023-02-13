@@ -7,8 +7,8 @@
                     <el-tooltip placement="bottom">
                         <template #content>
                             <div style="text-align: center">
-                                剩余{{ totalCount - totalFin.count }}个成就 <br />
-                                可获取{{ totalReward - totalFin.reward }}原石
+                                剩余 {{ totalCount - totalFin.count }} 个成就 <br />
+                                可获取 {{ totalReward - totalFin.reward }} 原石
                             </div>
                         </template>
                         <small :class="$style.totalPercent">
@@ -164,7 +164,7 @@
                                     :fetchSuggestions="searchToList"
                                     :trigger-on-focus="false"
                                     class="search-box"
-                                    placeholder="输入成就名字、描述或ID，定位成就"
+                                    placeholder="输入成就名字、描述或 ID，定位成就"
                                 >
                                     <template #default="{ item }">
                                         <div :class="$style.searchToDesc">
@@ -188,7 +188,7 @@
                                     v-model="searchKw"
                                     clearable
                                     class="search-box"
-                                    placeholder="搜索成就名字、描述或ID"
+                                    placeholder="搜索成就名字、描述或 ID"
                                 >
                                     <template #prefix>
                                         <a

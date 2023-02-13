@@ -1,9 +1,8 @@
 <template>
     <Layout full-height>
         <template #title>
-            <span style="font-family: genshin">椰羊 · </span> 扫描成就并导出到{{
-                to === 'seelie' ? 'Seelie' : 'Paimon.moe'
-            }}
+            <span style="font-family: genshin">椰羊 · </span>扫描成就并导出到
+            {{ to === 'seelie' ? 'SEELIE.me' : 'Paimon.moe' }}
         </template>
         <template #actions>
             <el-tooltip content="扫描完成之后也还可以切换哦">
@@ -21,7 +20,7 @@
                         })
                     "
                 >
-                    切换到{{ to === 'seelie' ? 'Paimon.moe' : 'Seelie' }}
+                    切换到 {{ to === 'seelie' ? 'Paimon.moe' : 'SEELIE.me' }}
                 </el-button>
             </el-tooltip>
         </template>
@@ -49,7 +48,7 @@
                                 },
                             })
                         "
-                        >切换到{{ to === 'seelie' ? 'Paimon.moe' : 'Seelie' }}</span
+                        >切换到 {{ to === 'seelie' ? 'Paimon.moe' : 'SEELIE.me' }}</span
                     >
                     <a> | </a>
                     <span class="reset" @click="reset">重新开始</span>
@@ -131,8 +130,8 @@ export default defineComponent({
                 })
             return `/* 
 * 复制此处所有内容，
-* 在Paimon.moe页面按F12打开调试器，
-* 选择控制台(Console)
+* 在 Paimon.moe 页面按 F12 打开调试器，
+* 选择控制台（Console）
 * 粘贴并回车执行完成导入
 */
 const b = ${JSON.stringify(exportArray)};
@@ -151,8 +150,8 @@ location.href='/achievement'`
                 })
             return `/* 
 * 复制此处所有内容，
-* 在Seelie.me页面按F12打开调试器，
-* 选择控制台(Console)
+* 在 SEELIE.me 页面按 F12 打开调试器，
+* 选择控制台（Console）
 * 粘贴并回车执行完成导入
 */
 const z = ${JSON.stringify(exportArray)};

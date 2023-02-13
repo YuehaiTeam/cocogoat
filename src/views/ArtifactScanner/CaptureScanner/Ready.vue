@@ -9,7 +9,7 @@
                 <div v-else-if="windowId > 0">
                     <el-alert
                         title="当前浏览器不支持悬浮窗"
-                        description="如需中断扫描，请按Win键"
+                        description="如需中断扫描，请按 Win 键"
                         type="error"
                         show-icon
                     />

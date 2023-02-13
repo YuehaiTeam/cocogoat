@@ -104,7 +104,7 @@ export function getUIAFCount(data: UIAF): string {
         const fin = data.list
             .filter((e) => (e as UIAFItem).status > UIAFStatus.ACHIEVEMENT_UNFINISHED)
             .length.toString()
-        return `${fin}个已完成，${data.list.length - Number(fin)}个未完成`
+        return `${fin} 个已完成，${data.list.length - Number(fin)} 个未完成`
     } catch (e) {
         return '数量统计失败'
     }
@@ -125,7 +125,7 @@ export function toUIAFExt(src: IAchievementItem[]): AchievementItem[] {
 }
 export function convertUIAF(data: UIAF): { achievements: IAchievementStore[]; source: string } {
     let source = data.source || data.info.export_app || 'UIAF'
-    if (source === 'cocogoat') source = '椰羊UIAF'
+    if (source === 'cocogoat') source = '椰羊 UIAF'
     const achievements: IAchievementStore[] = []
     data.list.forEach((e) => {
         const dt = new Date(e.timestamp === UIAFMagicTime ? 0 : e.timestamp * 1000)
@@ -159,32 +159,32 @@ export function useImport(
         try {
             const j = JSON.parse(content.value)
             if (j.achievements && hasCocogoatAchievementJson(j)) {
-                importText.value = '导入椰羊成就 (' + j.achievements.length + '个)'
+                importText.value = '导入椰羊成就（' + j.achievements.length + ' 个）'
                 allowed.value = true
                 importData.value = legacyToUIAFExt(j.achievements)
             } else if (j.value && j.value.achievements && hasCocogoatAchievementJson(j.value)) {
                 const imsource = j.source || '椰羊备份'
-                importText.value = '导入' + imsource + ' (' + j.value.achievements.length + '个)'
+                importText.value = '导入' + imsource + '（' + j.value.achievements.length + ' 个）'
                 allowed.value = true
                 importData.value = legacyToUIAFExt(j.value.achievements)
             } else if (hasUIAF(j)) {
                 let source = j.source || j.info.export_app || 'UIAF'
                 if (source === 'cocogoat') source = '椰羊UIAF'
-                importText.value = '导入' + source + ' ( ' + getUIAFCount(j) + ' )'
+                importText.value = '导入' + source + '（' + getUIAFCount(j) + ' ）'
                 allowed.value = true
                 importData.value = toUIAFExt(j.list as IAchievementItem[])
             } else if (j.value && hasUIAF(j.value)) {
                 let source = j.source || j.value.info.export_app || 'UIAF'
                 if (source === 'cocogoat') source = '椰羊UIAF'
-                importText.value = '导入' + source + ' ( ' + getUIAFCount(j.value) + ' )'
+                importText.value = '导入' + source + '（' + getUIAFCount(j.value) + ' ）'
                 allowed.value = true
                 importData.value = toUIAFExt(j.value.list as IAchievementItem[])
             } else if (j.achievement && (importData.value = hasPaimonMoeJson(j) || [])) {
-                importText.value = '导入Paimon.moe备份 (' + importData.value.length + '个)'
+                importText.value = '导入 Paimon.moe 备份（' + importData.value.length + ' 个）'
                 allowed.value = true
             } else if (j.achievements && hasSeelieJson(j)) {
                 importData.value = convertSeelieJson(j.achievements)
-                importText.value = '导入Seelie备份 (' + importData.value.length + '个)'
+                importText.value = '导入 SEELIE.me 备份（' + importData.value.length + ' 个）'
                 allowed.value = true
             } else {
                 importText.value = '未识别到可导入的内容'
@@ -247,7 +247,7 @@ export function useImport(
                     const mockCurrentUser = JSON.parse(result['cocogoat.v1.currentUser']) as string
                     const mockDB = result['cocogoat.v1.' + mockCurrentUser]
                     if (mockDB && hasCocogoatAchievementJson(mockDB)) {
-                        importText.value = '导入椰羊代码 (' + mockDB.achievements.length + '个)'
+                        importText.value = '导入椰羊代码（' + mockDB.achievements.length + ' 个）'
                         allowed.value = true
                         importData.value = legacyToUIAFExt(mockDB.achievements)
                         return
@@ -258,7 +258,7 @@ export function useImport(
                 if (typeof result.achievement === 'object') {
                     // maybe paimon.moe js
                     importData.value = convertPaimonMoeJson(result)
-                    importText.value = '导入Paimon.moe代码 (' + importData.value.length + '个)'
+                    importText.value = '导入 Paimon.moe 代码（' + importData.value.length + ' 个）'
                     allowed.value = true
                     return
                 }
@@ -267,7 +267,7 @@ export function useImport(
                     const a = result.account || 'main'
                     const b = JSON.parse(result[`${a}-achievements`])
                     const achList = convertSeelieJson(b)
-                    importText.value = '导入SeeLie.me代码 (' + achList.length + '个)'
+                    importText.value = '导入 SEELIE.me 代码（' + achList.length + ' 个）'
                     allowed.value = true
                     importData.value = achList
                     return

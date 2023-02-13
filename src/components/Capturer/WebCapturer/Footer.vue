@@ -1,6 +1,6 @@
 <template>
     <div :class="$style.opensource">
-        椰羊 | WebCapturer | <a href="https://github.com/YuehaiTeam/cocogoat" target="_blank">Github</a> |
+        椰羊 | WebCapturer | <a href="https://github.com/YuehaiTeam/cocogoat" target="_blank">GitHub</a> |
         <a href="https://github.com/YuehaiTeam/cocogoat/tree/main/docs" target="_blank">集成文档</a> |
         <build-info />
     </div>

@@ -9,7 +9,7 @@
                 <el-button size="large" type="primary" color="#0079cc" class="submit-button" @click="loginMsft">
                     Sign In With Microsoft
                 </el-button>
-                <div class="mail-desc">OneDrive在中国大陆地区响应较慢，并可能出现网络错误等情况，请知悉</div>
+                <div class="mail-desc">OneDrive 在中国大陆地区响应较慢，并可能出现网络错误等情况，请知悉</div>
             </div>
             <div class="loading">
                 <span class="big-icon">

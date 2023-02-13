@@ -140,12 +140,12 @@ export default defineComponent({
                 edit.value.id.includes('\\') ||
                 edit.value.id.includes(' ')
             ) {
-                ElMessageBox.alert('UID不合适', '出错了')
+                ElMessageBox.alert('UID 不合适', '出错了')
                 return
             }
             if (!edit.value.edit) {
                 if (allUsers.value.find((e) => e.id === edit.value.id)) {
-                    ElMessageBox.alert('UID重复', '出错了')
+                    ElMessageBox.alert('UID 重复', '出错了')
                     return
                 }
                 // 新增
@@ -160,7 +160,7 @@ export default defineComponent({
             if (edit.value.edit !== edit.value.id) {
                 // 修改了UID
                 if (allUsers.value.find((e) => e.id === edit.value.id)) {
-                    ElMessageBox.alert('UID重复', '出错了')
+                    ElMessageBox.alert('UID 重复', '出错了')
                     return
                 }
                 const val = get(edit.value.edit)

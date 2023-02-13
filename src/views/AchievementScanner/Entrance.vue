@@ -23,7 +23,7 @@
                         </small>
                         <small v-else style="color: #fe6565">
                             <div>暂不支持该浏览器</div>
-                            <div style="font-size: 12px">请换用Chrome或Edge</div>
+                            <div style="font-size: 12px">请换用 Chrome 或 Edge</div>
                         </small>
                     </h2>
                 </router-link>
@@ -44,7 +44,7 @@
                         <small v-else style="color: #fe6565">
                             <div>暂不支持该浏览器</div>
                             <div style="font-size: 12px">
-                                {{ isIOS ? '仅支持iOS 15.4及以上' : '请换用Chrome或Edge' }}
+                                {{ isIOS ? '仅支持 iOS 15.4 及以上' : '请换用 Chrome 或 Edge' }}
                             </div>
                         </small>
                     </h2>

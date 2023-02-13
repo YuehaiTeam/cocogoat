@@ -8,7 +8,7 @@
                 </span>
             </span>
             <div v-if="!edgeStrictMode" class="text">当前浏览器不支持此功能<br />请升级或更换浏览器</div>
-            <div v-else class="text">请对本站禁用Edge浏览器的“增强安全模式”以使用此功能</div>
+            <div v-else class="text">请对本站禁用 Edge 浏览器的“增强安全模式”以使用此功能</div>
         </div>
         <div v-else class="scanner-loading">
             <div :class="$style.loader">

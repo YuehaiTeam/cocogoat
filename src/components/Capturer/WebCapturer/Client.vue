@@ -17,7 +17,7 @@
                 <div class="content">
                     由于浏览器限制，自动操作无法在网页完成
                     <a class="dlink" href="/extra/client" target="_blank">
-                        如果插件没有自动启动，请点击此处下载辅助插件<small>(v{{ cVersion }} 300kB)</small>
+                        如果插件没有自动启动，请点击此处下载辅助插件<small>（v{{ cVersion }} {{ cSize }}）</small>
                     </a>
                     <div class="absolute-area">
                         <el-button class="start-btn start-gray" @click="enable(false)">
@@ -162,6 +162,7 @@ export default defineComponent({
             needUpdate,
             version,
             cVersion: latest.version,
+            cSize: latest.formattedSize,
         }
     },
 })

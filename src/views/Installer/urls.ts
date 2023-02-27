@@ -1,7 +1,7 @@
 export const urls = {
     'pc-cn': {
         name: '天空岛（国服）',
-        url: 'https://sdk-static.mihoyo.com/hk4e_cn/mdk/launcher/api/resource?key=eYd89JmJ&launcher_id=18',
+        url: 'https://sdk-static.mihoyo.com/hk4e_cn/mdk/launcher/api/resource?key=eYd89JmJ&launcher_id=18&channel_id=1',
     },
     'pc-bili': {
         name: '世界树（BiliBili）',

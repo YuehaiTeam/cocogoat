@@ -155,6 +155,9 @@
                                 <div class="chk">
                                     <el-checkbox v-model="sortByStatus" label="未完成优先" size="large" />
                                 </div>
+                                <div class="chk">
+                                    <el-checkbox v-model="hideFinished" label="隐藏已完成" size="large" />
+                                </div>
                             </div>
                             <div class="right" :class="{ [$style.searchToWrap]: searchTo && searchHidden && searchKw }">
                                 <el-autocomplete
@@ -359,6 +362,7 @@ export default defineComponent({
             )
         })
         const sortByStatus = ref(true)
+        const hideFinished = ref(false)
         const totalFin = computed(() => {
             return Object.values(achievementFinStat.value).reduce(
                 (acc, val) => {
@@ -475,6 +479,24 @@ export default defineComponent({
         })
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
+            if (hideFinished.value) {
+                data = data.filter((i) => {
+                    if (i.postStage) {
+                        let p = i
+                        while (p.postStage) {
+                            const q = currentCat.value.achievements.find((e) => e.id === p.postStage)
+                            p = q || p
+                            if (!q) {
+                                console.log('DATAERR: ', p.postStage)
+                                break
+                            }
+                        }
+                        return !isFin(p.id)
+                    } else {
+                        return !isFin(i.id)
+                    }
+                })
+            }
             const statusQuest2 = statusQuest.value.map((e) => (e === 'MQ' ? '' : e))
             if (statusQuest2.length > 0) {
                 data = data.filter((i) => statusQuest2.includes(currentCat.value.quest[i.id]))
@@ -707,6 +729,7 @@ export default defineComponent({
             CustomElScrollVue,
             showImport,
             sortByStatus,
+            hideFinished,
             totalCount,
             totalFin,
             totalReward,

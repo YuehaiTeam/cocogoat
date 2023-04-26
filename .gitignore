@@ -31,3 +31,7 @@ src/generated/
 .yarn/cache/*.zip
 .yarn/unplugged
 .yarn/sdks
+
+# Prepare for rust
+.rsw
+lib/*/*/target

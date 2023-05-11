@@ -2,33 +2,36 @@
     <div :class="$style.sidebar">
         <el-scrollbar ref="scrollbarRef" class="sidebar-scroll">
             <div class="sidebar-in">
-                <router-link
-                    v-for="i in achievementCat"
-                    :key="i.key || i.id"
-                    :to="{
-                        ...$route,
-                        params: {
-                            cat: i.key === 'wonders_of_the_world' ? '' : i.key,
-                        },
-                    }"
-                    :active-class="i.key === 'wonders_of_the_world' ? '' : 'router-link-active'"
-                    :exact-active-class="i.key === 'wonders_of_the_world' ? 'router-link-active' : ''"
-                >
-                    <div>
-                        {{ amos[i.name] }}
-                    </div>
-                    <small>
-                        <b>
-                            <img :src="img('yuanshi')" alt="原石" />
-                            {{ achievementFinStat[i.id || 0]?.reward || 0 }}/{{ i.totalReward }}
-                        </b>
-                        <span>
-                            {{ achievementFinStat[i.id || 0]?.count || 0 }}/{{ i.achievements.length }} ({{
-                                Math.round(((achievementFinStat[i.id || 0]?.count || 0) / i.achievements.length) * 100)
-                            }}%)
-                        </span>
-                    </small>
-                </router-link>
+                <template v-for="i in achievementCat" :key="i.key || i.id">
+                    <router-link
+                        v-if="!hideFinished || (achievementFinStat[i.id || 0]?.count || 0) < i.achievements.length"
+                        :to="{
+                            ...$route,
+                            params: {
+                                cat: i.key === 'wonders_of_the_world' ? '' : i.key,
+                            },
+                        }"
+                        :active-class="i.key === 'wonders_of_the_world' ? '' : 'router-link-active'"
+                        :exact-active-class="i.key === 'wonders_of_the_world' ? 'router-link-active' : ''"
+                    >
+                        <div>
+                            {{ amos[i.name] }}
+                        </div>
+                        <small>
+                            <b>
+                                <img :src="img('yuanshi')" alt="原石" />
+                                {{ achievementFinStat[i.id || 0]?.reward || 0 }}/{{ i.totalReward }}
+                            </b>
+                            <span>
+                                {{ achievementFinStat[i.id || 0]?.count || 0 }}/{{ i.achievements.length }} ({{
+                                    Math.round(
+                                        ((achievementFinStat[i.id || 0]?.count || 0) / i.achievements.length) * 100,
+                                    )
+                                }}%)
+                            </span>
+                        </small>
+                    </router-link>
+                </template>
             </div>
         </el-scrollbar>
         <div v-if="isMobile" class="lr">
@@ -53,7 +56,7 @@ import { i18n } from '@/i18n'
 import { ref, toRef, defineComponent } from 'vue'
 import type { ElScrollbar } from 'element-plus'
 export default defineComponent({
-    props: ['achievementCat', 'achievementFinStat'],
+    props: ['achievementCat', 'achievementFinStat', 'hideFinished'],
     setup() {
         const scrollbarRef = ref<InstanceType<typeof ElScrollbar> | null>(null)
         const move = (dir: number) => {

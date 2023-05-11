@@ -102,7 +102,11 @@
                     }"
                 ></div>
             </div>
-            <achievement-sidebar :achievementCat="achievementCat" :achievementFinStat="achievementFinStat" />
+            <achievement-sidebar
+                :achievementCat="achievementCat"
+                :achievementFinStat="achievementFinStat"
+                :hideFinished="hideFinished"
+            />
             <article>
                 <DynamicScroller
                     ref="scroll"

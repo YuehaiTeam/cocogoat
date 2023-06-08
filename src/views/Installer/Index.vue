@@ -39,7 +39,13 @@
                                 class="title-card"
                                 :header="`${m === 'game' ? '最新版本' : '预下载'}：${result[m].latest.version}`"
                             >
-                                <a class="d-link" :href="result[m].latest.path" target="_blank" rel="noreferrer">
+                                <a
+                                    v-if="result[m].latest.path"
+                                    class="d-link"
+                                    :href="result[m].latest.path"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                >
                                     <div class="icon">
                                         <fa-icon icon="box-open"></fa-icon>
                                     </div>
@@ -61,7 +67,50 @@
                                         <fa-icon icon="angle-right"></fa-icon>
                                     </div>
                                 </a>
-                                <el-divider>语音包</el-divider>
+                                <div v-else class="d-seg">
+                                    <div class="d-text">
+                                        <div class="icon">
+                                            <fa-icon icon="code-merge"></fa-icon>
+                                        </div>
+                                        <div class="center">
+                                            <div class="name">分卷包</div>
+                                            <div class="meta">
+                                                <span>
+                                                    <fa-icon icon="file-zipper" /> 共
+                                                    {{ formatSize(result[m].latest.package_size) }}</span
+                                                >
+                                                <span>
+                                                    <fa-icon icon="database" /> 共
+                                                    {{ formatSize(result[m].latest.size) }}</span
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="seg-list">
+                                        <a
+                                            v-for="i in result[m].latest.segments"
+                                            :key="i.path"
+                                            :href="i.path"
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            class="d-link d-small"
+                                        >
+                                            <div class="icon">
+                                                <fa-icon icon="box-open"></fa-icon>
+                                            </div>
+                                            <div class="center">
+                                                <div class="meta">
+                                                    <span class="seg-name">{{ basename(i.path) }}</span>
+                                                    <span> <fa-icon icon="hashtag" /> {{ i.md5 }} </span>
+                                                </div>
+                                            </div>
+                                            <div class="right">
+                                                <fa-icon icon="angle-right"></fa-icon>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                                <el-divider v-if="result[m].latest.voice_packs.length > 0">语音包</el-divider>
                                 <a
                                     v-for="i in result[m].latest.voice_packs"
                                     :key="i.path"
@@ -107,7 +156,7 @@
                                         <fa-icon icon="angle-right"></fa-icon>
                                     </div>
                                 </a>
-                                <el-divider>语音包</el-divider>
+                                <el-divider v-if="z.voice_packs.length > 0">语音包</el-divider>
                                 <a
                                     v-for="i in z.voice_packs"
                                     :key="i.path"
@@ -154,10 +203,21 @@ import {
     faFileZipper,
     faCalendarPlus,
     faHouseLaptop,
+    faCodeMerge,
 } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { ElNotification } from 'element-plus'
-library.add(faBoxOpen, faAngleRight, faFileAudio, faHashtag, faDatabase, faFileZipper, faCalendarPlus, faHouseLaptop)
+library.add(
+    faBoxOpen,
+    faAngleRight,
+    faFileAudio,
+    faHashtag,
+    faCodeMerge,
+    faDatabase,
+    faFileZipper,
+    faCalendarPlus,
+    faHouseLaptop,
+)
 import { vLoading } from 'element-plus/es/components/loading/src/directive'
 import 'element-plus/theme-chalk/el-loading.css'
 import 'element-plus/theme-chalk/el-notification.css'
@@ -175,8 +235,8 @@ export default defineComponent({
         const route = useRoute()
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const cachedResult = {} as Record<string, any>
-        const load = () => {
-            const url = urls[(route.query.type || 'pc-cn').toString()].url
+        const load = async () => {
+            const url = await urls[(route.query.type || 'pc-cn').toString()].url
             if (cachedResult[url]) {
                 result.value = cachedResult[url]
                 return
@@ -236,10 +296,9 @@ export default defineComponent({
         .title-card {
             margin: 20px;
         }
-        .d-link {
-            border: 1px solid var(--c-border);
+        .d-link,
+        .d-text {
             display: block;
-            height: 55px;
             text-decoration: none;
             border-radius: 5px;
             color: var(--c-text);
@@ -277,7 +336,19 @@ export default defineComponent({
                     display: inline-block;
                 }
             }
-
+            &.d-small {
+                height: 35px;
+                margin-top: 12px;
+                .icon,
+                .right {
+                    font-size: 16px;
+                    line-height: 33px;
+                }
+            }
+        }
+        .d-link {
+            border: 1px solid var(--c-border);
+            height: 55px;
             &:hover {
                 color: #0079cc;
                 border-color: #0079cc;

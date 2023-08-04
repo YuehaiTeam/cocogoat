@@ -165,8 +165,8 @@
                                 <div class="chk">
                                     <el-checkbox
                                         label="全选本页"
-                                        size="large"
                                         v-model="selectAllCat"
+                                        size="large"
                                         @change="(checked:boolean) => checkAllCat(checked)"
                                     />
                                 </div>

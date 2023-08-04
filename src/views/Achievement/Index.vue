@@ -164,10 +164,10 @@
                                 </div>
                                 <div class="chk">
                                     <el-checkbox
-                                        v-model="selectAllCat"
-                                        @change="(checked:boolean) => checkAllCat(checked)"
                                         label="全选本页"
                                         size="large"
+                                        v-model="selectAllCat"
+                                        @change="(checked:boolean) => checkAllCat(checked)"
                                     />
                                 </div>
                             </div>

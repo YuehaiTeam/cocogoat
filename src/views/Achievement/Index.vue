@@ -163,7 +163,12 @@
                                     <el-checkbox v-model="hideFinished" label="隐藏已完成" size="large" />
                                 </div>
                                 <div class="chk">
-                                    <el-checkbox v-model="selectAllCat" @change="checked=>checkAllCat(checked)" label="全选本页" size="large" />
+                                    <el-checkbox
+                                        v-model="selectAllCat"
+                                        @change="(checked:boolean) => checkAllCat(checked)"
+                                        label="全选本页"
+                                        size="large"
+                                    />
                                 </div>
                             </div>
                             <div class="right" :class="{ [$style.searchToWrap]: searchTo && searchHidden && searchKw }">
@@ -478,8 +483,8 @@ export default defineComponent({
             const reloadAllCat = () => {
                 let reloadStatus = true
                 for (let i = 0; i < data.length; i++) {
-                    if(achievementFin.value[data[i].id]) {
-                        if(achievementFin.value[data[i].id].status === UIAFStatus.ACHIEVEMENT_UNFINISHED) {
+                    if (achievementFin.value[data[i].id]) {
+                        if (achievementFin.value[data[i].id].status === UIAFStatus.ACHIEVEMENT_UNFINISHED) {
                             reloadStatus = false
                             selectAllCat.value = false
                             return
@@ -490,7 +495,7 @@ export default defineComponent({
                         return
                     }
                 }
-                if(reloadStatus) {
+                if (reloadStatus) {
                     selectAllCat.value = true
                 }
             }
@@ -603,16 +608,19 @@ export default defineComponent({
             }
             return data
         })
-        const checkAllCat = (checked) => {
-            let data = currentCat.value.achievements.concat([])
-            if(checked) {
-                data.forEach(item => {
-                    store.value.achievement2[item.id] = AchievementItem.create(item.id, UIAFStatus.ACHIEVEMENT_POINT_TAKEN)
+        const checkAllCat = (checked: boolean) => {
+            const data = currentCat.value.achievements.concat([])
+            if (checked) {
+                data.forEach((item) => {
+                    store.value.achievement2[item.id] = AchievementItem.create(
+                        item.id,
+                        UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
+                    )
                 })
                 selectAllCat.value = true
             }
-            if(!checked) {
-                data.forEach(item => {
+            if (!checked) {
+                data.forEach((item) => {
                     store.value.achievement2[item.id].status = UIAFStatus.ACHIEVEMENT_UNFINISHED
                 })
             }

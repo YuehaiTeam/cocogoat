@@ -162,6 +162,14 @@
                                 <div class="chk">
                                     <el-checkbox v-model="hideFinished" label="隐藏已完成" size="large" />
                                 </div>
+                                <div class="chk">
+                                    <el-checkbox
+                                        v-model="selectAllCat"
+                                        label="全选本页"
+                                        size="large"
+                                        @change="(checked:boolean) => checkAllCat(checked)"
+                                    />
+                                </div>
                             </div>
                             <div class="right" :class="{ [$style.searchToWrap]: searchTo && searchHidden && searchKw }">
                                 <el-autocomplete
@@ -233,18 +241,6 @@
                     </template>
                     <template #after>
                         <div class="page-after">
-                            <div class="select-this-page">
-                                <el-link
-                                    v-if="
-                                        !achievementFinStat[currentCat.id] ||
-                                        achievementFinStat[currentCat.id]?.count < currentCat.achievements.length
-                                    "
-                                    type="primary"
-                                    @click="selectCat(currentCat)"
-                                >
-                                    全选本页
-                                </el-link>
-                            </div>
                             <el-divider>
                                 <icon-cocogoat />
                             </el-divider>
@@ -280,7 +276,7 @@ import IconCocogoat from '@/components/Icons/cocogoat.vue'
 
 import { i18n } from '@/i18n'
 import { store, options } from '@/store'
-import { Achievement, AchievementCategory, UIAFStatus } from '@/typings/Achievement'
+import { Achievement, UIAFStatus } from '@/typings/Achievement'
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import CustomElScrollVue from '@/components/ElCustomScroll.vue'
@@ -367,6 +363,7 @@ export default defineComponent({
         })
         const sortByStatus = ref(true)
         const hideFinished = ref(false)
+        const selectAllCat = ref(false)
         const totalFin = computed(() => {
             return Object.values(achievementFinStat.value).reduce(
                 (acc, val) => {
@@ -483,6 +480,26 @@ export default defineComponent({
         })
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
+            const reloadAllCat = () => {
+                let reloadStatus = true
+                for (let i = 0; i < data.length; i++) {
+                    if (achievementFin.value[data[i].id]) {
+                        if (achievementFin.value[data[i].id].status === UIAFStatus.ACHIEVEMENT_UNFINISHED) {
+                            reloadStatus = false
+                            selectAllCat.value = false
+                            return
+                        }
+                    } else {
+                        reloadStatus = false
+                        selectAllCat.value = false
+                        return
+                    }
+                }
+                if (reloadStatus) {
+                    selectAllCat.value = true
+                }
+            }
+            reloadAllCat()
             if (hideFinished.value) {
                 data = data.filter((i) => {
                     if (i.postStage) {
@@ -591,6 +608,23 @@ export default defineComponent({
             }
             return data
         })
+        const checkAllCat = (checked: boolean) => {
+            const data = currentCat.value.achievements.concat([])
+            if (checked) {
+                data.forEach((item) => {
+                    store.value.achievement2[item.id] = AchievementItem.create(
+                        item.id,
+                        UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
+                    )
+                })
+                selectAllCat.value = true
+            }
+            if (!checked) {
+                data.forEach((item) => {
+                    store.value.achievement2[item.id].status = UIAFStatus.ACHIEVEMENT_UNFINISHED
+                })
+            }
+        }
         const updateFinished = async (id: number) => {
             if (achievementFin.value[id]) {
                 if (achievementFin.value[id].status > UIAFStatus.ACHIEVEMENT_UNFINISHED) {
@@ -677,13 +711,6 @@ export default defineComponent({
             }
             showClear.value = false
         }
-        const selectCat = (cat: AchievementCategory) => {
-            cat.achievements.forEach((item) => {
-                store.value.achievement2[item.id] =
-                    store.value.achievement2[item.id] ||
-                    AchievementItem.create(item.id, UIAFStatus.ACHIEVEMENT_POINT_TAKEN)
-            })
-        }
         const autoImportId = computed(() => (route.query.memo ? route.query.memo.toString() : ''))
         const showImport = ref(!!autoImportId.value)
         watch(autoImportId, (v) => {
@@ -729,11 +756,12 @@ export default defineComponent({
             updateCurrent: debouncedUpdateCurrent,
             doClear,
             showClear,
-            selectCat,
             CustomElScrollVue,
             showImport,
             sortByStatus,
             hideFinished,
+            selectAllCat,
+            checkAllCat,
             totalCount,
             totalFin,
             totalReward,

@@ -167,7 +167,7 @@
                                         v-model="selectAllCat"
                                         label="全选本页"
                                         size="large"
-                                        @change="(checked:boolean) => checkAllCat(checked)"
+                                        @change="(checked) => checkAllCat(checked as boolean)"
                                     />
                                 </div>
                             </div>

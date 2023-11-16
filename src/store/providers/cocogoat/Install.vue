@@ -57,7 +57,7 @@ import {
     faBomb,
 } from '@fortawesome/free-solid-svg-icons'
 import { ElMessageBox } from 'element-plus'
-import { computed, defineComponent, onBeforeUnmount, ref } from 'vue'
+import { computed, defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 library.add(faAngleRight, faEnvelopeOpenText, faCheckCircle, faCircleNotch, faBomb)
 export const name = '椰羊云同步'
 export default defineComponent({
@@ -66,6 +66,30 @@ export default defineComponent({
     },
     emits: ['submit'],
     setup(props, { emit }) {
+        let gtObj: any
+        let gtOnSucc = () => {}
+        const step = ref(1)
+        onMounted(() => {
+            window.initGeetest4(
+                {
+                    captchaId: '2c9c8579b5bc9d3771a03e7939ac0c66',
+                    product: 'bind',
+                },
+                function (captchaObj: any) {
+                    captchaObj
+                        .onReady(function () {
+                            gtObj = captchaObj
+                        })
+                        .onSuccess(function () {
+                            gtOnSucc()
+                            gtOnSucc = () => {}
+                        })
+                        .onClose(function () {
+                            step.value = 1
+                        })
+                },
+            )
+        })
         let intervalId = 0 as unknown as ReturnType<typeof setTimeout>
         onBeforeUnmount(() => {
             intervalId && clearTimeout(intervalId)
@@ -74,7 +98,6 @@ export default defineComponent({
         onBeforeUnmount(() => {
             destroyed = true
         })
-        const step = ref(1)
         const mail = ref('')
         const isMail = computed(() => {
             // 正则判断是否邮件地址
@@ -88,6 +111,14 @@ export default defineComponent({
         const submitMail = async () => {
             if (!isMail.value) return
             step.value = 2
+            let gtres = null
+            if (gtObj) {
+                gtObj.showCaptcha()
+                await new Promise<void>((resolve) => {
+                    gtOnSucc = resolve
+                })
+                gtres = gtObj.getValidate()
+            }
             const res = await fetch(await apibase('/v2/lumine'), {
                 method: 'POST',
                 headers: {
@@ -95,6 +126,7 @@ export default defineComponent({
                 },
                 body: JSON.stringify({
                     email: mail.value,
+                    gt: gtres,
                 }),
             })
             if (!res.ok || res.headers.get('content-type') !== 'application/json') {

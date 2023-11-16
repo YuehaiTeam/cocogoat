@@ -42,6 +42,7 @@ declare global {
         $cocogoat: CocogoatGlobal<TypeApp>
         dataLayer: unknown[]
         gtag: (...args: unknown[]) => void
+        initGeetest4: (...args: unknown[]) => any
     }
 }
 

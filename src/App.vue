@@ -1,5 +1,6 @@
 <template>
     <router-view />
+    <scriptx src="https://static.geetest.com/v4/gt4.js"></scriptx>
 </template>
 <script>
 import '@/style/theme.scss'

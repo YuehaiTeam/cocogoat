@@ -67,7 +67,9 @@ export default defineComponent({
     emits: ['submit'],
     setup(props, { emit }) {
         let gtObj: any
-        let gtOnSucc = () => {}
+        let gtOnSucc = () => {
+            // placeholder
+        }
         const step = ref(1)
         onMounted(() => {
             window.initGeetest4(
@@ -82,7 +84,9 @@ export default defineComponent({
                         })
                         .onSuccess(function () {
                             gtOnSucc()
-                            gtOnSucc = () => {}
+                            gtOnSucc = () => {
+                                // placeholder
+                            }
                         })
                         .onClose(function () {
                             step.value = 1

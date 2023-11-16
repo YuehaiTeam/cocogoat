@@ -110,15 +110,10 @@
                     <h4>本地使用</h4>
                     <div>如需离线使用，请点这里下载本地专用版。</div>
                 </a>
-                <a
-                    :class="$style.card"
-                    href="https://support.qq.com/products/417765"
-                    target="_blank"
-                    @click.prevent="clicktxc"
-                >
+                <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat/issues" target="_blank">
                     <fa-icon icon="message" />
                     <h4>反馈问题</h4>
-                    <div>无论功能反馈还是聊天吹水，都可以前往 兔小巢 反馈。</div>
+                    <div>无论功能反馈还是聊天吹水，都可以前往 Github Issues 反馈。</div>
                 </a>
             </div>
             <div :class="$style.copyright">&copy;2022-2023 YuehaiTeam cocogoat.work <build-info /></div>

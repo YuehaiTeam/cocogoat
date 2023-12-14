@@ -41,7 +41,7 @@
         </el-form>
         <h4>关于</h4>
         <section class="about">
-            <div class="logo"><icon-cocogoat /> 椰羊cocogoat</div>
+            <div class="logo"><icon-cocogoat /> 椰羊 cocogoat</div>
             <div class="copyright">&copy;2022-2023 YuehaiTeam <build-info /></div>
             <div v-if="options.reporting" class="logreport">
                 <el-link @click="report">上传日志</el-link>
@@ -88,6 +88,7 @@ export default {
             width: 300px;
             max-width: 80%;
             align-items: center;
+            text-align: center;
             .logo {
                 height: 50px;
                 color: var(--c-text);

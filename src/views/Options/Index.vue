@@ -1,6 +1,6 @@
 <template>
     <Layout :class="$style.options">
-        <template #title>设置</template>
+        <template #title><span style="font-family: genshin">设置</span></template>
         <el-tabs :model-value="$route.name" @update:model-value="$router.replace({ name: $event })">
             <el-tab-pane name="options.basic" label="基本设置"></el-tab-pane>
             <el-tab-pane name="options.user" label="账号管理"></el-tab-pane>

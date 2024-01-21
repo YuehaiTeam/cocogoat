@@ -2,18 +2,7 @@
     {
         "tag": "ort",
         "test": "ort-wasm-simd.wasm",
-        "prefix": "https://cdn.staticfile.org/onnxruntime-web/1.10.0/",
-        "resources": {
-            "ort-wasm-simd.wasm": "ort-wasm-simd.wasm",
-            "ort-wasm-simd-threaded.wasm": "ort-wasm-simd-threaded.wasm",
-            "ort-wasm.wasm": "ort-wasm.wasm",
-            "ort-wasm-threaded.wasm": "ort-wasm-threaded.wasm"
-        }
-    },
-    {
-        "tag": "ort",
-        "test": "ort-wasm-simd.wasm",
-        "prefix": "https://s1.pstatp.com/cdn/expire-1-y/onnxruntime-web/1.10.0/",
+        "prefix": "https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/onnxruntime-web/1.10.0/",
         "resources": {
             "ort-wasm-simd.wasm": "ort-wasm-simd.wasm",
             "ort-wasm-simd-threaded.wasm": "ort-wasm-simd-threaded.wasm",

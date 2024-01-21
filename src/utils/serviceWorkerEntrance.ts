@@ -9,7 +9,7 @@ import 'element-plus/theme-chalk/el-notification.css'
 import { hasSIMD } from './compatibility'
 const ortWasm = hasSIMD ? 'ort-wasm-simd.wasm' : 'ort-wasm.wasm'
 const ocvWasm = hasSIMD ? 'opencv-simd.wasm' : 'opencv-normal.wasm'
-const resourcesArr = { [ortWasm]: '1.10.0', [ocvWasm]: '1.0.5', 'ppocr.ort': '1.0.5', 'yas.ort': '1.0.5' }
+const resourcesArr = { [ortWasm]: '1.10.0-1', [ocvWasm]: '1.0.5', 'ppocr.ort': '1.0.5', 'yas.ort': '1.0.5' }
 export function loadSW() {
     const sw = new ServiceWorker(WorkerUrl(/* @worker-url '../../sw/index.ts' 'sw static/sw.js' */), {
         fallback: '/sw.js',

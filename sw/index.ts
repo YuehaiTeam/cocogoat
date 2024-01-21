@@ -170,7 +170,7 @@ registerRoute(
 // cachefirst for static cdn
 registerRoute(
     ({ url }) => {
-        return new URL(url).origin.includes('pstatp.com')
+        return new URL(url).origin.includes('bytecdntp.com')
     },
     new CacheFirst({
         cacheName: cacheName + '-prejs',

@@ -136,10 +136,10 @@ src.delete()`)
                 // @ts-ignore
                 window.require.reset()
             } catch (e) {}
-            const monacoBase = 'https://s1.pstatp.com/cdn/expire-1-y/monaco-editor/0.31.1/min/vs'
+            const monacoBase = 'https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/monaco-editor/0.31.1/min/vs'
             await Promise.all([
                 loadScript(monacoBase + '/loader.min.js'),
-                loadScript('https://s2.pstatp.com/cdn/expire-1-y/lodash.js/4.17.21/lodash.min.js'),
+                loadScript('https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/lodash.js/4.17.21/lodash.min.js'),
             ])
             // @ts-ignore
             window.define.push = webpackJsonp.push

@@ -50,7 +50,7 @@ console.log('')
 
 const PREJS_PROD_SUFFIX = process.env.NODE_ENV === 'production' ? '.prod' : ''
 const PREJS_URL =
-    'https://s2.pstatp.com/cdn/expire-1-y/??' +
+    'https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/??' +
     [
         `vue/3.2.31/vue.runtime.global${PREJS_PROD_SUFFIX}.min.js`,
         `vue-router/4.0.13/vue-router.global${PREJS_PROD_SUFFIX}.min.js`,
@@ -296,8 +296,8 @@ module.exports = defineConfig({
             // externals
             config.externals({
                 'monaco-editor': 'var monaco',
-                exceljs: ['https://s2.pstatp.com/cdn/expire-1-y/exceljs/4.3.0/exceljs.min.js', 'ExcelJS'],
-                jszip: ['https://s2.pstatp.com/cdn/expire-1-y/jszip/3.7.0/jszip.min.js', 'JSZip'],
+                exceljs: ['https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/exceljs/4.3.0/exceljs.min.js', 'ExcelJS'],
+                jszip: ['https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jszip/3.7.0/jszip.min.js', 'JSZip'],
                 '@sentry/browser': [
                     'https://npm.elemecdn.com/@sentry/tracing/build/bundle.tracing.es6.min.js',
                     'Sentry',

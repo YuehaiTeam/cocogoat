@@ -20,7 +20,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 const isCI = !!process.env.SENTRY_KEY
 const isTest = process.argv.includes('--test') || process.env.CF_PAGES === '1'
 const useCDN = process.argv.includes('--cdn') || isCI
-const usePreJS = process.argv.includes('--prejs') || isCI
+const usePreJS = process.argv.includes('--prejs') || false // isCI
 const useSWC = isCI
     ? 'false'
     : process.argv.includes('--no-swc')

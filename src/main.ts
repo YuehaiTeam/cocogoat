@@ -75,7 +75,7 @@ declare global {
     window.$cocogoat = c
     window.$cocogoat.onload && window.$cocogoat.onload()
     /// #if !SINGLEFILE
-    loadSW()
+    window.$cocogoat.sw = loadSW()
     /// #endif
 })()
 

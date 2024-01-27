@@ -70,7 +70,7 @@ declare global {
         options,
         resources,
         currentUser,
-    } as typeof window['$cocogoat']
+    } as (typeof window)['$cocogoat']
     Object.assign(c, window.$cocogoat)
     window.$cocogoat = c
     window.$cocogoat.onload && window.$cocogoat.onload()

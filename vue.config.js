@@ -24,10 +24,10 @@ const usePreJS = process.argv.includes('--prejs') || false // isCI
 const useSWC = isCI
     ? 'false'
     : process.argv.includes('--no-swc')
-    ? 'false'
-    : process.argv.includes('--no-swc-minify')
-    ? 'compile'
-    : 'true'
+      ? 'false'
+      : process.argv.includes('--no-swc-minify')
+        ? 'compile'
+        : 'true'
 const useSentry =
     !process.argv.includes('--no-sentry') && process.env.NODE_ENV === 'production' && !!process.env.SENTRY_KEY
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')

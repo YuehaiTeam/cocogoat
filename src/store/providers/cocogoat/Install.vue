@@ -221,7 +221,9 @@ export default defineComponent({
             border: 1px solid #0078cc;
             text-align: center;
             font-size: 18px;
-            font-family: Consolas, Microsoft Yahei;
+            font-family:
+                Consolas,
+                Microsoft Yahei;
             outline: 0;
             color: #0078cc;
             box-sizing: border-box;

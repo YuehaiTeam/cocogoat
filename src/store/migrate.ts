@@ -13,20 +13,26 @@ export function legacyToUIAFExt(src: IAchievementStore[]): AchievementItem[] {
                         ? UIAFStatus.ACHIEVEMENT_UNFINISHED
                         : UIAFStatus.ACHIEVEMENT_POINT_TAKEN,
                 partial:
-                    e.partialDetail?.reduce((a, b) => {
-                        a[b.id] = Math.floor(new Date(b.timestamp).getTime() / 1000)
-                        return a
-                    }, {} as Record<number, number>) || {},
+                    e.partialDetail?.reduce(
+                        (a, b) => {
+                            a[b.id] = Math.floor(new Date(b.timestamp).getTime() / 1000)
+                            return a
+                        },
+                        {} as Record<number, number>,
+                    ) || {},
                 image: e.images?.main || '',
                 source: IAchievementSource.IMPORT,
             }),
     )
 }
 export function achArrayToObject(src: AchievementItem[]): Record<number, AchievementItem> {
-    return src.reduce((a, b) => {
-        a[b.id] = b
-        return a
-    }, {} as Record<number, AchievementItem>)
+    return src.reduce(
+        (a, b) => {
+            a[b.id] = b
+            return a
+        },
+        {} as Record<number, AchievementItem>,
+    )
 }
 export const runMigrate = (key: string, data: IStore) => {
     let hasMigrated = false

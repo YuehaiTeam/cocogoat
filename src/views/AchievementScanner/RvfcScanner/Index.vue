@@ -63,7 +63,7 @@
                             <el-progress
                                 type="circle"
                                 :percentage="progress || 0"
-                                :format="(percent:number) => percent.toFixed(2) + '%'"
+                                :format="(percent: number) => percent.toFixed(2) + '%'"
                             />
                         </div>
                     </div>

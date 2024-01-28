@@ -48,7 +48,7 @@ export function WorkerExtract(wrapper: () => Worker): URL {
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             window.Worker = function (url: string) {
-                return new URL(url)
+                return new URL(url, import.meta.url)
             }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             window.URL.revokeObjectURL = (_url: string) => {

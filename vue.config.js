@@ -105,10 +105,10 @@ module.exports = defineConfig({
     },
     configureWebpack: {
         plugins: [
-            AutoImport({
+            AutoImport.default({
                 resolvers: [ElementPlusResolver()],
             }),
-            Components({
+            Components.default({
                 dirs: [],
                 resolvers: [ElementPlusResolver()],
             }),

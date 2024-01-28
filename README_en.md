@@ -29,7 +29,6 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
 
 ## Contact or Feedback
  - Any issues/feedback is welcome. Don't be scared by all the Chinese text, we'll answer you in English!
- - For Chinese-reading users, our QQ group is [933468075](https://jq.qq.com/?_wv=1027&k=Pl2MFHcA).
 
 **FAQs**
  - Q: Can I use this locally？  
@@ -45,7 +44,7 @@ A 100% browser-based toolbox for Genshin Impact with every line of code made by 
  - Q: Will my data be sent to the server?  
    A: No. Amy data that needs to be sent (such as feedback) will prompt you before it is sent. Even crash reports can be turned off in the settings.
  - Q: Can I export data to...?  
-   A: Eventually, we just need a PR/issue/group feedback to be submitted with the required import format!
+   A: Eventually, we just need a PR/issue to be submitted with the required import format!
 
 ## Upadting
  - Just reload the page by pressing <kbd>Ctrl</kbd> + <kbd>F5</kbd>

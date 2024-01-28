@@ -36,7 +36,7 @@
         "copy-to-clipboard": "^3.3.3",
         "core-js": "^3.35.1",
         "dayjs": "^1.11.10",
-        "delay": "^5.0.0",
+        "delay": "^6.0.0",
         "element-plus": "2.2.0",
         "exceljs": "^4.4.0",
         "fastq": "^1.17.0",
@@ -52,14 +52,14 @@
         "qs": "^6.11.2",
         "util": "^0.12.5",
         "vue": "^3.4.15",
-        "vue-demi": "^0.12.5",
+        "vue-demi": "^0.14.6",
         "vue-google-adsense": "^2.0.0",
         "vue-monaco": "^1.2.2",
         "vue-router": "^4.2.5",
         "vue-scriptx": "^0.2.5",
         "vue-virtual-scroller": "2.0.0-alpha.1",
-        "workbox-routing": "^6.6.0",
-        "workbox-strategies": "^6.6.0"
+        "workbox-routing": "^7.0.0",
+        "workbox-strategies": "^7.0.0"
     },
     "devDependencies": {
         "@babel/eslint-parser": "^7.23.9",
@@ -108,7 +108,7 @@
         "webpack-bundle-analyzer": "^4.10.1",
         "worker-loader": "^3.0.8"
     },
-    "packageManager": "pnpm@8.14.3",
+    "packageManager": "pnpm@8.15.0",
     "pnpm": {
         "patchedDependencies": {
             "git-repo-info@2.1.1": "patches/git-repo-info@2.1.1.patch",

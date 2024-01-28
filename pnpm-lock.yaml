@@ -72,8 +72,8 @@ dependencies:
     specifier: ^1.11.10
     version: 1.11.10
   delay:
-    specifier: ^5.0.0
-    version: 5.0.0
+    specifier: ^6.0.0
+    version: 6.0.0
   element-plus:
     specifier: 2.2.0
     version: 2.2.0(vue@3.4.15)
@@ -120,8 +120,8 @@ dependencies:
     specifier: ^3.4.15
     version: 3.4.15(typescript@4.9.5)
   vue-demi:
-    specifier: ^0.12.5
-    version: 0.12.5(vue@3.4.15)
+    specifier: ^0.14.6
+    version: 0.14.6(vue@3.4.15)
   vue-google-adsense:
     specifier: ^2.0.0
     version: 2.0.0(vue-scriptx@0.2.5)(vue@3.4.15)
@@ -138,11 +138,11 @@ dependencies:
     specifier: 2.0.0-alpha.1
     version: 2.0.0-alpha.1(patch_hash=rfk6l3w64yvy7dk3dqwf6tgolm)(vue@3.4.15)
   workbox-routing:
-    specifier: ^6.6.0
-    version: 6.6.0
+    specifier: ^7.0.0
+    version: 7.0.0
   workbox-strategies:
-    specifier: ^6.6.0
-    version: 6.6.0
+    specifier: ^7.0.0
+    version: 7.0.0
 
 devDependencies:
   '@babel/eslint-parser':
@@ -4029,7 +4029,7 @@ packages:
       '@vueuse/metadata': 8.9.4
       '@vueuse/shared': 8.9.4(vue@3.4.15)
       vue: 3.4.15(typescript@4.9.5)
-      vue-demi: 0.12.5(vue@3.4.15)
+      vue-demi: 0.14.6(vue@3.4.15)
     dev: false
 
   /@vueuse/metadata@10.7.2:
@@ -4061,7 +4061,7 @@ packages:
         optional: true
     dependencies:
       vue: 3.4.15(typescript@4.9.5)
-      vue-demi: 0.12.5(vue@3.4.15)
+      vue-demi: 0.14.6(vue@3.4.15)
     dev: false
 
   /@webassemblyjs/ast@1.11.6:
@@ -5524,9 +5524,9 @@ packages:
       rimraf: 2.7.1
     dev: true
 
-  /delay@5.0.0:
-    resolution: {integrity: sha512-ReEBKkIfe4ya47wlPYf/gu5ib6yUG0/Aez0JQZQz94kiWtRQvZIQbTiehsnwHvLSWJnQdhVeqYue7Id1dKr0qw==}
-    engines: {node: '>=10'}
+  /delay@6.0.0:
+    resolution: {integrity: sha512-2NJozoOHQ4NuZuVIr5CWd0iiLVIRSDepakaovIN+9eIDHEhdCAEvSy2cuf1DCrPPQLvHmbqTHODlhHg8UCy4zw==}
+    engines: {node: '>=16'}
     dev: false
 
   /depd@1.1.2:
@@ -9953,21 +9953,6 @@ packages:
     resolution: {integrity: sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==}
     dev: true
 
-  /vue-demi@0.12.5(vue@3.4.15):
-    resolution: {integrity: sha512-BREuTgTYlUr0zw0EZn3hnhC3I6gPWv+Kwh4MCih6QcAeaTlaIX0DwOVN0wHej7hSvDPecz4jygy/idsgKfW58Q==}
-    engines: {node: '>=12'}
-    hasBin: true
-    requiresBuild: true
-    peerDependencies:
-      '@vue/composition-api': ^1.0.0-rc.1
-      vue: ^3.0.0-0 || ^2.6.0
-    peerDependenciesMeta:
-      '@vue/composition-api':
-        optional: true
-    dependencies:
-      vue: 3.4.15(typescript@4.9.5)
-    dev: false
-
   /vue-demi@0.14.6(vue@3.4.15):
     resolution: {integrity: sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==}
     engines: {node: '>=12'}
@@ -10465,20 +10450,20 @@ packages:
     resolution: {integrity: sha512-CC1bOL87PIWSBhDcTrdeLo6eGT7mCFtrg0uIJtqJUFyK+eJnzl8A1niH56uu7KMa5XFrtiV+AQuHO3n7DsHnLQ==}
     dev: true
 
-  /workbox-core@6.6.0:
-    resolution: {integrity: sha512-GDtFRF7Yg3DD859PMbPAYPeJyg5gJYXuBQAC+wyrWuuXgpfoOrIQIvFRZnQ7+czTIQjIr1DhLEGFzZanAT/3bQ==}
+  /workbox-core@7.0.0:
+    resolution: {integrity: sha512-81JkAAZtfVP8darBpfRTovHg8DGAVrKFgHpOArZbdFd78VqHr5Iw65f2guwjE2NlCFbPFDoez3D3/6ZvhI/rwQ==}
     dev: false
 
-  /workbox-routing@6.6.0:
-    resolution: {integrity: sha512-x8gdN7VDBiLC03izAZRfU+WKUXJnbqt6PG9Uh0XuPRzJPpZGLKce/FkOX95dWHRpOHWLEq8RXzjW0O+POSkKvw==}
+  /workbox-routing@7.0.0:
+    resolution: {integrity: sha512-8YxLr3xvqidnbVeGyRGkaV4YdlKkn5qZ1LfEePW3dq+ydE73hUUJJuLmGEykW3fMX8x8mNdL0XrWgotcuZjIvA==}
     dependencies:
-      workbox-core: 6.6.0
+      workbox-core: 7.0.0
     dev: false
 
-  /workbox-strategies@6.6.0:
-    resolution: {integrity: sha512-eC07XGuINAKUWDnZeIPdRdVja4JQtTuc35TZ8SwMb1ztjp7Ddq2CJ4yqLvWzFWGlYI7CG/YGqaETntTxBGdKgQ==}
+  /workbox-strategies@7.0.0:
+    resolution: {integrity: sha512-dg3qJU7tR/Gcd/XXOOo7x9QoCI9nk74JopaJaYAQ+ugLi57gPsXycVdBnYbayVj34m6Y8ppPwIuecrzkpBVwbA==}
     dependencies:
-      workbox-core: 6.6.0
+      workbox-core: 7.0.0
     dev: false
 
   /worker-loader@3.0.8:

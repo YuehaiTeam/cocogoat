@@ -154,7 +154,7 @@
                                 >
                                     <el-option value="WQ" label="世界任务"></el-option>
                                     <el-option value="IQ" label="每日委托"></el-option>
-                                    <el-option value="MQ" label="主线任务"></el-option>
+                                    <el-option value="AQ" label="魔神任务"></el-option>
                                 </el-select>
                                 <div class="chk">
                                     <el-checkbox v-model="sortByStatus" label="未完成优先" size="large" />

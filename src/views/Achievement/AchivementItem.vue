@@ -127,6 +127,8 @@ export default defineComponent({
         const badgeMap = {
             WQ: '任务',
             IQ: '委托',
+            AQ: '魔神',
+            LQ: '邀约',
         } as Record<string, string>
         return {
             img,
@@ -313,6 +315,14 @@ export default defineComponent({
                 }
                 &.IQ:after {
                     border-right-color: #a87bfd;
+                }
+                &.AQ:after {
+                    border-right-color: #ec6f10;
+                }
+                :global(.dark) & {
+                    &.AQ:after {
+                        border-right-color: #9c5723;
+                    }
                 }
             }
 

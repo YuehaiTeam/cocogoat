@@ -27,14 +27,13 @@
                     </div>
                     <small>
                         <a
-                            v-if="contributed[i.id]"
-                            :href="contributed[i.id]"
+                            :href="contributed[i.id] ? contributed[i.id] : searchMys(i)"
                             target="_blank"
                             class="contributed"
                             rel="noopener nofollow"
                         >
                             <fa-icon icon="arrow-up-right-from-square" />
-                            攻略
+                            {{ contributed[i.id] ? '攻略' : '搜索' }}
                         </a>
                         {{ amos[i.desc].replace('{param0}', i.total.toString()) }}
                     </small>
@@ -130,8 +129,12 @@ export default defineComponent({
             AQ: '魔神',
             LQ: '邀约',
         } as Record<string, string>
+        const searchMys = (i: Achievement) => {
+            return `https://www.miyoushe.com/ys/search?keyword=${encodeURIComponent(i18n.amos[i.name])}`
+        }
         return {
             img,
+            searchMys,
             amos: toRef(i18n, 'amos'),
             questType: computed(() => {
                 if (props.i.trigger && props.i.trigger.task && props.i.trigger.task.length > 0) {

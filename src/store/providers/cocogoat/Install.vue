@@ -66,6 +66,7 @@ export default defineComponent({
     },
     emits: ['submit'],
     setup(props, { emit }) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         let gtObj: any
         let gtOnSucc = () => {
             // placeholder
@@ -77,6 +78,7 @@ export default defineComponent({
                     captchaId: '2c9c8579b5bc9d3771a03e7939ac0c66',
                     product: 'bind',
                 },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 function (captchaObj: any) {
                     captchaObj
                         .onReady(function () {

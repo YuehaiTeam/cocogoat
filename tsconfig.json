@@ -20,8 +20,7 @@
             "@/*": ["src/*"],
             "lodash": ["lodash-es"]
         },
-        "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
-        "typeRoots": ["node_modules/@types"]
+        "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
     },
     "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx"],
     "exclude": ["node_modules", "src/plugins/genshin-data/**"]

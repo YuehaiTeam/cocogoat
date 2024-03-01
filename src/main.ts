@@ -42,6 +42,7 @@ declare global {
         $cocogoat: CocogoatGlobal<TypeApp>
         dataLayer: unknown[]
         gtag: (...args: unknown[]) => void
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initGeetest4: (...args: unknown[]) => any
     }
 }

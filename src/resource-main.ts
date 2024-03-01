@@ -105,8 +105,6 @@ export function speedTest() {
 declare global {
     interface Window {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        DecompressionStream: any
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         pako: any
     }
 }

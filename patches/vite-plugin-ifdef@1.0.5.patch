@@ -1,0 +1,15 @@
+diff --git a/package.json b/package.json
+index 9665f6b7e08b42a672ba4deb0f9526a3dc8bd72c..5456e8b66ff638fdda4a7cfd2ae99de2ed7583f7 100644
+--- a/package.json
++++ b/package.json
+@@ -1,8 +1,9 @@
+ {
+   "name": "vite-plugin-ifdef",
+   "version": "1.0.5",
++  "type": "module",
+   "description": "a plugin for condition complie in vite ,transplant from webpack plugin ifdef-loader(https://github.com/nippur72/ifdef-loader#readme)",
+-  "main": "dist/index.js",
++  "main": "src/index.js",
+   
+   "keywords": [
+     "vite",

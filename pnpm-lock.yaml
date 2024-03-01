@@ -12,6 +12,9 @@ patchedDependencies:
   git-repo-info@2.1.1:
     hash: eqfc4faeujsbv3kkaxl3fw3yam
     path: patches/git-repo-info@2.1.1.patch
+  vite-plugin-ifdef@1.0.5:
+    hash: nzkbxy3dhhl3vaaoxyzd2cscay
+    path: patches/vite-plugin-ifdef@1.0.5.patch
   vue-virtual-scroller@2.0.0-alpha.1:
     hash: rfk6l3w64yvy7dk3dqwf6tgolm
     path: patches/vue-virtual-scroller@2.0.0-alpha.1.patch
@@ -266,8 +269,8 @@ devDependencies:
     specifier: ^3.2.2
     version: 3.2.2(vite@5.1.4)
   vite-plugin-ifdef:
-    specifier: ^1.0.5
-    version: 1.0.5
+    specifier: 1.0.5
+    version: 1.0.5(patch_hash=nzkbxy3dhhl3vaaoxyzd2cscay)
   vite-plugin-singlefile:
     specifier: ^2.0.0
     version: 2.0.0(vite@5.1.4)
@@ -9981,9 +9984,10 @@ packages:
       vite: 5.1.4(sass@1.71.1)
     dev: true
 
-  /vite-plugin-ifdef@1.0.5:
+  /vite-plugin-ifdef@1.0.5(patch_hash=nzkbxy3dhhl3vaaoxyzd2cscay):
     resolution: {integrity: sha512-WwN+MUh19NKgJXJCMTUmlENbB5fDUSxuoHhPVLI3mqSfUDS2WMI8yfsnizqj3SyXOEe+mv3Kok37QdLV4/0MOw==}
     dev: true
+    patched: true
 
   /vite-plugin-singlefile@2.0.0(vite@5.1.4):
     resolution: {integrity: sha512-0ADuhM0nLSTJAm/KhRLCHiAIhlmR70MajcLfJlIflbsPj02sKEQErzsiPhuSg/jt1nKBi7oLmuX718tYI2Fjdg==}

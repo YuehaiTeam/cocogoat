@@ -78,8 +78,8 @@ dependencies:
     specifier: ^6.0.0
     version: 6.0.0
   element-plus:
-    specifier: ^2.5.6
-    version: 2.5.6(vue@3.4.21)
+    specifier: ^2.6.0
+    version: 2.6.0(vue@3.4.21)
   exceljs:
     specifier: ^4.4.0
     version: 4.4.0
@@ -132,8 +132,8 @@ dependencies:
     specifier: ^1.2.2
     version: 1.2.2
   vue-router:
-    specifier: ^4.2.5
-    version: 4.2.5(vue@3.4.21)
+    specifier: ^4.3.0
+    version: 4.3.0(vue@3.4.21)
   vue-scriptx:
     specifier: ^0.2.5
     version: 0.2.5
@@ -5705,8 +5705,8 @@ packages:
     resolution: {integrity: sha512-3avY1B+vUzNxEgkBDpKOP8WarvUAEwpRaiCL0He5OKWEFxzaOFiq4WoZEZe7qh0ReS7DiWoHMnYoQCKxNZNzSg==}
     dev: true
 
-  /element-plus@2.5.6(vue@3.4.21):
-    resolution: {integrity: sha512-zctKTiyIDmcnMp3K5WG1hglgraW9EbiCLiIDVtaMCS5mPMl2fRKdS0vOFGnECIq9taFoxnyoDwxHD81nv0B4RA==}
+  /element-plus@2.6.0(vue@3.4.21):
+    resolution: {integrity: sha512-MP+N48P+diyndR+GjY+0VOrUmFnajD4U0CkrXIMzmeRmq4+dwi0bdzVo587v4wDo9Hs+ggviyacqm3NS8JYVqw==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:
@@ -10256,8 +10256,8 @@ packages:
       vue: 3.4.21(typescript@5.3.3)
     dev: false
 
-  /vue-router@4.2.5(vue@3.4.21):
-    resolution: {integrity: sha512-DIUpKcyg4+PTQKfFPX88UWhlagBEBEfJ5A8XDXRJLUnZOvcpMF8o/dnL90vpVkGaPbjvXazV/rC1qBKrZlFugw==}
+  /vue-router@4.3.0(vue@3.4.21):
+    resolution: {integrity: sha512-dqUcs8tUeG+ssgWhcPbjHvazML16Oga5w34uCUmsk7i0BcnskoLGwjpa15fqMr2Fa5JgVBrdL2MEgqz6XZ/6IQ==}
     peerDependencies:
       vue: ^3.2.0
     dependencies:

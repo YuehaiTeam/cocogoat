@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-const clientId = `125598c3-3d1f-4529-ae8c-e4f02807e13a`
+const clientId = `93a5cb17-1ee8-4abf-b1a3-c384a4f6952f`
 import { decode } from 'js-base64'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faMicrosoft } from '@fortawesome/free-brands-svg-icons'

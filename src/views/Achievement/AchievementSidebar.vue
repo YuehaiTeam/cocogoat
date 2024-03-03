@@ -6,7 +6,6 @@
                     <router-link
                         v-if="!hideFinished || (achievementFinStat[i.id || 0]?.count || 0) < i.achievements.length"
                         :to="{
-                            ...$route,
                             params: {
                                 cat: i.key === 'wonders_of_the_world' ? '' : i.key,
                             },

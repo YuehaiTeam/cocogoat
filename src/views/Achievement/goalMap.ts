@@ -17,6 +17,7 @@ const goalKeys = {
     45: 'fontaine-dance-of-the-dew-white-springs-ii',
     40: 'challenger-series-viii',
     46: 'fontaine-dance-of-the-dew-white-springs-iii',
+    47: 'chenyus-splendor',
 } as Record<number, string>
 achevementsAmos.forEach((cat) => {
     cat.key = goalKeys[cat.id] || cat.key.replace(/_/g, '-') || cat.id.toString()

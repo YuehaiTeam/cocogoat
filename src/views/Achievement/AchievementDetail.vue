@@ -26,7 +26,7 @@
             <ul v-if="tasks.length > 0" class="task-type">
                 <li v-for="i in tasks" :key="i.questId">
                     <span v-for="j in i.badges" :key="j" class="badge" :class="j">
-                        {{ taskType[j] || j || '主线任务' }}
+                        {{ taskType[j] || j }}
                     </span>
                     <span class="name">
                         <a
@@ -40,7 +40,7 @@
                     </span>
                 </li>
             </ul>
-            <div v-if="showNoTask" class="no-task">触发该成就的任务不存在或均为无名隐藏任务</div>
+            <div v-if="showNoTask" class="no-task">触发该成就的任务为无名隐藏任务</div>
             <div class="desc">点击 ID 或任务名可查看详情<br />触发条件为程序自动提取，请以实际游戏或攻略为准</div>
         </div>
     </el-dialog>
@@ -64,11 +64,15 @@ export default defineComponent({
         const triggerText = {
             FINISH_QUEST_OR: '完成以下任务之一',
             FINISH_QUEST_AND: '完成以下所有任务',
+            FINISH_PARENT_QUEST_OR: '完成以下任务之一',
+            FINISH_PARENT_QUEST_AND: '完成以下所有任务',
             DAILY_TASK_VAR_EQUAL: '每日委托触发特定对话',
         } as Record<string, string>
         const taskType = {
             WQ: '世界任务',
+            AQ: '魔神任务',
             IQ: '每日委托',
+            LQ: '邀约任务',
             H: '前置条件',
         } as Record<string, string>
         const tasks = computed(() => {
@@ -87,7 +91,9 @@ export default defineComponent({
             if (!props.achievement) return []
             return (
                 tasks.value.length === 0 &&
-                ['FINISH_QUEST_OR', 'FINISH_QUEST_AND'].includes(props.achievement.trigger.type)
+                ['FINISH_QUEST_OR', 'FINISH_QUEST_AND', 'FINISH_PARENT_QUEST_OR', 'FINISH_PARENT_QUEST_AND'].includes(
+                    props.achievement.trigger.type,
+                )
             )
         })
         return {
@@ -139,6 +145,15 @@ export default defineComponent({
             }
             &.H {
                 background: #dd5959;
+            }
+
+            &.AQ {
+                background: #ec6f10;
+            }
+            :global(.dark) & {
+                &.AQ {
+                    background: #9c5723;
+                }
             }
         }
         .name {

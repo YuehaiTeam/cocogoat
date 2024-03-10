@@ -108,15 +108,20 @@
                 >
                     <fa-icon icon="folder-tree" />
                     <h4>本地使用</h4>
-                    <div>如需离线使用，请点这里下载本地专用版。</div>
+                    <div>如需离线使用，请点这里下载本地专用版</div>
                 </a>
                 <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat/issues" target="_blank">
+                    <fa-icon :icon="['far', 'circle-dot']" />
+                    <h4>功能反馈</h4>
+                    <div>无论遇到问题还是请求新功能，都可以前往 Github Issues 反馈</div>
+                </a>
+                <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat/discussions" target="_blank">
                     <fa-icon icon="message" />
-                    <h4>反馈问题</h4>
-                    <div>无论功能反馈还是聊天吹水，都可以前往 Github Issues 反馈。</div>
+                    <h4>社区交流</h4>
+                    <div>前往 Github Discussions 进行聊天吹水和其他非正式讨论</div>
                 </a>
             </div>
-            <div :class="$style.copyright">&copy;2022-2023 YuehaiTeam cocogoat.work <build-info /></div>
+            <div :class="$style.copyright">&copy;2022-2024 YuehaiTeam cocogoat.work <build-info /></div>
         </div>
     </Layout>
 </template>
@@ -125,16 +130,27 @@
 import { ref, defineComponent, watch } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
-    faInfinity,
-    faFolderTree,
-    faTerminal,
     faBoxOpen,
-    faMapLocationDot,
     faFileZipper,
+    faFolderTree,
+    faInfinity,
+    faMapLocationDot,
     faMessage,
+    faTerminal,
 } from '@fortawesome/free-solid-svg-icons'
+import { faCircleDot } from '@fortawesome/free-regular-svg-icons'
 import { faGithubAlt } from '@fortawesome/free-brands-svg-icons'
-library.add(faGithubAlt, faMessage, faInfinity, faFolderTree, faTerminal, faBoxOpen, faMapLocationDot, faFileZipper)
+library.add(
+    faBoxOpen,
+    faCircleDot,
+    faFileZipper,
+    faFolderTree,
+    faGithubAlt,
+    faInfinity,
+    faMapLocationDot,
+    faMessage,
+    faTerminal,
+)
 
 import IconCocogoat from '@/components/Icons/cocogoat.vue'
 import BuildInfo from '@/components/BuildInfo.vue'

@@ -42,6 +42,7 @@ declare global {
         $cocogoat: CocogoatGlobal<TypeApp>
         dataLayer: unknown[]
         gtag: (...args: unknown[]) => void
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         initGeetest4: (...args: unknown[]) => any
     }
 }
@@ -70,7 +71,7 @@ declare global {
         options,
         resources,
         currentUser,
-    } as typeof window['$cocogoat']
+    } as (typeof window)['$cocogoat']
     Object.assign(c, window.$cocogoat)
     window.$cocogoat = c
     window.$cocogoat.onload && window.$cocogoat.onload()

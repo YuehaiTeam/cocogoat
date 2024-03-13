@@ -113,12 +113,12 @@
                 <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat/issues" target="_blank">
                     <fa-icon :icon="['far', 'circle-dot']" />
                     <h4>功能反馈</h4>
-                    <div>无论遇到问题还是请求新功能，都可以前往 Github Issues 反馈</div>
+                    <div>无论遇到问题还是请求新功能，都可以前往 GitHub Issues 反馈</div>
                 </a>
                 <a :class="$style.card" href="https://github.com/YuehaiTeam/cocogoat/discussions" target="_blank">
                     <fa-icon icon="message" />
                     <h4>社区交流</h4>
-                    <div>前往 Github Discussions 进行聊天吹水和其他非正式讨论</div>
+                    <div>前往 GitHub Discussions 进行聊天吹水和其他非正式讨论</div>
                 </a>
             </div>
             <div :class="$style.copyright">&copy;2022-2024 YuehaiTeam cocogoat.work <build-info /></div>

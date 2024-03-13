@@ -8,7 +8,7 @@
             </h1>
             <div class="method-list">
                 <router-link
-                    :to="{ name: 'frames.achievement.scan.capture-scanner', params: { direct: true } }"
+                    :to="{ name: 'frames.achievement.scan.capture-scanner', params: { direct: 'true' } }"
                     class="one"
                     :class="{ disabled: !scannerCompatible }"
                 >

@@ -52,7 +52,7 @@ export function loadAllUsers() {
         id: key,
         ...(get(key) as IStore).user,
     }))
-    if (!keys.find((e) => e == currentUser.value)) {
+    if (!keys.find((e) => e === currentUser.value)) {
         alist.unshift({
             id: currentUser.value,
             name: '默认',

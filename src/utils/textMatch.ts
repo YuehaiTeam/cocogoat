@@ -39,8 +39,8 @@ export function levenshteinEditDistance(value: string, other: string): number {
                         ? result + 1
                         : distanceOther
                     : distanceOther > distance
-                    ? distance + 1
-                    : distanceOther
+                      ? distance + 1
+                      : distanceOther
         }
     }
 

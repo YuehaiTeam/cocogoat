@@ -48,7 +48,7 @@
     </svg>
 </template>
 <script lang="ts">
-import { ref, onMounted, defineComponent, onBeforeUnmount } from 'vue'
+import { ref, onMounted, defineComponent, onBeforeUnmount, toRef } from 'vue'
 
 export default defineComponent({
     props: {
@@ -72,7 +72,7 @@ export default defineComponent({
             const distance = 220
             const waveLength = 500
             const offset = offset_ % waveLength
-            const circle = ((width / waveLength) >> 0) + 2
+            const circle = Math.trunc(width / waveLength) + 2
             let d = 'M ' + (-offset >> 0) + ' ' + (((1 - percent) * height) >> 0)
             let d1 = 'M ' + ((-offset + distance) >> 0) + ' ' + (((1 - percent) * height) >> 0)
             // 每个周期用两个Q
@@ -121,7 +121,7 @@ export default defineComponent({
             shadow.value && shadow.value.setAttribute('d', d1)
         }
         let stopped = false
-        const currentProgress = ref(props.percent)
+        const currentProgress = toRef(props, 'percent')
         const run = function () {
             requestAnimationFrame(() => {
                 let perc = props.percent

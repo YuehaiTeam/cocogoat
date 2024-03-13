@@ -194,7 +194,7 @@ export const useArstore = defineStore('artifact-capture-scanner', {
                 let fri = 0
                 this.cap.onFrame(async () => {
                     fri++
-                    if (fri % 2 == 0) return
+                    if (fri % 2 === 0) return
                     const image = this.capturePanel()
                     const diff = await scanner.diffCached(image)
                     if (diff > 5) {

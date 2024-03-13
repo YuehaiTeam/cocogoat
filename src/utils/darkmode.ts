@@ -19,6 +19,7 @@ function checkMode(cmode: string) {
     }
 }
 const darkMode = window.matchMedia('(prefers-color-scheme: dark)')
+// eslint-disable-next-line vue/no-ref-object-destructure
 checkMode(configuredMode.value)
 darkMode.addEventListener('change', () => {
     checkMode(configuredMode.value)

@@ -9,11 +9,6 @@ export interface ICocogoatSyncStatus {
     status: SYNCSTAT
     error: SyncError<unknown> | null
 }
-declare global {
-    class CompressionStream extends TransformStream<Blob, Blob> {
-        constructor(type: string)
-    }
-}
 class CocogoatSyncProvider implements SyncProvider {
     data: { token: string; lastModified: number }
     token = ''

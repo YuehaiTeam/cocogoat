@@ -76,6 +76,7 @@ export async function init(app: App, router: Router) {
             // @ts-expect-error
             const dnt = doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || msTracking()
 
+            // eslint-disable-next-line eqeqeq
             return dnt == '1' || dnt === 'yes'
         }
 

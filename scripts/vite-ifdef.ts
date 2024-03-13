@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Plugin } from 'vite'
-import parse from 'vite-plugin-ifdef/dist/preprocessor.js'
+import parse from 'vite-plugin-ifdef/src/preprocessor.js'
 const vitePluginIfDef = (userOptions = { data: {} as Record<string, any>, option: {} as Record<string, any> }) => {
     const data = userOptions.data
     const option = userOptions.option

@@ -279,9 +279,15 @@ src.delete()`)
 
 <style lang="scss" module>
 .popover {
-    font-family: Sarasa Term SC, Consolas, Microsoft Yahei;
+    font-family:
+        Sarasa Term SC,
+        Consolas,
+        Microsoft Yahei;
     code {
-        font-family: Sarasa Term SC, Consolas, Microsoft Yahei;
+        font-family:
+            Sarasa Term SC,
+            Consolas,
+            Microsoft Yahei;
         color: var(--c-theme);
     }
 }
@@ -309,13 +315,18 @@ src.delete()`)
                 height: calc(100% - 50px);
                 display: flex;
                 color: #aaa;
-                font-family: Sarasa Term SC, Microsoft Yahei;
+                font-family:
+                    Sarasa Term SC,
+                    Microsoft Yahei;
                 text-align: center;
                 & > div {
                     flex: 1;
                     code {
                         background: #000;
-                        font-family: Sarasa Term SC, Consolas, Microsoft Yahei;
+                        font-family:
+                            Sarasa Term SC,
+                            Consolas,
+                            Microsoft Yahei;
                         color: #fff;
                     }
                     span.sel-span {

@@ -89,13 +89,6 @@
         <el-dialog v-model="showImport" title="导入" :custom-class="$style.importDialog" destroy-on-close>
             <import-dialog :memo-id="autoImportId" @close="closeImport" />
         </el-dialog>
-        <el-dialog v-model="showSelectAllCatConfirm" title="选项超过100，确认要全选本页吗" 
-        :center="true" :custom-class="$style.importDialog" destroy-on-close>
-            <span>
-                <el-button @click="showSelectAllCatConfirm = false;">取消</el-button>
-                <el-button type="primary" @click="showSelectAllCatConfirm = false; selectAll(true);">确定</el-button>
-            </span>
-        </el-dialog>
         <achievement-detail :achievement="detail" @close="detail = undefined" />
         <section :class="$style.achievementView">
             <div class="progress">
@@ -615,18 +608,7 @@ export default defineComponent({
             }
             return data
         })
-        const showSelectAllCatConfirm = ref(false)
-        const isAllowed = ref(true)
-        const limit = 100
         const checkAllCat = (checked: boolean) => {
-            const data = currentCat.value.achievements.concat([])
-            if(data && data.length > limit && checked){
-                showSelectAllCatConfirm.value = true
-            }else{
-                selectAll(checked);
-            }
-        }
-        const selectAll = (checked: boolean) => {
             const data = currentCat.value.achievements.concat([])
             if (checked) {
                 data.forEach((item) => {
@@ -779,10 +761,7 @@ export default defineComponent({
             sortByStatus,
             hideFinished,
             selectAllCat,
-            showSelectAllCatConfirm,
-            limit,
             checkAllCat,
-            selectAll,
             totalCount,
             totalFin,
             totalReward,

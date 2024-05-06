@@ -162,7 +162,7 @@
                                 <div class="chk">
                                     <el-checkbox v-model="hideFinished" label="隐藏已完成" size="large" />
                                 </div>
-                                <div class="chk">
+                                <div v-if="!checkIfAllCat" class="chk">
                                     <el-checkbox
                                         v-model="selectAllCat"
                                         label="全选本页"
@@ -438,8 +438,9 @@ export default defineComponent({
             }, 0)
         })
         const route = useRoute()
+        const ALLCAT = 'wonders-of-the-world'
         const currentCatId = computed(() => {
-            return route.params.cat || 'wonders_of_the_world'
+            return route.params.cat || ALLCAT
         })
         const currentCat = computed(() => {
             const v = achievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
@@ -608,6 +609,7 @@ export default defineComponent({
             }
             return data
         })
+        const checkIfAllCat = computed(() => currentCatId.value === ALLCAT)
         const checkAllCat = (checked: boolean) => {
             const data = currentCat.value.achievements.concat([])
             if (checked) {
@@ -761,6 +763,7 @@ export default defineComponent({
             sortByStatus,
             hideFinished,
             selectAllCat,
+            checkIfAllCat,
             checkAllCat,
             totalCount,
             totalFin,

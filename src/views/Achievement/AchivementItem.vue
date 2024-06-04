@@ -89,6 +89,7 @@
 <script lang="ts">
 import { i18n } from '@/i18n'
 import versionMap from './versionMap'
+import { badgeMap, badgeTypeMap } from './badgeMap'
 import img from '@/assets/images'
 import { toRef, PropType, defineComponent, computed } from 'vue'
 import { Achievement, UIAFStatus } from '@/typings/Achievement'
@@ -123,12 +124,6 @@ export default defineComponent({
     },
     emits: ['input-date', 'input-current', 'input-partial', 'check', 'click-title'],
     setup(props, { emit }) {
-        const badgeMap = {
-            WQ: '任务',
-            IQ: '委托',
-            AQ: '魔神',
-            LQ: '邀约',
-        } as Record<string, string>
         const searchMys = (i: Achievement) => {
             return `https://www.miyoushe.com/ys/search?keyword=${encodeURIComponent(i18n.amos[i.name])}`
         }
@@ -137,10 +132,18 @@ export default defineComponent({
             searchMys,
             amos: toRef(i18n, 'amos'),
             questType: computed(() => {
-                if (props.i.trigger && props.i.trigger.task && props.i.trigger.task.length > 0) {
-                    return badgeMap[props.i.trigger.task[0].type]
-                        ? [badgeMap[props.i.trigger.task[0].type], props.i.trigger.task[0].type]
-                        : false
+                if (props.i.trigger) {
+                    let res: string[] | boolean = false
+                    if (props.i.trigger.task && props.i.trigger.task.length > 0) {
+                        res = badgeMap[props.i.trigger.task[0].type]
+                            ? [badgeMap[props.i.trigger.task[0].type], props.i.trigger.task[0].type]
+                            : false
+                    } else if (props.i.trigger.type) {
+                        res = badgeTypeMap[props.i.trigger.type]
+                            ? [badgeMap[badgeTypeMap[props.i.trigger.type]], badgeTypeMap[props.i.trigger.type]]
+                            : false
+                    }
+                    return res
                 } else {
                     return false
                 }

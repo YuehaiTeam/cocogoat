@@ -55,14 +55,17 @@ export function speedTest() {
         return []
     }
     // group testresources by tag
-    const testResourcesByTag = testResources.reduce((acc, item) => {
-        const tag = item.tag
-        if (!acc[tag]) {
-            acc[tag] = []
-        }
-        acc[tag].push(item)
-        return acc
-    }, {} as Record<string, IResourceItem[]>) as Record<string, IResourceItem[]>
+    const testResourcesByTag = testResources.reduce(
+        (acc, item) => {
+            const tag = item.tag
+            if (!acc[tag]) {
+                acc[tag] = []
+            }
+            acc[tag].push(item)
+            return acc
+        },
+        {} as Record<string, IResourceItem[]>,
+    ) as Record<string, IResourceItem[]>
     // test each tag
     const allPromises = [] as Promise<IResourceItem>[]
     const waitPromises = [] as Promise<IResourceItem>[]
@@ -101,8 +104,6 @@ export function speedTest() {
 }
 declare global {
     interface Window {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        DecompressionStream: any
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         pako: any
     }

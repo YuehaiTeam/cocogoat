@@ -59,7 +59,6 @@ export default defineConfig(({ command, mode }) => {
             alias: {
                 '@': resolve(__dirname, 'src'),
                 lodash: 'lodash-es',
-                util: require.resolve('util'),
             },
         },
         build: {

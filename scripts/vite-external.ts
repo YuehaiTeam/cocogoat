@@ -23,8 +23,8 @@ const importExternal = function (externals = {}) {
             return typeof fnOrIife === 'function'
                 ? fnOrIife(id)
                 : fnOrIife.startsWith('import(')
-                ? `import M from ${fnOrIife.slice(7, -1)};export default M`
-                : `const M = window['${fnOrIife}']; export default M`
+                  ? `import M from ${fnOrIife.slice(7, -1)};export default M`
+                  : `const M = window['${fnOrIife}']; export default M`
         },
     }
 }

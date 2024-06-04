@@ -46,7 +46,7 @@
 <script lang="ts">
 import { debounce } from 'lodash-es'
 import { useImport } from './useImport'
-import { defineComponent, ref, watch } from 'vue'
+import { defineComponent, ref, toRef, watch } from 'vue'
 import { apibase } from '@/utils/apibase'
 import { ElNotification } from 'element-plus'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -82,7 +82,7 @@ export default defineComponent({
                 })
             }
         }, 200)
-        const inputMemoId = ref(props.memoId)
+        const inputMemoId = toRef(props, 'memoId')
         watch(
             () => props.memoId,
             (val) => {
@@ -111,13 +111,14 @@ export default defineComponent({
                 memoLoading.value = false
             }
         }
-        checkMemo(inputMemoId.value)
-        watch(inputMemoId, checkMemo)
+        watch(inputMemoId, checkMemo, { immediate: true })
         watch(content, debouncedCheck)
+        // eslint-disable-next-line vue/no-ref-object-destructure
         const activeName = ref(inputMemoId.value ? 'memo' : 'text')
         const doImport = async () => {
             if (!allowed.value) return
             importToStore()
+            // eslint-disable-next-line vue/no-ref-object-destructure
             emit('close', inputMemoId.value)
         }
         const onFile = async (e: File) => {

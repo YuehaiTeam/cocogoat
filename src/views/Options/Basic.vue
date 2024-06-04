@@ -80,6 +80,9 @@ export default {
 .option-basic {
     padding: 0 20px;
     :global {
+        .select {
+            width: 200px;
+        }
         .about {
             display: flex;
             flex-direction: column;

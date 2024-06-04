@@ -84,7 +84,7 @@ export async function tillChanged(
             }
         }
         const runCheck = () => {
-            interval == 0 ? requestAnimationFrame(check) : setTimeout(check, interval)
+            interval === 0 ? requestAnimationFrame(check) : setTimeout(check, interval)
         }
         runCheck()
     })) as {

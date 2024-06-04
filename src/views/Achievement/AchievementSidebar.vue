@@ -6,7 +6,6 @@
                     <router-link
                         v-if="!hideFinished || (achievementFinStat[i.id || 0]?.count || 0) < i.achievements.length"
                         :to="{
-                            ...$route,
                             params: {
                                 cat: i.key === 'wonders_of_the_world' ? '' : i.key,
                             },
@@ -63,7 +62,7 @@ export default defineComponent({
             if (!scrollbarRef.value) return
             const delta = 50
             const move = delta * dir
-            const div = scrollbarRef.value.wrap$
+            const div = scrollbarRef.value.wrapRef
             if (!div) return
             const newScrollLeft = div.scrollLeft + move
             scrollbarRef.value.setScrollLeft(Math.max(0, newScrollLeft))

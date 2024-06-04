@@ -63,7 +63,7 @@
                             <el-progress
                                 type="circle"
                                 :percentage="progress || 0"
-                                :format="(percent:number) => percent.toFixed(2) + '%'"
+                                :format="(percent: number) => percent.toFixed(2) + '%'"
                             />
                         </div>
                     </div>
@@ -256,7 +256,7 @@ export default defineComponent({
             let fri = 0
             const onFrame = () => {
                 fri++
-                if (fri % 2 == 0) return
+                if (fri % 2 === 0) return
                 if (!videoEl.value) return
                 if (!tmpCtx) return
                 if (splitEnded.value) return

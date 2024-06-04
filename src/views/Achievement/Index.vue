@@ -438,9 +438,9 @@ export default defineComponent({
             }, 0)
         })
         const route = useRoute()
-        const ALLCAT = 'wonders-of-the-world'
+        const DEFAULTCAT = 'wonders-of-the-world'
         const currentCatId = computed(() => {
-            return route.params.cat || ALLCAT
+            return route.params.cat || DEFAULTCAT
         })
         const currentCat = computed(() => {
             const v = achievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
@@ -461,6 +461,7 @@ export default defineComponent({
             if (i18n.amos[ach.desc].toLowerCase().includes(search.toLowerCase())) return true
         }
         const searchToList = (search: string, cb: AutocompleteFetchSuggestionsCallback) => {
+            console.log(i18n.amos);
             return cb(
                 currentCat.value.achievements
                     .filter((e) => has(e, search))
@@ -609,7 +610,7 @@ export default defineComponent({
             }
             return data
         })
-        const checkIfAllCat = computed(() => currentCatId.value === ALLCAT)
+        const checkIfAllCat = computed(() => currentCatId.value === DEFAULTCAT)
         const checkAllCat = (checked: boolean) => {
             const data = currentCat.value.achievements.concat([])
             if (checked) {

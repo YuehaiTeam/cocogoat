@@ -67,6 +67,9 @@ export default defineComponent({
             FINISH_PARENT_QUEST_OR: '完成以下任务之一',
             FINISH_PARENT_QUEST_AND: '完成以下所有任务',
             DAILY_TASK_VAR_EQUAL: '每日委托触发特定对话',
+            MAIN_COOP_SAVE_POINT_AND: '邀约任务',
+            ELEMENT_REACTION_TIMELIMIT_KILL_NUM: '有限时间内元素反应击杀数量',
+            HOME_UNLOCK_BGM_COUNT: '尘歌壶解锁BGM数量'
         } as Record<string, string>
         const taskType = {
             WQ: '世界任务',

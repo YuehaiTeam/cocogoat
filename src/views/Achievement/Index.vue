@@ -461,7 +461,7 @@ export default defineComponent({
             if (i18n.amos[ach.desc].toLowerCase().includes(search.toLowerCase())) return true
         }
         const searchToList = (search: string, cb: AutocompleteFetchSuggestionsCallback) => {
-            console.log(i18n.amos);
+            console.log(i18n.amos)
             return cb(
                 currentCat.value.achievements
                     .filter((e) => has(e, search))

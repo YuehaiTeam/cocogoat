@@ -89,7 +89,7 @@
 <script lang="ts">
 import { i18n } from '@/i18n'
 import versionMap from './versionMap'
-import {badgeMap, badgeTypeMap} from './badgeMap'
+import { badgeMap, badgeTypeMap } from './badgeMap'
 import img from '@/assets/images'
 import { toRef, PropType, defineComponent, computed } from 'vue'
 import { Achievement, UIAFStatus } from '@/typings/Achievement'
@@ -132,21 +132,21 @@ export default defineComponent({
             searchMys,
             amos: toRef(i18n, 'amos'),
             questType: computed(() => {
-                if(props.i.trigger){
-                    let res : string[] | boolean = false
-                    if(props.i.trigger.task && props.i.trigger.task.length > 0){
-                        res = badgeMap[props.i.trigger.task[0].type]? 
-                        [badgeMap[props.i.trigger.task[0].type], props.i.trigger.task[0].type] 
-                        : false
-                    }else if(props.i.trigger.type){
-                        res = badgeTypeMap[props.i.trigger.type]?
-                        [badgeMap[badgeTypeMap[props.i.trigger.type]], badgeTypeMap[props.i.trigger.type]] 
-                        : false
+                if (props.i.trigger) {
+                    let res: string[] | boolean = false
+                    if (props.i.trigger.task && props.i.trigger.task.length > 0) {
+                        res = badgeMap[props.i.trigger.task[0].type]
+                            ? [badgeMap[props.i.trigger.task[0].type], props.i.trigger.task[0].type]
+                            : false
+                    } else if (props.i.trigger.type) {
+                        res = badgeTypeMap[props.i.trigger.type]
+                            ? [badgeMap[badgeTypeMap[props.i.trigger.type]], badgeTypeMap[props.i.trigger.type]]
+                            : false
                     }
                     return res
-                }else{
+                } else {
                     return false
-                }                
+                }
             }),
             isFin: computed(() => {
                 return props.fin && props.fin.status > UIAFStatus.ACHIEVEMENT_UNFINISHED

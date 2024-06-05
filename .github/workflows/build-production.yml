@@ -20,7 +20,7 @@ jobs:
           rm -rf pack
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 20
       - uses: szenius/set-timezone@v1.1
         with:
           timezoneLinux: "Asia/Shanghai"

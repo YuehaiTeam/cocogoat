@@ -675,6 +675,7 @@ export default defineComponent({
                 }
                 const item = toRef(achievementFin.value, k.id)
                 item.value.current = current || 0
+                // eslint-disable-next-line vue/no-ref-object-destructure
                 if (item.value.current >= k.total) {
                     item.value.status = UIAFStatus.ACHIEVEMENT_POINT_TAKEN
                     item.value.timestamp = Math.floor(Date.now() / 1000)
@@ -735,6 +736,7 @@ export default defineComponent({
             showClear.value = false
         }
         const autoImportId = computed(() => (route.query.memo ? route.query.memo.toString() : ''))
+        // eslint-disable-next-line vue/no-ref-object-destructure
         const showImport = ref(!!autoImportId.value)
         watch(autoImportId, (v) => {
             if (v) {

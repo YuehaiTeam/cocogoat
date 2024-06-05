@@ -29,7 +29,7 @@ const useSWC = isCI
     ? 'compile'
     : 'true'
 const useSentry = false
-    // !process.argv.includes('--no-sentry') && process.env.NODE_ENV === 'production' && !!process.env.SENTRY_KEY
+// !process.argv.includes('--no-sentry') && process.env.NODE_ENV === 'production' && !!process.env.SENTRY_KEY
 process.env.VUE_APP_BUILD = require('dayjs')().format('YYMMDDHHmm')
 process.env.VUE_APP_ROUTER_HASH = singleFile ? 'true' : 'false'
 process.env.VUE_APP_SINGLEFILE = singleFile ? 'true' : 'false'
@@ -105,10 +105,10 @@ module.exports = defineConfig({
     },
     configureWebpack: {
         plugins: [
-            AutoImport({
+            AutoImport.default({
                 resolvers: [ElementPlusResolver()],
             }),
-            Components({
+            Components.default({
                 dirs: [],
                 resolvers: [ElementPlusResolver()],
             }),

@@ -59,7 +59,6 @@ export default defineConfig(({ command, mode }) => {
             alias: {
                 '@': resolve(__dirname, 'src'),
                 lodash: 'lodash-es',
-                util: require.resolve('util'),
             },
         },
         build: {
@@ -79,9 +78,12 @@ export default defineConfig(({ command, mode }) => {
             checker({
                 typescript: true,
                 vueTsc: true,
-                eslint: {
-                    lintCommand: 'eslint ./**/*.{js,ts,vue} --ext .js,.ts,.vue',
-                },
+                eslint:
+                    command === 'build'
+                        ? undefined
+                        : {
+                              lintCommand: 'eslint ./**/*.{js,ts,vue} --ext .js,.ts,.vue',
+                          },
             }),
             vue(),
             AutoImport({

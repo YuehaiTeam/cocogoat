@@ -106,17 +106,23 @@ export class AchievementItem implements IAchievementItem {
         delete this.partial[id]
     }
     async finishAllPartials() {
-        this.partial = (await this.part).reduce((acc, part) => {
-            acc[part.id] = Math.floor(Date.now() / 1000)
-            return acc
-        }, {} as Record<number, number>)
+        this.partial = (await this.part).reduce(
+            (acc, part) => {
+                acc[part.id] = Math.floor(Date.now() / 1000)
+                return acc
+            },
+            {} as Record<number, number>,
+        )
         return this
     }
     static fromObject(obj: Record<number, IAchievementItem>): Record<number, AchievementItem> {
-        return Object.values(obj).reduce((acc, data) => {
-            acc[data.id] = new AchievementItem(data)
-            return acc
-        }, {} as Record<number, AchievementItem>)
+        return Object.values(obj).reduce(
+            (acc, data) => {
+                acc[data.id] = new AchievementItem(data)
+                return acc
+            },
+            {} as Record<number, AchievementItem>,
+        )
     }
     static create(id: number, status = UIAFStatus.ACHIEVEMENT_POINT_TAKEN) {
         return new AchievementItem({

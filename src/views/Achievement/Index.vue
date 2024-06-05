@@ -449,11 +449,7 @@ export default defineComponent({
         const currentCat = computed(() => {
             let v: AchievementCategory
             if (currentCatId.value === ALLCAT) {
-                v = {}
-                v.achievements = []
-                v.key = ALLCAT
-                v.name = 0
-                v.order = 0
+                v = { achievements: [], key: ALLCAT, id: 0, name: 0, order: 0, totalReward: 0 }
                 // 整合所有成就便于做整体的搜索
                 for (let i = 0; i < achievementCat.value.length; i++) {
                     v.achievements.push(...achievementCat.value[i].achievements)

@@ -501,7 +501,6 @@ export default defineComponent({
         })
         const currentAch = computed(() => {
             let data = currentCat.value.achievements.concat([])
-            console.log(currentCat.value)
             const reloadAllCat = () => {
                 let reloadStatus = true
                 for (let i = 0; i < data.length; i++) {

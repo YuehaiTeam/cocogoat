@@ -45,7 +45,7 @@
         </el-table>
         <el-drawer
             v-model="edit.show"
-            custom-class="edit-drawer"
+            class="edit-drawer"
             :size="320"
             :title="`${edit.edit ? '编辑' : '添加'}账号`"
             :append-to-body="false"
@@ -269,7 +269,7 @@ export default defineComponent({
     }
 }
 .avatar-sel {
-    height: 57px;
+    height: 71px;
     overflow: hidden;
     .avatar-sel-prefix {
         border-radius: 100%;

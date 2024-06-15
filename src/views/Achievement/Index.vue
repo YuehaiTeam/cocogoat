@@ -86,7 +86,7 @@
             </div>
         </template>
         <scanner-dialog v-model:showScanner="showScanner" />
-        <el-dialog v-model="showImport" title="导入" :custom-class="$style.importDialog" destroy-on-close>
+        <el-dialog v-model="showImport" title="导入" :class="$style.importDialog" destroy-on-close>
             <import-dialog :memo-id="autoImportId" @close="closeImport" />
         </el-dialog>
         <achievement-detail :achievement="detail" @close="detail = undefined" />

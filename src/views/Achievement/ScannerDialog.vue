@@ -10,7 +10,7 @@
     <el-dialog
         v-model="scannerResult.show"
         :title="`成功扫描 ${scannerResult.length} 个成就`"
-        :custom-class="$style.scannerResultDialog"
+        :class="$style.scannerResultDialog"
         destroy-on-close
     >
         以下为失败和识别到的未完成成就列表，您可以自行检查确认后手动添加。

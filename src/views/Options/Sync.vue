@@ -87,7 +87,7 @@
 
         <el-drawer
             :model-value="addType !== ''"
-            custom-class="add-drawer"
+            class="add-drawer"
             title="添加同步账号"
             :size="320"
             :append-to-body="false"

@@ -7,11 +7,11 @@
                         v-if="!hideFinished || (achievementFinStat[i.id || 0]?.count || 0) < i.achievements.length"
                         :to="{
                             params: {
-                                cat: i.key === 'wonders_of_the_world' ? '' : i.key,
+                                cat: i.key === 'wonders-of-the-world' ? '' : i.key,
                             },
                         }"
-                        :active-class="i.key === 'wonders_of_the_world' ? '' : 'router-link-active'"
-                        :exact-active-class="i.key === 'wonders_of_the_world' ? 'router-link-active' : ''"
+                        :active-class="i.key === 'wonders-of-the-world' ? '' : 'router-link-active'"
+                        :exact-active-class="i.key === 'wonders-of-the-world' ? 'router-link-active' : ''"
                     >
                         <div>
                             {{ amos[i.name] }}

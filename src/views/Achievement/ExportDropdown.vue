@@ -22,7 +22,7 @@
     <el-dialog
         v-model="exportData.show"
         :title="exportData.title"
-        :custom-class="$style.exportDialog"
+        :class="$style.exportDialog"
         append-to-body
         destroy-on-close
     >

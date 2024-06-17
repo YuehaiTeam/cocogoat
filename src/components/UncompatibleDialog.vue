@@ -1,6 +1,6 @@
 <template>
     <el-dialog
-        custom-class="uncompatible-dialog"
+        class="uncompatible-dialog"
         title="当前浏览器版本过低"
         :modelValue="dialogVisible"
         :close-on-click-modal="false"

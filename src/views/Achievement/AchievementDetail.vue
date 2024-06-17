@@ -4,7 +4,7 @@
         :model-value="!!achievement"
         :z-index="111"
         :width="500"
-        :custom-class="$style.detailDialog"
+        :class="$style.detailDialog"
         @closed="$emit('close')"
     >
         <div :class="$style.trigger">

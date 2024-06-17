@@ -47,6 +47,11 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '',
                 name: 'installer.index',
+                component: () => import('@/views/Installer/HYP.vue'),
+            },
+            {
+                path: '',
+                name: 'installer.legacy',
                 component: () => import('@/views/Installer/Index.vue'),
             },
         ],

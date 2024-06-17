@@ -3,7 +3,11 @@
         <template #title>
             <div class="teleport-title">PC 端更新包列表</div>
         </template>
-        <template #actions></template>
+        <template #actions>
+            <router-link :to="{ name: 'installer.index' }">
+                <el-button type="info" plain>转到米哈游启动器</el-button>
+            </router-link>
+        </template>
         <div v-elloading="loading" :class="$style.page">
             <el-scrollbar>
                 <el-tabs

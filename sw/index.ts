@@ -135,6 +135,14 @@ registerRoute(
         cacheName: cacheName,
     }),
 )
+;(process.env.VUE_APP_BASE_URL_LIST || '').split(',').forEach((url: string) => {
+    registerRoute(
+        new RegExp(`${url}(.*)`),
+        new CacheFirst({
+            cacheName: cacheName,
+        }),
+    )
+})
 
 // networkfirst for jsons
 registerRoute(

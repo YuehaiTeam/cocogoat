@@ -19,6 +19,12 @@ export const apibase = async (path = '', region = 'default') => {
     return apis[region === 'default' ? apiregion : region] + path
 }
 export const checkRegion = async (apiregion: string) => {
+    if (window.$cocogoat.status && window.$cocogoat.region) {
+        apistatus.value = window.$cocogoat.status.msg
+        apicolor.value = window.$cocogoat.status.typ
+        syncstatus.value = window.$cocogoat.status.smsg
+        return window.$cocogoat.region
+    }
     const url = (await apis[apiregion]) + '/status'
     try {
         const res = await fetch(url)

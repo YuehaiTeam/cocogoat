@@ -63,6 +63,7 @@ declare global {
     window.$cocogoat = window.$cocogoat || {}
     const c = {
         endpoint: '',
+        entrance: '',
         build: '',
         route: process.env.VUE_APP_ROUTER_HASH === 'true' ? 'hash' : 'history',
         app,
@@ -78,6 +79,11 @@ declare global {
     /// #if !SINGLEFILE
     window.$cocogoat.sw = loadSW()
     /// #endif
+    if (window.$cocogoat.entrance) {
+        const indexJsonUrl = window.$cocogoat.entrance
+        const cdnBaseUrl = indexJsonUrl.replace(/\/[^/]*$/, '/')
+        __webpack_public_path__ = cdnBaseUrl
+    }
 })()
 
 // 检查连续刷新

@@ -4,6 +4,9 @@ import type { i18n } from '@/i18n'
 import type resources from '@/resources'
 export interface CocogoatGlobal<T> {
     endpoint: string
+    entrance: string
+    region?: 'cn' | 'global'
+    status?: Record<string, string>
     build: string
     route: 'history' | 'hash'
     manifest: string

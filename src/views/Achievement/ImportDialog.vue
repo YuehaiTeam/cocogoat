@@ -1,6 +1,6 @@
 <template>
     <!-- eslint-disable vue/no-parsing-error -->
-    <div style="margin-top: -35px">
+    <div style="margin-top: -5px">
         <el-tabs v-model="activeName" stretch>
             <el-tab-pane label="本地导入" name="text">
                 <div
@@ -224,9 +224,9 @@ export default defineComponent({
 .import-button {
     display: block;
     margin-top: 15px;
-    width: calc(100% + 40px);
+    width: calc(100% + var(--el-dialog-padding-primary) * 2);
     margin-bottom: -30px;
-    margin-left: -20px;
+    margin-left: calc(-1 * var(--el-dialog-padding-primary));
     height: 50px;
     border-radius: 0;
     border-left: 0;

@@ -298,14 +298,6 @@ module.exports = defineConfig({
                 'monaco-editor': 'var monaco',
                 exceljs: ['https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/exceljs/4.3.0/exceljs.min.js', 'ExcelJS'],
                 jszip: ['https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/jszip/3.7.0/jszip.min.js', 'JSZip'],
-                '@sentry/browser': [
-                    'https://npm.elemecdn.com/@sentry/tracing/build/bundle.tracing.es6.min.js',
-                    'Sentry',
-                ],
-                '@sentry/tracing': [
-                    'https://npm.elemecdn.com/@sentry/tracing/build/bundle.tracing.es6.min.js',
-                    'Sentry',
-                ],
                 ...(usePreJS ? preJsExt : {}),
             })
 

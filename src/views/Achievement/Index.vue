@@ -125,6 +125,7 @@
                                     v-model="statusVersion"
                                     class="status-version"
                                     multiple
+                                    clearable
                                     collapse-tags
                                     collapse-tags-tooltip
                                     placeholder="所有版本"
@@ -148,6 +149,7 @@
                                 <el-select
                                     v-model="statusQuest"
                                     multiple
+                                    clearable
                                     collapse-tags
                                     collapse-tags-tooltip
                                     class="status-quest"
@@ -277,7 +279,7 @@ import IconCocogoat from '@/components/Icons/cocogoat.vue'
 
 import { i18n } from '@/i18n'
 import { store, options } from '@/store'
-import { Achievement, UIAFStatus } from '@/typings/Achievement'
+import { Achievement, AchievementCategory, UIAFStatus } from '@/typings/Achievement'
 
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import CustomElScrollVue from '@/components/ElCustomScroll.vue'
@@ -291,6 +293,7 @@ import ExportDropdown from './ExportDropdown.vue'
 import ImportDialog from './ImportDialog.vue'
 import ScannerDialog from './ScannerDialog.vue'
 import versionMap, { allVersions, versionDateMap } from './versionMap'
+import { badgeTypeMap } from './badgeMap'
 import bus from '@/bus'
 import { AchievementItem } from '@/typings/Achievement/Achievement'
 import { debounce } from 'lodash-es'
@@ -440,15 +443,27 @@ export default defineComponent({
         })
         const route = useRoute()
         const DEFAULTCAT = 'wonders-of-the-world'
+        const ALLCAT = 'all'
         const currentCatId = computed(() => {
-            return route.params.cat || DEFAULTCAT
+            return route.params.cat || ALLCAT
         })
         const currentCat = computed(() => {
-            const v = achievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
+            let v: AchievementCategory
+            if (currentCatId.value === ALLCAT) {
+                v = { achievements: [], key: ALLCAT, id: 0, name: 0, order: 0, totalReward: 0 }
+                // 整合所有成就便于做整体的搜索
+                for (let i = 0; i < achievementCat.value.length; i++) {
+                    v.achievements.push(...achievementCat.value[i].achievements)
+                }
+            } else {
+                v = achievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
+            }
             const q = {} as Record<number, string>
             v.achievements.forEach((e) => {
                 if (e.trigger.task && e.trigger.task.length > 0) {
                     q[e.id] = e.trigger.task[0].type
+                } else if (e.trigger.type && badgeTypeMap[e.trigger.type]) {
+                    q[e.id] = badgeTypeMap[e.trigger.type]
                 }
             })
             return {
@@ -611,7 +626,7 @@ export default defineComponent({
             }
             return data
         })
-        const checkIfAllCat = computed(() => currentCatId.value === DEFAULTCAT)
+        const checkIfAllCat = computed(() => currentCatId.value === DEFAULTCAT || currentCatId.value === ALLCAT)
         const checkAllCat = (checked: boolean) => {
             const data = currentCat.value.achievements.concat([])
             if (checked) {

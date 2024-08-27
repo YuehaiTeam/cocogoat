@@ -27,7 +27,8 @@
                 <div class="a-line">
                     <el-popover
                         v-model:visible="showClear"
-                        :width="190"
+                        width="auto"
+                        trigger="click"
                         :placement="isMobile ? 'left-start' : 'bottom'"
                     >
                         <div style="text-align: center">真的要清空吗？</div>
@@ -37,7 +38,7 @@
                             <el-button size="small" type="danger" plain @click="doClear(true)">清空全部</el-button>
                         </div>
                         <template #reference>
-                            <el-button v-show="!showScanner" type="danger" plain @click="showClear = true">
+                            <el-button v-show="!showScanner" type="danger" plain>
                                 <fa-icon icon="trash-can" />
                                 清空
                             </el-button>

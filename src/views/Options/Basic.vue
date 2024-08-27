@@ -1,8 +1,8 @@
 <template>
-    <section :class="$style.optionBasic">
+    <section :class="[$style.optionBasic, { [$style.optionBasicMoblie]: isMobile }]">
         <el-form label-position="right" label-width="130px">
             <el-form-item label="语言 (Language)">
-                <div>
+                <div class="form-content">
                     <div class="select">
                         <el-select v-model="options.lang">
                             <el-option v-for="(i, a) in langNames" :key="a" :label="i" :value="a" />
@@ -12,7 +12,7 @@
                 </div>
             </el-form-item>
             <el-form-item label="颜色模式">
-                <div>
+                <div class="form-content">
                     <div class="select">
                         <el-select v-model="configuredMode">
                             <el-option label="跟随系统" value="auto" />
@@ -23,7 +23,7 @@
                 </div>
             </el-form-item>
             <el-form-item label="错误报告和统计">
-                <div>
+                <div class="form-content">
                     <div class="select">
                         <el-switch v-model="options.reporting"></el-switch>
                     </div>
@@ -31,7 +31,7 @@
                 </div>
             </el-form-item>
             <el-form-item label="展示广告">
-                <div>
+                <div class="form-content">
                     <div class="select">
                         <el-switch v-model="options.showads"></el-switch>
                     </div>
@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import { toRef } from 'vue'
+import bus from '@/bus'
 import { langNames } from '@/i18n'
 import { options } from '@/store'
 import { configuredMode } from '@/utils/darkmode'
@@ -67,6 +69,7 @@ export default {
             reporting.report()
         }
         return {
+            isMobile: toRef(bus(), 'isMobile'),
             langNames,
             options,
             report,
@@ -86,10 +89,8 @@ export default {
         .about {
             display: flex;
             flex-direction: column;
-            align-content: center;
             justify-content: center;
-            width: 300px;
-            max-width: 80%;
+            width: 320px;
             align-items: center;
             text-align: center;
             .logo {
@@ -116,6 +117,19 @@ export default {
             .logreport {
                 margin-top: 12px;
             }
+        }
+    }
+}
+.option-basic.option-basic-moblie {
+    :global {
+        .form-content {
+            width: 100%;
+        }
+        .select {
+            width: 100%;
+        }
+        .about {
+            width: 100%;
         }
     }
 }

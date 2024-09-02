@@ -104,7 +104,7 @@
                 ></div>
             </div>
             <achievement-sidebar
-                :achievementCat="achievementCat"
+                :achievementCat="allAchievementCat"
                 :achievementFinStat="achievementFinStat"
                 :hideFinished="hideFinished"
             />
@@ -431,7 +431,17 @@ export default defineComponent({
                 .filter((e) => e.achievements.length > 0)
             return ach
         })
-
+        const allAchievementCat = computed(() => {
+            const output = []
+            const all = { id: -1, order: 0, key: 'all', name: -1, totalReward: 0, achievements: [] as Achievement[] }
+            achievementCat.value.forEach((e) => {
+                all.totalReward += e.totalReward
+                all.achievements.push(...e.achievements)
+            })
+            output.push(all)
+            output.push(...achievementCat.value)
+            return output
+        })
         const totalCount = computed(() => {
             return achievementCat.value.reduce((acc, e) => acc + e.achievements.length, 0)
         })
@@ -445,19 +455,11 @@ export default defineComponent({
         const DEFAULTCAT = 'wonders-of-the-world'
         const ALLCAT = 'all'
         const currentCatId = computed(() => {
-            return route.params.cat || ALLCAT
+            return route.params.cat || DEFAULTCAT
         })
         const currentCat = computed(() => {
-            let v: AchievementCategory
-            if (currentCatId.value === ALLCAT) {
-                v = { achievements: [], key: ALLCAT, id: 0, name: 0, order: 0, totalReward: 0 }
-                // 整合所有成就便于做整体的搜索
-                for (let i = 0; i < achievementCat.value.length; i++) {
-                    v.achievements.push(...achievementCat.value[i].achievements)
-                }
-            } else {
-                v = achievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
-            }
+            const v: AchievementCategory =
+                allAchievementCat.value.find((i) => i.key === currentCatId.value) || achievementCat.value[0]
             const q = {} as Record<number, string>
             v.achievements.forEach((e) => {
                 if (e.trigger.task && e.trigger.task.length > 0) {
@@ -477,7 +479,6 @@ export default defineComponent({
             if (i18n.amos[ach.desc].toLowerCase().includes(search.toLowerCase())) return true
         }
         const searchToList = (search: string, cb: AutocompleteFetchSuggestionsCallback) => {
-            console.log(i18n.amos)
             return cb(
                 currentCat.value.achievements
                     .filter((e) => has(e, search))
@@ -767,6 +768,7 @@ export default defineComponent({
             showScanner,
             selectedIds,
             achievementCat,
+            allAchievementCat,
             currentCatId,
             currentCat,
             achievementFin,

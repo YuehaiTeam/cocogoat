@@ -7,14 +7,14 @@
                         v-if="!hideFinished || (achievementFinStat[i.id || 0]?.count || 0) < i.achievements.length"
                         :to="{
                             params: {
-                                cat: i.key === 'wonders-of-the-world' ? '' : i.key,
+                                cat: i.key,
                             },
                         }"
-                        :active-class="i.key === 'wonders-of-the-world' ? '' : 'router-link-active'"
-                        :exact-active-class="i.key === 'wonders-of-the-world' ? 'router-link-active' : ''"
+                        :active-class="i.key === DEFAULTCAT ? '' : 'router-link-active'"
+                        :exact-active-class="i.key === DEFAULTCAT ? 'router-link-active' : ''"
                     >
                         <div>
-                            {{ amos[i.name] }}
+                            {{ i.key === ALLCAT ? '所有' : amos[i.name] }}
                         </div>
                         <small>
                             <b>
@@ -57,6 +57,9 @@ import type { ElScrollbar } from 'element-plus'
 export default defineComponent({
     props: ['achievementCat', 'achievementFinStat', 'hideFinished'],
     setup() {
+        const DEFAULTCAT = 'wonders-of-the-world'
+        const ALLCAT = 'all'
+
         const scrollbarRef = ref<InstanceType<typeof ElScrollbar> | null>(null)
         const move = (dir: number) => {
             if (!scrollbarRef.value) return
@@ -73,6 +76,8 @@ export default defineComponent({
             scrollbarRef,
             isMobile: toRef(bus(), 'isMobile'),
             amos: toRef(i18n, 'amos'),
+            DEFAULTCAT,
+            ALLCAT,
         }
     },
 })

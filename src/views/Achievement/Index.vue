@@ -104,6 +104,7 @@
                 ></div>
             </div>
             <achievement-sidebar
+                :totalFin="totalFin"
                 :achievementCat="allAchievementCat"
                 :achievementFinStat="achievementFinStat"
                 :hideFinished="hideFinished"

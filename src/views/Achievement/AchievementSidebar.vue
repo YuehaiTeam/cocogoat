@@ -19,12 +19,22 @@
                         <small>
                             <b>
                                 <img :src="img('yuanshi')" alt="原石" />
-                                {{ achievementFinStat[i.id || 0]?.reward || 0 }}/{{ i.totalReward }}
+                                {{
+                                    i.key === ALLCAT
+                                        ? totalFin?.reward || 0
+                                        : achievementFinStat[i.id || 0]?.reward || 0
+                                }}/{{ i.totalReward }}
                             </b>
                             <span>
-                                {{ achievementFinStat[i.id || 0]?.count || 0 }}/{{ i.achievements.length }} ({{
-                                    Math.round(
-                                        ((achievementFinStat[i.id || 0]?.count || 0) / i.achievements.length) * 100,
+                                {{
+                                    i.key === ALLCAT ? totalFin?.count || 0 : achievementFinStat[i.id || 0]?.count || 0
+                                }}/{{ i.achievements.length }} ({{
+                                    Math.floor(
+                                        ((i.key === ALLCAT
+                                            ? totalFin?.count || 0
+                                            : achievementFinStat[i.id || 0]?.count || 0) /
+                                            i.achievements.length) *
+                                            100,
                                     )
                                 }}%)
                             </span>
@@ -55,7 +65,7 @@ import { i18n } from '@/i18n'
 import { ref, toRef, defineComponent } from 'vue'
 import type { ElScrollbar } from 'element-plus'
 export default defineComponent({
-    props: ['achievementCat', 'achievementFinStat', 'hideFinished'],
+    props: ['achievementCat', 'achievementFinStat', 'hideFinished', 'totalFin'],
     setup() {
         const DEFAULTCAT = 'wonders-of-the-world'
         const ALLCAT = 'all'

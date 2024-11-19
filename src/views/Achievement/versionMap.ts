@@ -1459,6 +1459,7 @@ const versionMap = {
     82270: 5.2,
 } as Record<number, number>
 export const versionDateMap = {
+    5.2: new Date('2024-11-20'),
     5.1: new Date('2024-10-09'),
     5.0: new Date('2024-08-28'),
     4.7: new Date('2024-06-05'),

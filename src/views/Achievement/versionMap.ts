@@ -1,11 +1,15 @@
 import { uniq } from 'lodash-es'
 import versionMeta from '@/generated/versionMeta.json'
 
-const versionMap = Object.entries(versionMeta).reduce((prev, curr) => {
-    prev[Number(curr[0])] = curr[1]
-    return prev
-}, {} as Record<number, number>)
+const versionMap = Object.entries(versionMeta).reduce(
+    (prev, curr) => {
+        prev[Number(curr[0])] = curr[1]
+        return prev
+    },
+    {} as Record<number, number>,
+)
 export const versionDateMap = {
+    5.3: new Date('2025-01-01'),
     5.2: new Date('2024-11-20'),
     5.1: new Date('2024-10-09'),
     5.0: new Date('2024-08-28'),

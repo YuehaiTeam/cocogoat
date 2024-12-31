@@ -3,7 +3,7 @@ export class Worker extends WebWorker {
     url: string
     constructor(_url: string | URL) {
         const url: URL = new URL(_url, location.href)
-        const base = new URL(process.env.BASE_URL, location.href)
+        const base = new URL(process.env.BASE_URL as string, location.href)
         if (location.protocol !== 'file:' && url.origin !== location.origin) {
             const blob = new Blob([`_base='${base}';importScripts('${url}');`], {
                 type: 'application/javascript',

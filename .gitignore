@@ -24,7 +24,8 @@ pnpm-debug.log*
 *.sw?
 .cache
 
-src/generated/
+src/generated/amos-data
+!src/generated/versionMeta.json
 
 /*.txt
 

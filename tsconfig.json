@@ -4,6 +4,7 @@
         "outDir": "dist",
         "target": "esnext",
         "module": "esnext",
+        "resolveJsonModule": true,
         "strict": true,
         "jsx": "preserve",
         "moduleResolution": "node",
@@ -15,13 +16,35 @@
         "isolatedModules": true,
         "sourceMap": true,
         "baseUrl": ".",
-        "types": ["webpack-env", "vite/client", "element-plus/global"],
+        "types": [
+            "webpack-env",
+            "vite/client",
+            "element-plus/global"
+        ],
         "paths": {
-            "@/*": ["src/*"],
-            "lodash": ["lodash-es"]
+            "@/*": [
+                "src/*"
+            ],
+            "lodash": [
+                "lodash-es"
+            ]
         },
-        "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+        "lib": [
+            "esnext",
+            "dom",
+            "dom.iterable",
+            "scripthost"
+        ]
     },
-    "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "tests/**/*.ts", "tests/**/*.tsx"],
-    "exclude": ["node_modules", "src/plugins/genshin-data/**"]
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.vue",
+        "tests/**/*.ts",
+        "tests/**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules",
+        "src/plugins/genshin-data/**"
+    ]
 }

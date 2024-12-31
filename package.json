@@ -16,7 +16,8 @@
         "build:singlefile:webpack": "vue-cli-service build --singlefile",
         "preview": "vite preview",
         "lint": "vue-cli-service lint",
-        "postinstall": "git submodule update --init --remote --depth 1"
+        "postinstall": "git submodule update --init --remote --depth 1",
+        "update-data": "node --no-warnings=ExperimentalWarning --loader ts-node/esm  scripts/update.mts"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -64,6 +65,7 @@
         "@types/color-diff": "^1.2.5",
         "@types/lodash-es": "^4.17.12",
         "@types/murmurhash-js": "^1.0.6",
+        "@types/node": "^22.10.2",
         "@types/qs": "^6.9.15",
         "@types/serviceworker": "^0.0.85",
         "@types/webpack-env": "^1.18.4",
@@ -92,6 +94,7 @@
         "sass": "^1.75.0",
         "sass-loader": "^14.2.1",
         "swc-loader": "^0.2.6",
+        "ts-node": "^10.9.2",
         "typescript": "^5.4.5",
         "unplugin-auto-import": "^0.17.5",
         "unplugin-vue-components": "^0.26.0",
@@ -120,7 +123,6 @@
             ]
         },
         "overrides": {
-            "@types/node": "link:.cache/empty",
             "flyio>request": "link:.cache/empty"
         }
     }

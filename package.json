@@ -17,7 +17,7 @@
         "preview": "vite preview",
         "lint": "vue-cli-service lint",
         "postinstall": "git submodule update --init --remote --depth 1",
-        "update-data": "node --no-warnings=ExperimentalWarning --loader ts-node/esm  scripts/update.mts"
+        "update-data": "node --no-warnings=ExperimentalWarning --loader ts-node/esm scripts/update.mts"
     },
     "dependencies": {
         "@fortawesome/fontawesome-svg-core": "^6.5.2",

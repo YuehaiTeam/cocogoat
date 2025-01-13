@@ -112,7 +112,8 @@
         "patchedDependencies": {
             "git-repo-info@2.1.1": "patches/git-repo-info@2.1.1.patch",
             "vue-virtual-scroller@2.0.0-alpha.1": "patches/vue-virtual-scroller@2.0.0-alpha.1.patch",
-            "vite-plugin-ifdef@1.0.5": "patches/vite-plugin-ifdef@1.0.5.patch"
+            "vite-plugin-ifdef@1.0.5": "patches/vite-plugin-ifdef@1.0.5.patch",
+            "vue-scriptx@0.2.7": "patches/vue-scriptx@0.2.7.patch"
         },
         "peerDependencyRules": {
             "ignoreMissing": [

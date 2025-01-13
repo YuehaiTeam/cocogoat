@@ -121,7 +121,7 @@
                     <div>前往 GitHub Discussions 进行聊天吹水和其他非正式讨论</div>
                 </a>
             </div>
-            <div :class="$style.copyright">&copy;2022-2024 YuehaiTeam cocogoat.work <build-info /></div>
+            <div :class="$style.copyright">&copy;2022-2025 YuehaiTeam cocogoat.work <build-info /></div>
         </div>
     </Layout>
 </template>

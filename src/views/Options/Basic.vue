@@ -42,7 +42,7 @@
         <h4>关于</h4>
         <section class="about">
             <div class="logo"><icon-cocogoat /> 椰羊 cocogoat</div>
-            <div class="copyright">&copy;2022-2024 YuehaiTeam <build-info /></div>
+            <div class="copyright">&copy;2022-2025 YuehaiTeam <build-info /></div>
             <div v-if="options.reporting" class="logreport">
                 <el-link @click="report">上传日志</el-link>
             </div>

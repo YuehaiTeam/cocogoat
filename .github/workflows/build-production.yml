@@ -12,26 +12,26 @@ jobs:
     runs-on: ubuntu-latest
     name: Build
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Unpack git objects
         run: |
           mv .git/objects/pack .
           git unpack-objects < pack/*.pack
           rm -rf pack
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-      - uses: szenius/set-timezone@v1.1
+          node-version: 22
+      - uses: szenius/set-timezone@v2
         with:
           timezoneLinux: "Asia/Shanghai"
           timezoneMacos: "Asia/Shanghai"
           timezoneWindows: "China Standard Time"
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
       - name: Get pnpm store directory
         id: pnpm-cache
         run: |
-          echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
-      - uses: actions/cache@v3
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v4
         name: Setup pnpm cache
         with:
           path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
@@ -47,12 +47,12 @@ jobs:
         run: |
           curl -X POST -H "Content-Type: application/json" -d '{"msg_type":"interactive","card":{"config":{"wide_screen_mode":false},"header":{"template":"red","title":{"content":"构建失败通知","tag":"plain_text"}},"elements":[{"tag":"div","text":{"content":"cocogoat-web构建失败，请检查错误信息","tag":"lark_md"}}]}}' ${{ secrets.FEISHU_WEBHOOK }}
       - name: Upload Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cocogoat-web-report
           path: dist/report.html
       - name: Upload package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cocogoat-web
           path: dist/

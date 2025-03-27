@@ -123,9 +123,6 @@ module.exports = defineConfig({
         config.plugins.delete('prefetch')
         config.plugins.delete('preload')
         config.module.rule('asset-raw').type('asset/source').set('resourceQuery', /raw/)
-        config.resolve.set('fallback', {
-            util: require.resolve('util'),
-        })
         config.resolve.alias.set('lodash', 'lodash-es')
         config.plugin('corsWorkerPlugin').use(corsWorkerPlugin, [webpack])
         config.module.rule('ts').use('ifdef-loader').loader('ifdef-loader').options({

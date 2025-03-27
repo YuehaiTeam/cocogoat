@@ -108,7 +108,7 @@ export default defineConfig(({ command, mode }) => {
             }),
             visualizer({
                 emitFile: true,
-                filename: 'dist/report.html',
+                filename: 'report.html',
             }),
             createHtmlPlugin({
                 minify: true,

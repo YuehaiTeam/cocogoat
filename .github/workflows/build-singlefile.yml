@@ -45,12 +45,12 @@ jobs:
       - name: Rename
         run: mkdir dist/local && mv dist/index.html dist/local/cocogoat-web-local.html
       - name: Upload package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cocogoat-local
           path: dist/local/
       - name: Upload Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cocogoat-web-report
           path: dist/report.html

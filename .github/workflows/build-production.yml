@@ -2,7 +2,7 @@ name: Build Production
 on:
   push:
     branches:
-      - main
+      - mm
 jobs:
   build:
     env:

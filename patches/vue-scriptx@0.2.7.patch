@@ -1,0 +1,13 @@
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index b73742fb6c4bebc11a4f44164add6a09390c7d44..cae2b11cbaa8c4f270dcfbd4b251b8ea64eb6401 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -7,7 +7,7 @@ declare class VueScriptX {
+     install(app: App): void;
+     load(src: string, opts?: Record<string, any>): Promise<any>;
+ }
+-declare module '@vue/runtime-core' {
++declare module 'vue' {
+     interface ComponentCustomProperties {
+         $scriptx: VueScriptX;
+     }

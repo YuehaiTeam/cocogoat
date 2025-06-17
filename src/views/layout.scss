@@ -1,4 +1,4 @@
-@import '@/style/theme.scss';
+@use '@/style/theme.scss';
 $main: var(--c-theme-sub);
 $front: rgba(255, 255, 255, 0.75);
 $--color-primary: var(--c-theme);

@@ -107,7 +107,7 @@
         "webpack-bundle-analyzer": "^4.10.2",
         "worker-loader": "^3.0.8"
     },
-    "packageManager": "pnpm@8.15.0",
+    "packageManager": "pnpm@10.11.1",
     "pnpm": {
         "patchedDependencies": {
             "git-repo-info@2.1.1": "patches/git-repo-info@2.1.1.patch",
@@ -124,6 +124,21 @@
         },
         "overrides": {
             "flyio>request": "link:.cache/empty"
-        }
+        },
+        "onlyBuiltDependencies": [
+            "@fortawesome/fontawesome-common-types",
+            "@fortawesome/fontawesome-svg-core",
+            "@fortawesome/free-brands-svg-icons",
+            "@fortawesome/free-regular-svg-icons",
+            "@fortawesome/free-solid-svg-icons",
+            "@sentry/cli",
+            "@swc/core",
+            "core-js",
+            "esbuild",
+            "postinstall-postinstall",
+            "protobufjs",
+            "vue-demi",
+            "yorkie"
+        ]
     }
 }

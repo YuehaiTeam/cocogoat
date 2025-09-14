@@ -29,7 +29,7 @@
                                 {{
                                     i.key === ALLCAT ? totalFin?.count || 0 : achievementFinStat[i.id || 0]?.count || 0
                                 }}/{{ i.achievements.length }} ({{
-                                    Math.floor(
+                                    Math.round(
                                         ((i.key === ALLCAT
                                             ? totalFin?.count || 0
                                             : achievementFinStat[i.id || 0]?.count || 0) /

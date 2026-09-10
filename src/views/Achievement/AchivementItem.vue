@@ -125,7 +125,14 @@ export default defineComponent({
     emits: ['input-date', 'input-current', 'input-partial', 'check', 'click-title'],
     setup(props, { emit }) {
         const searchMys = (i: Achievement) => {
-            return `https://www.miyoushe.com/ys/search?keyword=${encodeURIComponent(i18n.amos[i.name])}`
+            let gameNameRR = '原神'
+            let achievement = '成就'
+            try {
+                gameNameRR = navigator.language.toLowerCase() === 'zh-cn' ? '原神' : 'Genshin·Impact'
+                achievement = navigator.language.toLowerCase() === 'zh-cn' ? '成就' : 'achievement'
+            } catch (e) {}
+            const searchString = `${gameNameRR} ${i18n.amos[i.name]} ${achievement}`
+            return `https://www.bing.com/search?q=${encodeURIComponent(searchString)}`
         }
         return {
             img,
@@ -353,7 +360,7 @@ export default defineComponent({
             small {
                 max-width: calc(100% - 80px);
                 overflow: hidden;
-                white-space: nowrap;
+                white-space: wrap;
                 display: inline-block;
                 text-overflow: ellipsis;
 

@@ -40,29 +40,32 @@ export function WorkerUrl(arg?: URL | (() => URL)): URL {
     return typeof arg === 'function' ? arg() : arg
 }
 export function WorkerExtract(wrapper: () => Worker): URL {
-    const url = wrapper.toString().match(/\(\s?['"](.*?)['"][,)\s]/)
-    if (!url) {
-        try {
-            const temp_Worker = window.Worker
-            const temp_RevokeObjectUrl = window.URL.revokeObjectURL
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            window.Worker = function (url: string) {
-                return new URL(url, import.meta.url)
-            }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            window.URL.revokeObjectURL = (_url: string) => {
-                // do nothing
-            }
-            const tmpUrl = wrapper() as unknown as URL
-            window.Worker = temp_Worker
-            window.URL.revokeObjectURL = temp_RevokeObjectUrl
-            return tmpUrl
-        } catch (e) {
-            throw new Error('WorkerMacro faild to get url')
-        }
+    // 直接捕获 wrapper 内部 new Worker(...) 的脚本地址，
+    // 不再用正则在函数源码里猜：旧正则会把包装函数里的 addEventListener('error', ...) 匹配成地址，
+    // 导致 file:// 下去加载 file:///.../error 并抛出 SecurityError。
+    const temp_Worker = window.Worker
+    const temp_RevokeObjectUrl = window.URL.revokeObjectURL
+    let captured = ''
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    window.Worker = function (url: string) {
+        if (!captured) captured = String(url)
+        return new URL(url, import.meta.url)
     }
-    return new URL(url[1], import.meta.url)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    window.URL.revokeObjectURL = (_url: string) => {
+        // 先不撤销，等 Worker 创建完成后再交给浏览器回收
+    }
+    try {
+        wrapper()
+    } catch (e) {
+        if (!captured) throw new Error('WorkerMacro faild to get url: ' + (e as Error)?.message)
+    } finally {
+        window.Worker = temp_Worker
+        window.URL.revokeObjectURL = temp_RevokeObjectUrl
+    }
+    if (!captured) throw new Error('WorkerMacro faild to get url')
+    return new URL(captured, import.meta.url)
 }
 WorkerMacro.installToWindow = installToWindow
 WorkerMacro.WorkerExtract = WorkerExtract

@@ -123,7 +123,19 @@ export function getBlobWithProgress(
                     if (!response.body) {
                         throw new Error('No body')
                     }
-                    const decompressedStream = response.body.pipeThrough(ds)
+                    let loaded = 0
+                    let lastReport = 0
+                    const counter = new TransformStream<Uint8Array, Uint8Array>({
+                        transform(chunk, controller) {
+                            loaded += chunk.byteLength
+                            if (loaded - lastReport >= 256 * 1024) {
+                                lastReport = loaded
+                                onprogress(loaded, fallbackSize)
+                            }
+                            controller.enqueue(chunk)
+                        },
+                    })
+                    const decompressedStream = response.body.pipeThrough(ds).pipeThrough(counter)
                     console.log('Decompressed successfully using stream')
                     return await new Response(decompressedStream).blob()
                 } else {
@@ -223,14 +235,16 @@ export async function requireAsBlob(
         })(name)
     })
     const ret = await Promise.all(promises)
-    for (const item of ret) {
-        if (location.protocol === 'file:') {
-            // blob not supported in file protocol, use base64 instead
-            resources[item.name] = await blobToBase64(item.blob)
-        } else {
-            resources[item.name] = URL.createObjectURL(item.blob)
-        }
-    }
+    await Promise.all(
+        ret.map(async (item) => {
+            if (location.protocol === 'file:') {
+                // blob not supported in file protocol, use base64 instead
+                resources[item.name] = await blobToBase64(item.blob)
+            } else {
+                resources[item.name] = URL.createObjectURL(item.blob)
+            }
+        }),
+    )
 }
 function blobToBase64(blob: Blob): Promise<string> {
     return new Promise((resolve) => {

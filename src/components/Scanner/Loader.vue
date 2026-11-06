@@ -59,12 +59,28 @@ export default defineComponent({
     emits: ['done'],
     setup(props, { emit }) {
         const progress = ref(0)
-        const progressText = ref(process.env.VUE_APP_SINGLEFILE === 'true' ? '解压资源文件' : '获取资源地址')
+        const progressText = ref(
+            process.env.VUE_APP_SINGLEFILE === 'true' ? '正在解压资源文件（首次较慢，请稍候）' : '获取资源地址',
+        )
         onMounted(async () => {
+            const hintTimer = setTimeout(() => {
+                if (progress.value === 0) {
+                    progressText.value = '仍在解压资源文件，请再稍候；若长时间无变化，请按 F12 查看控制台报错'
+                }
+            }, 20000)
             if (!ocrCompatible) {
+                clearTimeout(hintTimer)
                 return
             }
-            const instance = props.instance()
+            let instance: ReturnType<typeof props.instance>
+            try {
+                instance = props.instance()
+            } catch (e) {
+                clearTimeout(hintTimer)
+                progressText.value = `初始化失败：${(e as Error)?.message || e}`
+                console.error('scanner instance failed', e)
+                return
+            }
             instance.onProgress((pvalue, error) => {
                 if (error) {
                     send('error', error.message + '\n' + error.stack, props.source)
@@ -93,9 +109,13 @@ export default defineComponent({
                     }, 140)
                 }
             })
-            instance.initPromise.then(() => {
-                emit('done')
-            })
+            instance.initPromise
+                .then(() => {
+                    emit('done')
+                })
+                .catch((e) => {
+                    console.error('scanner init failed', e)
+                })
         })
         return {
             ocrCompatible,

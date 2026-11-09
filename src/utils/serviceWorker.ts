@@ -115,7 +115,7 @@ export class ServiceWorker {
         // fetch manifest
         const publicPath = new URL(__webpack_public_path__, location.href)
         const manifestUrl = new URL(this.manifest, publicPath)
-        const manifestReq = await fetch(manifestUrl.toString())
+        const manifestReq = await fetch(manifestUrl.toString(), { cache: 'no-store' })
         if (manifestReq.status !== 200) {
             throw new Error(`${manifestReq.status} ${manifestReq.statusText}`)
         }
@@ -190,7 +190,7 @@ export class ServiceWorker {
     async updateCachedManifest() {
         const path = __webpack_public_path__ + 'index.json'
         const manifestCache = await caches.open('cocogoat-sw-manifest')
-        const indexJson = await fetch(path)
+        const indexJson = await fetch(path, { cache: 'no-store' })
         await manifestCache.put(path, indexJson)
     }
 }

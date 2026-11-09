@@ -149,6 +149,7 @@ registerRoute(
     /(.*).json/,
     new NetworkFirst({
         cacheName: cacheName,
+        fetchOptions: { cache: 'no-store' },
     }),
 )
 

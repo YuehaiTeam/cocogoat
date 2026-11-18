@@ -208,16 +208,14 @@ export default defineComponent({
         const ocrQueue = fastq.promise(recoginzeWorker, 2)
         async function startScan() {
             ocrQueue.killAndDrain()
-            ocrQueue.pause()
-            let last = Promise.resolve() as Promise<void>
-            images.value.forEach((element, index) => {
-                last = ocrQueue.push({
-                    image: element as HTMLImageElement,
-                    thread: index % 2 === 0,
-                })
-            })
-            ocrQueue.resume()
-            await last
+            await Promise.all(
+                images.value.map((image, index) =>
+                    ocrQueue.push({
+                        image,
+                        thread: index % 2 === 0,
+                    }),
+                ),
+            )
             send('state', 'finish')
             send('result', {
                 result: results.value,

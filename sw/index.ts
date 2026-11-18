@@ -70,10 +70,7 @@ addEventListener('install', (event: ExtendableEvent) => {
                 }
                 await cache.add(process.env.BASE_URL + 'index.json')
             }),
-            fetch(new Request(new URL('/', location.href).toString())).then(async (response) => {
-                const cache = await caches.open(cacheName)
-                return cache.put(new Request(new URL('/', location.href).toString()), response)
-            }),
+            caches.open(cacheName).then((cache) => cache.add(new Request('/', { cache: 'reload' }))),
         ]),
     )
 })
@@ -191,31 +188,15 @@ registerRoute(
 // network-only for api
 registerRoute(new RegExp(`${process.env.BASE_URL}77/(.*)`), new NetworkOnly())
 
-// networkfirst for pages
+// Online navigations must use the site's current shell, including scanner iframes.
 registerRoute(
-    // eslint-disable-next-line prefer-regex-literals
-    ({ url, request }) => {
-        // check is GET
-        if (request.method !== 'GET') {
-            return false
-        }
-        // check same origin
-        if (new URL(url).origin !== location.origin) {
-            return false
-        }
-        return !new URL(url).pathname.includes('.')
-    },
-    async ({ url, request }): Promise<Response> => {
+    ({ url, request }) => request.mode === 'navigate' && url.origin === location.origin && !url.pathname.includes('.'),
+    async ({ request }): Promise<Response> => {
         try {
-            // get entrance
-            const response = await fetch(new Request(process.env.VUE_APP_SWENTRANCE))
+            return await fetch(request)
+        } catch {
             const cache = await caches.open(cacheName)
-            await cache.put(request, response.clone())
-            return response
-        } catch (e) {
-            // fallback to cache
-            const cache = await caches.open(cacheName)
-            const cached = await cache.match(new Request(new URL('/', url).toString()))
+            const cached = await cache.match('/')
             if (cached) {
                 return cached
             }
